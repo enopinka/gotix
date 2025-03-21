@@ -1,5 +1,6 @@
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
+import { Link } from "@inertiajs/react";
 import { Search, SearchIcon } from "lucide-react";
 
 export default function CustomerLayout({
@@ -24,7 +25,9 @@ export default function CustomerLayout({
                         </Button>
                     </div>
                     <div>
-                        <Button>Login</Button>
+                        <Link href="/login">
+                            <Button>Login</Button>
+                        </Link>
                     </div>
                 </div>
             </div>
