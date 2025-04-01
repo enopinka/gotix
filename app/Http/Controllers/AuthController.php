@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\User;
-App\Http\Controllers\Hash
+
 
 class AuthController extends Controller
 {
@@ -60,26 +61,22 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => ['required'],
             'email' => ['required', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:admin,partner,customer'], // Sesuaikan dengan kebutuhan
+            'password' => ['required', 'string', 'min:8'],
+            
         ]);
 
         // Buat user baru
-        $user = user::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
+            'role' => "customer",
         ]);
         Auth::login($user);
 
         // Redirect berdasarkan peran
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'partner') {
-            return redirect()->route('partner.dashboard');
-        } else {
-            return redirect()->route('home');
-        }
+        if ($user->role === 'customer') {
+            return redirect('/');}
+        
     }
 }

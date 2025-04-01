@@ -23,9 +23,9 @@ Route::post('/login', [AuthController::class, 'login']
 
 Route::get('/logout', [AuthController::class, 'logout']);
 
-Route::get('/register', function(){
-    return Inertia::render("Register");
-});
+Route::get('/register', [AuthController::class, 'registerScreen']);
+
+Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
 Route::middleware([Authentication::class."customer"])->group( function(){
