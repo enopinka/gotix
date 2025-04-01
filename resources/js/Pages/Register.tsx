@@ -13,7 +13,7 @@ import { Input } from "@/Components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 
 const formSchema = z.object({
     email: z.string().min(2, { message: "harus berisi setidaknya 2 karakter" }),
@@ -36,9 +36,23 @@ export default function Register() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values);
+        if (values.password === values.confirm_password) {
+            router.post("/register", values, {
+                onSuccess: () => {
+                    console.log("berhasil register");
+                },
+                onError: (e) => {
+                    form.setError("email", {
+                        type: "manual",
+                        message: e.email,
+                    });
+                    form.setError("password", {
+                        type: "manual",
+                        message: e.password,
+                    });
+                },
+            });
+        }
     }
     return (
         <>
