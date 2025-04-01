@@ -13,7 +13,10 @@ import { Input } from "@/Components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
+import { AlertCircle, X } from "lucide-react";
 
 const formSchema = z.object({
     email: z.string().min(2, { message: "harus berisi setidaknya 2 karakter" }),
@@ -21,6 +24,9 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+    const { errors } = usePage().props;
+    const [showAlert, setShowAlert] = useState(!!errors?.password);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -31,12 +37,47 @@ export default function Login() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values);
+        router.post("/login", values, {
+            onSuccess: () => {
+                console.log("berhasil login");
+            },
+            onError: (e) => {
+                form.setError("email", { type: "manual", message: e.email });
+                form.setError("password", {
+                    type: "manual",
+                    message: e.password,
+                });
+            },
+        });
     }
     return (
         <>
+            {showAlert && errors?.password && (
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 max-w-2xl w-full">
+                    <Alert
+                        variant="destructive"
+                        className="flex justify-between items-center"
+                    >
+                        <div className="flex gap-4 items-center">
+                            <AlertCircle className="h-4 w-4" />
+                            <div>
+                                <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>
+                                    {errors.password}
+                                </AlertDescription>
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                onClick={() => setShowAlert(false)}
+                            >
+                                <X />
+                            </button>
+                        </div>
+                    </Alert>
+                </div>
+            )}
             <div className="flex justify-center items-center h-screen">
                 <Card className="w-1/2 shadow-md ">
                     <CardHeader>
