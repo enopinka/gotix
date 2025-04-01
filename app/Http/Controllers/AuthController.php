@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Psr\Http\Message\RequestInterface;
+use App\Models\User;
+
 
 class AuthController extends Controller
 {
@@ -13,7 +15,7 @@ class AuthController extends Controller
         return Inertia::render("Login");
     }
 
-    public function authenticate (Request $request){
+    public function login (Request $request){
         
         $credentials = $request->validate([
             'email'=>['required'],
@@ -39,5 +41,42 @@ class AuthController extends Controller
                 ])->onlyInput('password');
             }
             
+    }
+
+    public function logout(Request $request){
+        Auth::logout();
+
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
+    }
+
+    public function registerScreen(){
+        return Inertia::render("Register");
+    }
+
+    public function register(Request $request){
+        // Validasi input
+        $validated = $request->validate([
+            'name' => ['required'],
+            'email' => ['required', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+            
+        ]);
+
+        // Buat user baru
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => "customer",
+        ]);
+        Auth::login($user);
+
+        // Redirect berdasarkan peran
+        if ($user->role === 'customer') {
+            return redirect('/');}
+        
     }
 }
