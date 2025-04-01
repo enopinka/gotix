@@ -13,7 +13,7 @@ class AuthController extends Controller
         return Inertia::render("Login");
     }
 
-    public function authenticate (Request $request){
+    public function login (Request $request){
         
         $credentials = $request->validate([
             'email'=>['required'],
@@ -39,5 +39,14 @@ class AuthController extends Controller
                 ])->onlyInput('password');
             }
             
+    }
+
+    public function logout(Request $request){
+        Auth::logout();
+
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 }
