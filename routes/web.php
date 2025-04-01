@@ -3,10 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PartnerController;
-use App\Http\Controllers\PartnerControllerController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\Authentication;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
