@@ -3,11 +3,11 @@ import PartnerLayout from "@/Layouts/PartnerLayout";
 import { Link } from "@inertiajs/react";
 import { Banknote, LogOut, Ticket } from "lucide-react";
 
-export default function Dashboard() {
+export default function CreateEvent() {
     return (
         <>
             <PartnerLayout>
-                <p>Ini halaman mitra</p>
+                <p>Ini halaman bikin event</p>
             </PartnerLayout>
         </>
     );
