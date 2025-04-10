@@ -33,6 +33,9 @@ Route::middleware([Authentication::class."customer"])->group( function(){
 // diakses partner
 Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::get('/partner', [PartnerController::class, 'index']);
+    Route::get('/partner/event', [PartnerController::class, 'eventScreen']);
+    Route::get('/partner/event/create', [PartnerController::class, 'createEventScreen']);
+    Route::get('/partner/report', [PartnerController::class, 'reportScreen']);
 }); 
 
 
