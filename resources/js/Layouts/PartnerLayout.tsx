@@ -24,9 +24,9 @@ export default function PartnerLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <div className="flex">
+        <div className="flex h-screen overflow-hidden">
             {/* Sidebar */}
-            <div className="bg-slate-100 w-64 h-screen shadow-md px-2">
+            <div className="bg-slate-100 w-64 h-screen shadow-md px-2 fixed">
                 <div className="flex flex-col justify-center items-center my-16 space-y-2">
                     <div className="w-16 h-16 bg-white rounded-full"></div>
                     <p>Admin 1</p>
@@ -46,7 +46,10 @@ export default function PartnerLayout({
                 </nav>
             </div>
 
-            <div className="flex-1 p-4">{children}</div>
+            {/* Content */}
+            <div className="flex-1 ml-64 h-screen overflow-y-auto p-4">
+                {children}
+            </div>
         </div>
     );
 }
