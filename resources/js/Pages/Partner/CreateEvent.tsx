@@ -7,7 +7,7 @@ export default function CreateEvent() {
     return (
         <>
             <PartnerLayout>
-                <p>Ini halaman bikin event</p>
+                <p className="text-2xl font-bold my-4">Tambah Acara</p>
             </PartnerLayout>
         </>
     );

@@ -7,7 +7,7 @@ export default function Report() {
     return (
         <>
             <PartnerLayout>
-                <p>Ini halaman laporan</p>
+                <p className="text-2xl font-bold my-4">Laporan</p>
             </PartnerLayout>
         </>
     );
