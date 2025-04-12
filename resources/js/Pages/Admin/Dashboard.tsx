@@ -1,20 +1,12 @@
-import ManagementLayout from "@/Layouts/ManagementLayout";
+import AdminLayout from "@/Layouts/AdminLayout";
 import { LogOut } from "lucide-react";
 
 export default function Dashboard() {
-    const menuItems = [
-        {
-            name: "Logout",
-            icon: <LogOut />,
-            path: "/logout",
-        },
-    ];
-
     return (
         <>
-            <ManagementLayout menu={menuItems}>
+            <AdminLayout>
                 <p>Ini Halaman Admin</p>
-            </ManagementLayout>
+            </AdminLayout>
         </>
     );
 }
