@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
-            $table->foreignId('partner_id')->constrained('partners')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('type');
             $table->unsignedBigInteger('price');
             $table->unsignedInteger('quota');
