@@ -36,10 +36,12 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::get('/partner/event', [PartnerController::class, 'eventScreen']);
     Route::get('/partner/event/create', [PartnerController::class, 'createEventScreen']);
     Route::get('/partner/report', [PartnerController::class, 'reportScreen']);
-}); 
+});
 
 
 // diakses admin
 Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin', [AdminController::class, 'index']);
+    Route::get('/admin/promotor', [AdminController::class, 'promotor']);
+    Route::get('/admin/laporan', [AdminController::class, 'laporan']);
 });
