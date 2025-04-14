@@ -4,14 +4,14 @@ import { ReactNode } from "react";
 
 const menuItems = [
     {
-        name: "Acara",
+        name: "Promotor",
         icon: <Ticket />,
-        path: "#",
+        path: "/admin/promotor",
     },
     {
         name: "Laporan",
         icon: <Banknote />,
-        path: "#",
+        path: "/admin/laporan",
     },
     {
         name: "Logout",
