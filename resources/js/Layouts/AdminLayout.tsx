@@ -1,25 +1,32 @@
 import { Link } from "@inertiajs/react";
+import { Ticket, Banknote, LogOut } from "lucide-react";
 import { ReactNode } from "react";
 
-interface MenuItem {
-    name: string;
-    icon: ReactNode;
-    path: string;
-}
+const menuItems = [
+    {
+        name: "Promotor",
+        icon: <Ticket />,
+        path: "/admin/promotor",
+    },
+    {
+        name: "Laporan",
+        icon: <Banknote />,
+        path: "/admin/laporan",
+    },
+    {
+        name: "Logout",
+        icon: <LogOut />,
+        path: "/logout",
+    },
+];
 
-interface ManagementLayoutProps {
-    children: ReactNode;
-    menu: MenuItem[];
-}
-
-export default function ManagementLayout({
+export default function PartnerLayout({
     children,
-    menu,
-}: ManagementLayoutProps) {
+}: Readonly<{ children: React.ReactNode }>) {
     return (
-        <div className="flex">
+        <div className="flex h-screen overflow-hidden">
             {/* Sidebar */}
-            <div className="bg-slate-100 w-64 h-screen shadow-md px-2">
+            <div className="bg-slate-100 w-64 h-screen shadow-md px-2 fixed">
                 <div className="flex flex-col justify-center items-center my-16 space-y-2">
                     <div className="w-16 h-16 bg-white rounded-full"></div>
                     <p>Admin 1</p>
@@ -27,7 +34,7 @@ export default function ManagementLayout({
                 </div>
                 <hr />
                 <nav className="mt-4">
-                    {menu.map((item, index) => (
+                    {menuItems.map((item, index) => (
                         <Link key={index} href={item.path}>
                             <div className="flex gap-4 my-4">
                                 <div>{item.icon}</div>
@@ -39,7 +46,10 @@ export default function ManagementLayout({
                 </nav>
             </div>
 
-            <div className="flex-1 p-4">{children}</div>
+            {/* Content */}
+            <div className="flex-1 ml-64 h-screen overflow-y-auto p-4">
+                {children}
+            </div>
         </div>
     );
 }
