@@ -42,7 +42,10 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
 }); 
 
 
+
 // diakses admin
 Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin', [AdminController::class, 'index']);
+    Route::get('/admin/promotor', [AdminController::class, 'promotor']);
+    Route::get('/admin/laporan', [AdminController::class, 'laporan']);
 });
