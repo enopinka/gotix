@@ -69,10 +69,6 @@ export default function Event({ events }: eventProps) {
                                             </button>
                                         </TableCell>
                                     </TableRow>
-                                    // <div key={event.id}>
-                                    //     <h3>{event.title}</h3>
-                                    //     <p>{event.description}</p>
-                                    // </div>
                                 ))
                             ) : (
                                 <p>Tidak ada acara ditemukan.</p>

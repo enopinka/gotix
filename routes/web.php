@@ -34,6 +34,7 @@ Route::middleware([Authentication::class."customer"])->group( function(){
 Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::get('/partner', [PartnerEventController::class, 'index']);
     Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
+    Route::get('/partner/event/{id}', [PartnerEventController::class, 'eventDetailScreen']);
     Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
     Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
 
