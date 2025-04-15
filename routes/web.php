@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\PartnerEventController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,11 +32,15 @@ Route::middleware([Authentication::class."customer"])->group( function(){
 
 // diakses partner
 Route::middleware([Authentication::class.":partner"])->group(function(){
-    Route::get('/partner', [PartnerController::class, 'index']);
-    Route::get('/partner/event', [PartnerController::class, 'eventScreen']);
-    Route::get('/partner/event/create', [PartnerController::class, 'createEventScreen']);
-    Route::get('/partner/report', [PartnerController::class, 'reportScreen']);
-});
+    Route::get('/partner', [PartnerEventController::class, 'index']);
+    Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
+    Route::get('/partner/event/{id}', [PartnerEventController::class, 'eventDetailScreen']);
+    Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
+    Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
+
+    Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
+}); 
+
 
 
 // diakses admin
