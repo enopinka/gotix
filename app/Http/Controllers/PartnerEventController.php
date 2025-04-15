@@ -14,7 +14,12 @@ class PartnerEventController extends Controller
         return Inertia::render('Partner/Dashboard');
     }
     public function eventScreen(){
-        return Inertia::render('Partner/Event');
+        $user_id = Auth::user()->getAuthIdentifier();
+      
+
+        $events = Event::where('user_id', $user_id)->get();
+
+        return Inertia::render('Partner/Event', ['events'=>$events]);
     }
     public function createEventScreen(){
         return Inertia::render('Partner/CreateEvent');
