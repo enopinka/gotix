@@ -2,15 +2,14 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PartnerEventController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+
 
 // diakses publik
-Route::get('/', function(){
-    return Inertia::render("LandingPage");
-});
+Route::get('/', [CustomerController::class, "index"]);
 
 Route::get('/login', [AuthController::class, "index"]
 );
