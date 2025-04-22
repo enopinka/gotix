@@ -16,5 +16,10 @@ class AdminController extends Controller
     public function laporan(){
         return Inertia::render('Admin/Laporan');
     }
-
+    public function acara(){
+        return Inertia::render('Admin/Acara');
+    }
+    public function customer(){
+        return Inertia::render('Admin/Customer');
+    }
 }
