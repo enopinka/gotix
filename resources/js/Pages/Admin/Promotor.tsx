@@ -9,15 +9,43 @@ import {
 } from "@/Components/ui/dialog";
 
 const mockPromotors = [
-    { id: 1, name: "EventPro ID", events: ["Konser Dewa", "Stand Up Night", "Jazz Fest"] },
-    { id: 2, name: "GoEvent", events: ["Anime Expo", "Startup Weekend", "Food Festival"] },
-    { id: 3, name: "Lokalize", events: ["Karya Anak Bangsa", "Culinary Night"] },
+    {
+        id: 1,
+        name: "EventPro ID",
+        profilePicture: "/path/to/promotor1.jpg",
+        description: "Spesialis konser dan acara hiburan skala besar.",
+        events: [
+            { name: "Konser Dewa", thumbnail: "/path/to/thumbnail1.jpg" },
+            { name: "Stand Up Night", thumbnail: "/path/to/thumbnail2.jpg" },
+            { name: "Jazz Fest", thumbnail: "/path/to/thumbnail3.jpg" },
+        ],
+    },
+    {
+        id: 2,
+        name: "GoEvent",
+        profilePicture: "/path/to/promotor2.jpg",
+        description: "Mitra event organizer untuk acara komunitas dan startup.",
+        events: [
+            { name: "Anime Expo", thumbnail: "/path/to/thumbnail4.jpg" },
+            { name: "Startup Weekend", thumbnail: "/path/to/thumbnail5.jpg" },
+            { name: "Food Festival", thumbnail: "/path/to/thumbnail6.jpg" },
+        ],
+    },
+    {
+        id: 3,
+        name: "Lokalize",
+        profilePicture: "/path/to/promotor3.jpg",
+        description: "Mendukung karya lokal dengan acara tematik dan kreatif.",
+        events: [
+            { name: "Karya Anak Bangsa", thumbnail: "/path/to/thumbnail7.jpg" },
+            { name: "Culinary Night", thumbnail: "/path/to/thumbnail8.jpg" },
+        ],
+    },
 ];
 
 export default function Promotor() {
     const handleEventClick = (eventName) => {
         alert(`Kamu mengklik event: ${eventName}`);
-        // atau bisa diarahkan ke detail page: navigate(`/event/${eventId}`)
     };
 
     return (
@@ -29,27 +57,41 @@ export default function Promotor() {
                     {mockPromotors.map((promotor) => (
                         <Dialog key={promotor.id}>
                             <DialogTrigger asChild>
-                                <div
-                                    className="border rounded-xl p-4 cursor-pointer shadow-sm hover:bg-gray-50 transition"
-                                >
-                                    <h2 className="font-semibold text-lg">{promotor.name}</h2>
+                                <div className="border rounded-xl p-4 shadow-sm hover:bg-gray-50 transition cursor-pointer">
+                                    <div className="flex items-center gap-4">
+                                        <img
+                                            src={promotor.profilePicture}
+                                            alt={promotor.name}
+                                            className="w-16 h-16 object-cover rounded-full border"
+                                        />
+                                        <div>
+                                            <h2 className="font-semibold text-lg">{promotor.name}</h2>
+                                            <p className="text-sm text-gray-600">{promotor.description}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </DialogTrigger>
+
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Event oleh {promotor.name}</DialogTitle>
                                 </DialogHeader>
-                                <ul className="list-disc list-inside mt-4 space-y-2 text-gray-700">
+                                <div className="mt-4 space-y-4">
                                     {promotor.events.map((event, index) => (
-                                        <li
+                                        <div
                                             key={index}
-                                            className="cursor-pointer hover:text-blue-600 transition"
-                                            onClick={() => handleEventClick(event)}
+                                            className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
+                                            onClick={() => handleEventClick(event.name)}
                                         >
-                                            {event}
-                                        </li>
+                                            <img
+                                                src={event.thumbnail}
+                                                alt={event.name}
+                                                className="w-16 h-16 rounded object-cover"
+                                            />
+                                            <p className="text-gray-800 font-medium">{event.name}</p>
+                                        </div>
                                     ))}
-                                </ul>
+                                </div>
                             </DialogContent>
                         </Dialog>
                     ))}
