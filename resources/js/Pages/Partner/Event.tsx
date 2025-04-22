@@ -8,7 +8,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import ManagementLayout from "@/Layouts/ManagementLayout";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { Link } from "@inertiajs/react";
 import { Banknote, LogOut, Plus, Ticket, Trash, Trash2 } from "lucide-react";
@@ -57,7 +56,7 @@ export default function Event({ events }: eventProps) {
                                         </TableCell>
                                         <TableCell>
                                             <Link
-                                                href={`/partner/event/${event.id}`}
+                                                href={`/partner/event/detail/${event.id}`}
                                                 className="hover:underline"
                                             >
                                                 Detail Acara
