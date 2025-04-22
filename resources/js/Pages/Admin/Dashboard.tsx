@@ -27,7 +27,13 @@ export default function Dashboard() {
     );
 }
 
-function StatCard({ icon, title, value }) {
+type StatCardProps = {
+    icon: React.ReactNode;
+    title: string;
+    value: string;
+};
+
+function StatCard({ icon, title, value }: StatCardProps) {
     return (
         <div className="bg-white shadow-md rounded-xl p-5 flex items-center space-x-4">
             <div className="bg-blue-100 text-blue-600 rounded-full p-3">

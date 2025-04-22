@@ -2,17 +2,24 @@ import { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Button } from "@/Components/ui/button";
 
-const mockEvents = [
-    { id: 1, name: "Konser Dewa", thumbnail: "/path/to/thumbnail1.jpg", description: "Konser musik terbesar tahun ini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduhini waduh!" },
-    { id: 2, name: "Stand Up Night", thumbnail: "/path/to/thumbnail2.jpg", description: "Malam penuh tawa dengan komedian ternama." },
-    { id: 3, name: "Jazz Fest", thumbnail: "/path/to/thumbnail3.jpg", description: "Festival musik jazz dengan artis internasional." },
+type EventType = {
+    id: number;
+    name: string;
+    thumbnail: string;
+    description: string;
+};
+
+const mockEvents: EventType[] = [
+    { id: 1, name: "Konser Dewa", thumbnail: "/path/to/thumbnail1.jpg", description: "Konser musik terbesar..." },
+    { id: 2, name: "Stand Up Night", thumbnail: "/path/to/thumbnail2.jpg", description: "Malam penuh tawa..." },
+    { id: 3, name: "Jazz Fest", thumbnail: "/path/to/thumbnail3.jpg", description: "Festival musik jazz..." },
 ];
 
 export default function Acara() {
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
 
-    const handleEventClick = (event) => {
-        setSelectedEvent(event); // Menyimpan detail acara yang diklik
+    const handleEventClick = (event: EventType) => {
+        setSelectedEvent(event);
     };
 
     return (

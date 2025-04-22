@@ -44,7 +44,8 @@ const mockPromotors = [
 ];
 
 export default function Promotor() {
-    const handleEventClick = (eventName) => {
+    // Explicitly type the eventName parameter as a string
+    const handleEventClick = (eventName: string) => {
         alert(`Kamu mengklik event: ${eventName}`);
     };
 
