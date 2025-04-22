@@ -28,7 +28,7 @@ class PartnerEventController extends Controller
         $event = Event::find($id);
 
         if (!$event) {
-            return Inertia::render('Partner/Error', ['message' => 'Event tidak ditemukan']);
+            return redirect()->back()->withErrors(['message' => 'Event tidak ditemukan']);
         }
 
         $categories = Ticket::where('event_id', $id)->get();
@@ -45,6 +45,7 @@ class PartnerEventController extends Controller
     }
 
     public function createEventScreen(){
+        
         return Inertia::render('Partner/CreateEvent');
     }
     public function reportScreen(){
@@ -80,5 +81,38 @@ class PartnerEventController extends Controller
        ]);
         
        return redirect('/partner/event')->with('success', 'Event berhasil dibuat!');
+    }
+
+    public function createEventCategory(Request $request, $id){ 
+        $validated = $request->validate([
+            'title'=> ["required"],
+            'price'=> ["required"],
+            'quota'=> ["required"],
+        ]);
+        
+        $user_id = Auth::id();
+
+        // 1. Validasi apakah event dengan ID ini ada
+    $event = Event::find($id);
+
+    if (!$event) {
+        return redirect()->back()->withErrors(['Event tidak ditemukan.']);
+    }
+
+    // 2. Validasi apakah user adalah pemilik atau authorized untuk event ini
+    if ($event->user_id !== $user_id) {
+        return redirect()->back()->withErrors(['Anda tidak memiliki akses ke event ini.']);
+    }
+        
+        $category = Ticket::create([
+            'event_id' => $id,
+            'user_id' => $user_id,
+            'type' => $validated['title'],
+            'price' => $validated['price'],
+            'quota' => $validated['quota'],
+            'available_seats' => $validated['quota'], 
+        ]);
+         
+        return redirect('/partner/event/$id')->with('success', 'Event berhasil dibuat!');
     }
 }
