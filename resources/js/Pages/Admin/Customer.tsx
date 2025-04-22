@@ -8,7 +8,7 @@ const mockCustomers = [
 ];
 
 export default function Customer() {
-    const handleDelete = (customerName) => {
+    const handleDelete = (customerName: string) => {
         const confirmation = window.confirm(`Apakah Anda yakin ingin menghapus pelanggan ${customerName}?`);
         if (confirmation) {
             alert(`Pelanggan ${customerName} telah dihapus!`);
