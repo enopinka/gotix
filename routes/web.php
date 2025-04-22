@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
 
-Route::get('/event', [CustomerController::class, 'event']);
+Route::get('/event/{id}', [CustomerController::class, 'event']);
 
 Route::get('/login', [AuthController::class, "index"]
 );
