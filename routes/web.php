@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
 
+Route::get('/event', [CustomerController::class, 'event']);
+
 Route::get('/login', [AuthController::class, "index"]
 );
 
@@ -25,6 +27,7 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
 Route::middleware([Authentication::class."customer"])->group( function(){
+
 
 });
 

@@ -10,4 +10,8 @@ class CustomerController extends Controller
     public function index(){
         return Inertia::render('LandingPage');
     }
+
+    public function event(){
+        return Inertia::render('Customer/DetailsEvent');
+    }
 }
