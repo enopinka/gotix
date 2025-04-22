@@ -8,9 +8,21 @@ import {
 } from "@/Components/ui/carousel";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import Autoplay from "embla-carousel-autoplay";
+import { Link } from "@inertiajs/react";
 import React from "react";
 
-export default function LandingPage() {
+type Events = {
+    id: number;
+    title: string;
+    poster: string;
+    date: string;
+};
+
+type LandingPageProps = {
+    events: Events[];
+};
+
+export default function LandingPage({ events }: LandingPageProps) {
     const plugin = React.useRef(
         Autoplay({ delay: 2000, stopOnInteraction: false })
     );
@@ -25,31 +37,30 @@ export default function LandingPage() {
                     onMouseLeave={plugin.current.reset}
                 >
                     <CarouselContent>
-                        {[
-                            "/carousel/carousel1.jpg",
-                            "/carousel/carousel2.jpg",
-                            "/carousel/carousel3.jpg",
-                            "/carousel/carousel4.jpg",
-                            "/carousel/carousel5.jpg",
-                            "/carousel/carousel6.jpg",
-                            "/carousel/carousel7.jpg",
-                            "/carousel/carousel8.jpg",
-                            "/carousel/carousel9.jpg",
-                            "/carousel/carousel10.jpg",
-                        ].map((src, index) => (
+                        {events.map((event) => (
                             <CarouselItem
-                                key={index}
+                                key={event.id}
                                 className=" pl-4 basis-auto w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px]"
                             >
                                 <div className="p-1">
                                     <Card>
-                                        <CardContent className="p-0">
-                                            <img
-                                                src={src}
-                                                alt={`Slide ${index + 1}`}
-                                                className="rounded-lg object-cover aspect-[2/3] w-full"
-                                            />
-                                        </CardContent>
+                                        <Link href={`/event/${event.id}`}>
+                                            <CardContent className="p-0 hover:shadow-lg h-96 border-none">
+                                                <img
+                                                    src={event.poster}
+                                                    alt={event.title}
+                                                    className="rounded-lg relative object-cover aspect-[2/3] w-full"
+                                                />
+                                                <div className="p-4">
+                                                    <p className="text-base font-semibold overflow-hidden">
+                                                        {event.title}
+                                                    </p>
+                                                    <p className="text-sm font-light">
+                                                        {event.date}
+                                                    </p>
+                                                </div>
+                                            </CardContent>
+                                        </Link>
                                     </Card>
                                 </div>
                             </CarouselItem>

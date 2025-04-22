@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PartnerEventController;
+use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
 
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
 
-Route::get('/event', [CustomerController::class, 'event']);
+Route::get('/event/{id}', [CustomerController::class, 'event']);
 
 Route::get('/login', [AuthController::class, "index"]
 );
@@ -39,6 +40,7 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::get('/partner/event/detail/{id}', [PartnerEventController::class, 'eventDetailScreen']);
     Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
     Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
+    Route::get('/partner/order', [PartnerOrderController::class, 'index']);
 
     Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
     Route::post('/partner/event/{id}/category', [PartnerEventController::class, 'createEventCategory']);
