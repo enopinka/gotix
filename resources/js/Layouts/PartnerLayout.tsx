@@ -9,6 +9,11 @@ const menuItems = [
         path: "/partner/event",
     },
     {
+        name: "Pesanan",
+        icon: <Banknote />,
+        path: "/partner/order",
+    },
+    {
         name: "Laporan",
         icon: <Banknote />,
         path: "/partner/report",

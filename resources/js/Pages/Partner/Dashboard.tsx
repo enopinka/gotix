@@ -7,6 +7,7 @@ export default function Dashboard() {
         <>
             <PartnerLayout>
                 <p>Ini halaman mitra</p>
+        
             </PartnerLayout>
         </>
     );

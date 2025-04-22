@@ -1,6 +1,5 @@
-import ManagementLayout from "@/Layouts/ManagementLayout";
 import PartnerLayout from "@/Layouts/PartnerLayout";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import {
     Banknote,
     CalendarIcon,
@@ -16,7 +15,6 @@ import { Button } from "@/Components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -33,19 +31,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/Components/ui/dialog";
-import { Label } from "@headlessui/react";
 
-const eventFormSchema = z.object({
+const formSchema = z.object({
     title: z.string().min(2).max(50),
     description: z.string().min(2).max(50),
     date: z.date({
@@ -61,61 +48,71 @@ const eventFormSchema = z.object({
     }),
 });
 
-const categoryFormSchema = z.object({
-    title: z.string().min(2).max(50),
-    price: z.number().min(1000),
-    quota: z.number().min(0),
-});
+// const categoryFormSchema = z.object({
+//     title: z.string().min(2).max(50),
+//     price: z.number().min(1000),
+//     quota: z.number().min(0),
+// });
 
 export default function CreateEvent() {
-    const eventForm = useForm<z.infer<typeof eventFormSchema>>({
-        resolver: zodResolver(eventFormSchema),
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            description: "",
-            place: "",
+            title: "test",
+            description: "test",
+            place: "test",
             time: "",
         },
     });
-    const categoryForm = useForm<z.infer<typeof categoryFormSchema>>({
-        resolver: zodResolver(categoryFormSchema),
-        defaultValues: {
-            title: "",
-            price: 0,
-            quota: 0,
-        },
-    });
+    // const categoryForm = useForm<z.infer<typeof categoryFormSchema>>({
+    //     resolver: zodResolver(categoryFormSchema),
+    //     defaultValues: {
+    //         title: "",
+    //         price: 0,
+    //         quota: 0,
+    //     },
+    // });
 
-    function onSubmit(values: z.infer<typeof eventFormSchema>) {
+    // const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
+        const formattedValues = {
+            ...values,
+            date: format(values.date, "yyyy-MM-dd"),
+        };
         console.log(values);
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">
-                        {JSON.stringify(values, null, 2)}
-                    </code>
-                </pre>
-            ),
+        router.post("/partner/event/create", formattedValues, {
+            onSuccess: () => {
+                console.log("berhasil menambahkan event baru");
+            },
+            onError: () => {
+                console.log("error");
+            },
         });
     }
+    // function onSubmitCategory(values: z.infer<typeof categoryFormSchema>) {
+    //     // Do something with the form values.
+    //     // ✅ This will be type-safe and validated.
+    //     console.log("yuhu");
+    //     console.log(values);
+    // }
 
     return (
         <>
             <PartnerLayout>
                 <p className="text-2xl font-bold my-4">Tambah Acara</p>
 
-                <Form {...eventForm}>
+                <Form {...form}>
                     <form
-                        onSubmit={eventForm.handleSubmit(onSubmit)}
+                        onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-8"
                     >
                         <div className="space-y-4">
                             {" "}
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
                                 name="title"
                                 render={({ field }) => (
                                     <FormItem>
@@ -128,7 +125,7 @@ export default function CreateEvent() {
                                 )}
                             />
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
@@ -141,7 +138,20 @@ export default function CreateEvent() {
                                 )}
                             />
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
+                                name="place"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tempat</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name="date"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
@@ -192,7 +202,7 @@ export default function CreateEvent() {
                                 )}
                             />
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
                                 name="time"
                                 render={({ field }) => (
                                     <FormItem>
@@ -206,7 +216,7 @@ export default function CreateEvent() {
                                 )}
                             />
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
                                 name="poster"
                                 render={({ field }) => (
                                     <FormItem>
@@ -227,7 +237,7 @@ export default function CreateEvent() {
                                 )}
                             />
                             <FormField
-                                control={eventForm.control}
+                                control={form.control}
                                 name="seat"
                                 render={({ field }) => (
                                     <FormItem>
@@ -248,10 +258,10 @@ export default function CreateEvent() {
                                 )}
                             />
                         </div>
-                        <div>
+                        {/* <div>
                             <div className="flex justify-between my-2 items-center">
                                 <p className="font-semibold">Kategori</p>
-                                <Dialog>
+                                <Dialog aria-hidden="false">
                                     <DialogTrigger asChild>
                                         <Button variant="outline">
                                             <Plus />
@@ -269,8 +279,8 @@ export default function CreateEvent() {
                                         </DialogHeader>
                                         <Form {...eventForm}>
                                             <form
-                                                onSubmit={eventForm.handleSubmit(
-                                                    onSubmit
+                                                onSubmit={categoryForm.handleSubmit(
+                                                    onSubmitCategory
                                                 )}
                                                 className="space-y-8"
                                             >
@@ -289,6 +299,7 @@ export default function CreateEvent() {
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input
+                                                                        type="text"
                                                                         {...field}
                                                                     />
                                                                 </FormControl>
@@ -301,7 +312,7 @@ export default function CreateEvent() {
                                                         control={
                                                             categoryForm.control
                                                         }
-                                                        name="title"
+                                                        name="price"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel>
@@ -322,7 +333,7 @@ export default function CreateEvent() {
                                                         control={
                                                             categoryForm.control
                                                         }
-                                                        name="title"
+                                                        name="quota"
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormLabel>
@@ -330,6 +341,7 @@ export default function CreateEvent() {
                                                                 </FormLabel>
                                                                 <FormControl>
                                                                     <Input
+                                                                        id="first-dialog-input"
                                                                         type="number"
                                                                         {...field}
                                                                     />
@@ -356,7 +368,7 @@ export default function CreateEvent() {
                                 </Dialog>
                             </div>
                             <hr />
-                        </div>
+                        </div> */}
                         <Button type="submit">Submit</Button>
                     </form>
                 </Form>

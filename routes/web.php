@@ -2,15 +2,17 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PartnerEventController;
+use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+
 
 // diakses publik
-Route::get('/', function(){
-    return Inertia::render("LandingPage");
-});
+Route::get('/', [CustomerController::class, "index"]);
+
+Route::get('/event/{id}', [CustomerController::class, 'event']);
 
 Route::get('/login', [AuthController::class, "index"]
 );
@@ -27,16 +29,23 @@ Route::post('/register', [AuthController::class, 'register']);
 // diakses customer
 Route::middleware([Authentication::class."customer"])->group( function(){
 
+
 });
 
 
 // diakses partner
 Route::middleware([Authentication::class.":partner"])->group(function(){
-    Route::get('/partner', [PartnerController::class, 'index']);
-    Route::get('/partner/event', [PartnerController::class, 'eventScreen']);
-    Route::get('/partner/event/create', [PartnerController::class, 'createEventScreen']);
-    Route::get('/partner/report', [PartnerController::class, 'reportScreen']);
+    Route::get('/partner', [PartnerEventController::class, 'index']);
+    Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
+    Route::get('/partner/event/detail/{id}', [PartnerEventController::class, 'eventDetailScreen']);
+    Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
+    Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
+    Route::get('/partner/order', [PartnerOrderController::class, 'index']);
+
+    Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
+    Route::post('/partner/event/{id}/category', [PartnerEventController::class, 'createEventCategory']);
 });
+
 
 
 // diakses admin
