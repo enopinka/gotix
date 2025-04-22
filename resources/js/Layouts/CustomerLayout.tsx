@@ -387,7 +387,9 @@ export default function CustomerLayout({
             {/* Main Content */}
             <main className="flex-grow">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
-                    {children}
+                    {        
+                        children
+                    }
                 </div>
             </main>
 

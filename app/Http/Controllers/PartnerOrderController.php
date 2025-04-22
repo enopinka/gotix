@@ -8,8 +8,9 @@ use Inertia\Inertia;
 class PartnerOrderController extends Controller
 {
     public function index(Request $request)
-    {return Inertia::render('Partner/Order');
+    {
+        return Inertia::render("Partner/Order");
     }
 
-    
+
 }
