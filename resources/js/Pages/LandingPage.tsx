@@ -45,14 +45,17 @@ export default function LandingPage({ events }: LandingPageProps) {
                                 <div className="p-1">
                                     <Card>
                                         <Link href={`/event/${event.id}`}>
-                                            <CardContent className="p-0 hover:shadow-lg h-96 border-none">
+                                            <CardContent className="relative p-0 border-none group overflow-hidden">
                                                 <img
                                                     src={event.poster}
                                                     alt={event.title}
                                                     className="rounded-lg relative object-cover aspect-[2/3] w-full"
                                                 />
-                                                <div className="p-4">
-                                                    <p className="text-base font-semibold overflow-hidden">
+                                                <div className="absolute inset-0 bg-black bg-opacity-50
+                                                                opacity-0 group-hover:opacity-100
+                                                                transition-opacity duration-200
+                                                                flex flex-col justify-end p-4">
+                                                    <p className="text-white text-base font-semibold truncate">
                                                         {event.title}
                                                     </p>
                                                     <p className="text-sm font-light">
