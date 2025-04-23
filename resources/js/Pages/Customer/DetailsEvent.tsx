@@ -43,7 +43,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
             <div className="max-w-5xl mx-auto py-4 space-y-6">
                 <div className="flex flex-col md:flex-row gap-2 items-start">
                     {/* Banner with Dialog */}
-                    <div className="md:w-2/3">
+                    <div>
                         <Dialog open={open} onOpenChange={setOpen}>
                             <DialogTrigger asChild>
                                 <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
@@ -63,7 +63,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                             </DialogContent>
                         </Dialog>
                     </div>
-                    <div className="flex flex-col md:w-1/3 gap-6">
+                    <div className=" px-6 flex flex-col gap-6">
                         {/* Info Card */}
                         <Card className="w-full">
                             <CardContent className="p-6 space-y-4">
@@ -103,7 +103,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                         </Card>
 
                         {/* Tabs */}
-                        <ScrollArea className=" h-[200px] w-[350px] rounded-md border p-4">
+                        <ScrollArea className=" h-[200px] w-[500px] rounded-md border p-4">
                         <Tabs defaultValue="ticket">
                             <TabsList className="w-full">
                                 <TabsTrigger value="desc" className="w-full">Deskripsi</TabsTrigger>

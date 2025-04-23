@@ -7,9 +7,8 @@ import {
     CarouselPrevious,
 } from "@/Components/ui/carousel";
 import CustomerLayout from "@/Layouts/CustomerLayout";
-import Autoplay from "embla-carousel-autoplay";
 import { Link } from "@inertiajs/react";
-import React from "react";
+
 
 type Events = {
     id: number;
@@ -23,18 +22,15 @@ type LandingPageProps = {
 };
 
 export default function LandingPage({ events }: LandingPageProps) {
-    const plugin = React.useRef(
-        Autoplay({ delay: 2000, stopOnInteraction: false })
-    );
+    
     return (
         <>
             <CustomerLayout>
                 <p>Ini halaman landing page</p>
 
                 <Carousel
-                    plugins={[plugin.current]}
+
                     className="w-full px-4 py-8"
-                    onMouseLeave={plugin.current.reset}
                 >
                     <CarouselContent>
                         {events.map((event) => (
@@ -69,8 +65,36 @@ export default function LandingPage({ events }: LandingPageProps) {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious 
+                       style={{
+                        position: 'absolute',
+                        left: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(209, 213, 219, 0.5)', // Contoh warna dengan alpha untuk transparansi
+                        borderRadius: '9999px',
+                        padding: '0.5rem',
+                        opacity: 0.5,
+                        transition: 'opacity 0.2s ease-in-out',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.75')}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+                    />
+                    <CarouselNext 
+                         style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(209, 213, 219, 0.5)', // Contoh warna dengan alpha untuk transparansi
+                            borderRadius: '9999px',
+                            padding: '0.5rem',
+                            opacity: 0.5,
+                            transition: 'opacity 0.2s ease-in-out',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.75')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+                    />
                 </Carousel>
             </CustomerLayout>
         </>
