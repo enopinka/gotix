@@ -83,7 +83,7 @@ export default function Event({ events }: eventProps) {
                                                 <Button
                                                     onClick={() =>
                                                         router.delete(
-                                                            `/partner/event/${event.id}`
+                                                            `/partner/event/${event.id}/delete`
                                                         )
                                                     }
                                                     className="hover:underline hover:bg-transparent bg-transparent border-none text-red-500 p-2"

@@ -78,8 +78,8 @@ class PartnerEventController extends Controller
             'date'=>$validated['date'],
             'place'=>$validated['place'],
             'time'=>$validated['time'],
-            'poster'=>$posterPath,
-            'seating_chart'=>$seatPath,
+            'poster'=>"/storage/{$posterPath}",
+            'seating_chart'=>"/storage/{$seatPath}",
         ]);
         return redirect('/partner/event')->with('success', 'Event berhasil diubah!');
     }
@@ -135,8 +135,8 @@ class PartnerEventController extends Controller
             'date'=>$validated['date'],
             'place'=>$validated['place'],
             'time'=>$validated['time'],
-            'poster'=>$posterPath,
-            'seating_chart'=>$seatPath,
+            'poster'=>"/storage/{$posterPath}",
+            'seating_chart'=>"/storage/{$seatPath}",
             'user_id'=>$user,
        ]);
         
@@ -178,6 +178,7 @@ class PartnerEventController extends Controller
     }
 
     public function deleteEvent($id){
+        
         $user_id = Auth::user()->getAuthIdentifier();
 
         $event = Event::find($id);

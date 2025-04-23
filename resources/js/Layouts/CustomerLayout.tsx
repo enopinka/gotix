@@ -1,6 +1,6 @@
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Search,
     Home,
@@ -32,6 +32,8 @@ export default function CustomerLayout({
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
+
+    const { auth } = usePage().props;
 
     // Close mobile nav when clicking outside
     useEffect(() => {
@@ -199,23 +201,52 @@ export default function CustomerLayout({
                     >
                         {!isCollapsed ? (
                             <>
-                                <Link href="/login" className="w-full">
-                                    <Button
-                                        variant="outline"
-                                        className="w-full bg-transparent border-indigo-400 text-white hover:bg-indigo-700 mb-2"
-                                        size="sm"
-                                    >
-                                        Masuk
-                                    </Button>
-                                </Link>
-                                <Link href="/register" className="w-full">
-                                    <Button
-                                        className="w-full bg-indigo-500 hover:bg-indigo-600"
-                                        size="sm"
-                                    >
-                                        Daftar
-                                    </Button>
-                                </Link>
+                                {!auth.user ? (
+                                    <div>
+                                        <Link href="/login" className="w-full">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full bg-transparent border-indigo-400 text-white hover:bg-indigo-700 mb-2"
+                                                size="sm"
+                                            >
+                                                Masuk
+                                            </Button>
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            className="w-full"
+                                        >
+                                            <Button
+                                                className="w-full bg-indigo-500 hover:bg-indigo-600"
+                                                size="sm"
+                                            >
+                                                Daftar
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div className="w-full flex gap-4 my-4 justify-start items-center">
+                                            <img
+                                                src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="
+                                                className="w-8 h-8 rounded-full"
+                                            />
+                                            <div>
+                                                <p className="text-sm font-semibold">
+                                                    {auth.user.name}
+                                                </p>
+                                                <p className="text-xs font-light">
+                                                    {auth.user.email}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Link href="/logout" className="w-full">
+                                            <Button className="w-full bg-transparent hover:bg-red-400 border border-white">
+                                                Logout
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <>
@@ -262,23 +293,39 @@ export default function CustomerLayout({
 
                     {/* Right Actions - Auth Buttons for desktop */}
                     <div className="hidden md:flex items-center gap-2">
-                        <Link href="/login">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="rounded-lg px-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                            >
-                                Masuk
-                            </Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button
-                                size="sm"
-                                className="rounded-lg px-4 bg-indigo-600 hover:bg-indigo-700"
-                            >
-                                Daftar
-                            </Button>
-                        </Link>
+                        {!auth.user ? (
+                            <>
+                                <Link href="/login">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="rounded-lg px-4 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                    >
+                                        Masuk
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button
+                                        size="sm"
+                                        className="rounded-lg px-4 bg-indigo-600 hover:bg-indigo-700"
+                                    >
+                                        Daftar
+                                    </Button>
+                                </Link>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <Link href="#">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="bg-transparent border-indigo-400 text-indigo-700 hover:bg-indigo-50"
+                                    >
+                                        <User size={18} />
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
 
