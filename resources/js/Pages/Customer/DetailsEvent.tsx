@@ -5,7 +5,7 @@ import { Button } from "@/Components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon } from "lucide-react";
 import { ScrollArea } from "@/Components/ui/scroll-area"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Event = {
     id: number;
@@ -30,6 +30,8 @@ type EventDetailProps = {
 };
 
 export default function DetailsEvent({ event }: EventDetailProps) {
+    console.log(event);
+
     const eventWithDate = {
         ...event,
         date: new Date(event.date),
@@ -112,29 +114,28 @@ export default function DetailsEvent({ event }: EventDetailProps) {
 
                             <TabsContent value="desc" className="pt-4">
                                 <p className="py-1 text-justify">
-                                    ✨ Short n’ Sweet is Sabrina Carpenter’s shimmering pop return —
-                                    bold, flirty, and irresistibly catchy. With a kiss mark on her
-                                    shoulder and a soft retro glow, the album cover perfectly captures
-                                    the essence of the songs inside: a mix of confidence, cheekiness,
-                                    and vulnerability. Dibalut dalam visual ala 70s glam, Sabrina tampil
-                                    fierce dan feminin, menatap tajam dengan pancaran warna violet dan
-                                    gold yang dreamy. Setiap track seperti Espresso, Bed Chem, dan Please
-                                    Please Please menawarkan cerita pendek nan manis — just like the title.
-                                    Whether it’s about love, heartbreak, or playful sarcasm, Short n’ Sweet
-                                    is a capsule of emotions wrapped in sugar-pop brilliance.
+                                    Details: {event.description}
                                 </p>
                             </TabsContent>
 
                             <TabsContent value="ticket" className="pt-4 space-y-4">
-                                <Card>
-                                    <CardContent className="p-4 flex items-center justify-between">
-                                        <div>
-                                            <h4 className="text-sm font-semibold">Fansign Event</h4>
-                                            <p className="text-xs text-muted-foreground">Mulai dari Rp429.000</p>
-                                        </div>
-                                        <Button>Beli Tiket</Button>
-                                    </CardContent>
-                                </Card>
+                                {event.categories && event.categories.length > 0 ? (
+                                    event.categories.map((category) => (
+                                        <Card key={category.id}>
+                                            <CardContent className="p-4 flex items-center justify-between">
+                                                <div>
+                                                    <h4 className="text-sm font-semibold">{category.type}</h4>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Mulai dari Rp{category.price.toLocaleString("id-ID")}
+                                                    </p>
+                                                </div>
+                                                <Button>Beli Tiket</Button>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p className="text-center text-muted-foreground">Tidak ada kategori tiket tersedia.</p>
+                                )}
                             </TabsContent>
                         </Tabs>
                         </ScrollArea>
