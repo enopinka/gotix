@@ -34,7 +34,7 @@ class AuthController extends Controller
             } elseif ($user->role === 'partner') {
                 return redirect('/partner');
             } elseif ($user->role === 'customer') {
-                return redirect()->route('/');
+                return redirect('/');
             }
             return back()->withErrors([
                 'password'=>'Password salah'

@@ -11,17 +11,10 @@ use Illuminate\Support\Facades\Route;
 
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
-
 Route::get('/event/{id}', [CustomerController::class, 'event']);
-
-Route::get('/login', [AuthController::class, "index"]
-);
-
-Route::post('/login', [AuthController::class, 'login']
-);
-
+Route::get('/login', [AuthController::class, "index"]);
+Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
-
 Route::get('/register', [AuthController::class, 'registerScreen']);
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -39,11 +32,18 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
     Route::get('/partner/event/detail/{id}', [PartnerEventController::class, 'eventDetailScreen']);
     Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
+    Route::get('/partner/event/edit/{id}', [PartnerEventController::class, 'editEventScreen']);
     Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
     Route::get('/partner/order', [PartnerOrderController::class, 'index']);
 
     Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
     Route::post('/partner/event/{id}/category', [PartnerEventController::class, 'createEventCategory']);
+    Route::post('/partner/event/edit/{event_id}', [PartnerEventController::class, 'editEvent']);
+    
+    Route::put('/partner/event/detail/{event_id}/category/{category_id}', [PartnerEventController::class, 'editEventCategory']);
+    
+    Route::delete('/partner/event/{id}/delete', [PartnerEventController::class, 'deleteEvent']);
+    Route::delete('/partner/event/detail/{event_id}/category/{category_id}', [PartnerEventController::class, 'deleteEventCategory']);
 }); 
 
 
