@@ -1,16 +1,31 @@
 import { Link } from "@inertiajs/react";
-import { Ticket, Banknote, LogOut } from "lucide-react";
+import { CalendarRangeIcon, Ticket, Banknote, LogOut, UsersIcon, HandshakeIcon, BookOpenIcon, LayoutDashboardIcon} from "lucide-react";
 import { ReactNode } from "react";
 
 const menuItems = [
     {
+        name: "Dashboard",
+        icon: <LayoutDashboardIcon />,
+        path: "/admin/dashboard",
+    },
+    {
+        name: "Customer",
+        icon: <UsersIcon />,
+        path: "/admin/customer",
+    },
+    {
         name: "Promotor",
-        icon: <Ticket />,
+        icon: <HandshakeIcon />,
         path: "/admin/promotor",
     },
     {
+        name: "Acara",
+        icon: <CalendarRangeIcon />,
+        path: "/admin/acara",
+    },
+    {
         name: "Laporan",
-        icon: <Banknote />,
+        icon: <BookOpenIcon />,
         path: "/admin/laporan",
     },
     {

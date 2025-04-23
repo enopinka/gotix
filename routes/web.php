@@ -48,9 +48,14 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
 
 
 
+
 // diakses admin
 Route::middleware([Authentication::class.":admin"])->group(function(){
-    Route::get('/admin', [AdminController::class, 'index']);
+    Route::get('/admin/dashboard', [AdminController::class, 'index']);
     Route::get('/admin/promotor', [AdminController::class, 'promotor']);
     Route::get('/admin/laporan', [AdminController::class, 'laporan']);
+    Route::get('/admin/acara', [AdminController::class, 'acara']);
+    Route::get('/admin/customer', [AdminController::class, 'customer']);
+    Route::get('/admin/dashboard', [AdminController::class, 'index']);
+
 });
