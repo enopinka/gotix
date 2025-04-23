@@ -32,72 +32,91 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
+type Event = {
+    id?: number;
+    title?: string;
+    description?: string;
+    date?: Date;
+    time?: string;
+    place?: string;
+    poster?: File;
+    seat?: File;
+};
+
+type eventProps = {
+    event?: Event;
+};
+
 const formSchema = z.object({
-    title: z.string().min(2).max(50),
-    description: z.string().min(2).max(50),
+    title: z.string().min(2),
+    description: z.string().min(2),
     date: z.date({
-        required_error: "A date of birth is required.",
+        required_error: "Tanggal tidak boleh kosong",
     }),
-    time: z.string().min(2).max(50),
-    place: z.string().min(2).max(50),
-    poster: z.any().refine((file) => file instanceof File, {
-        message: "File tidak valid",
-    }),
-    seat: z.any().refine((file) => file instanceof File, {
-        message: "File tidak valid",
-    }),
+    time: z.string().min(2),
+    place: z.string().min(2),
+    poster: z
+        .any()
+        .optional()
+        .refine((file) => file instanceof File, {
+            message: "File tidak valid",
+        }),
+    seat: z
+        .any()
+        .optional()
+        .refine((file) => file instanceof File, {
+            message: "File tidak valid",
+        }),
 });
 
-// const categoryFormSchema = z.object({
-//     title: z.string().min(2).max(50),
-//     price: z.number().min(1000),
-//     quota: z.number().min(0),
-// });
-
-export default function CreateEvent() {
+export default function EditorEvent({ event }: eventProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "test",
-            description: "test",
-            place: "test",
-            time: "",
+            title: event?.title ? event.title : "",
+            description: event?.description ? event.description : "",
+            place: event?.place ? event.place : "",
+            time: event?.time ? event.time : "",
+            date: event?.date ? new Date(event.date) : undefined,
+            poster: event?.poster ? event.poster : undefined,
+            seat: event?.seat ? event.seat : undefined,
         },
     });
-    // const categoryForm = useForm<z.infer<typeof categoryFormSchema>>({
-    //     resolver: zodResolver(categoryFormSchema),
-    //     defaultValues: {
-    //         title: "",
-    //         price: 0,
-    //         quota: 0,
-    //     },
-    // });
-
-    // const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+        const formData = new FormData();
+
+        formData.append("title", values.title);
+        formData.append("description", values.description);
+        formData.append("date", format(values.date, "yyyy-MM-dd"));
+        formData.append("time", values.time);
+        formData.append("place", values.place);
+        if (values.poster instanceof File)
+            formData.append("poster", values.poster);
+        if (values.seat instanceof File) formData.append("seat", values.seat);
+
         const formattedValues = {
             ...values,
             date: format(values.date, "yyyy-MM-dd"),
         };
-        console.log(values);
-        router.post("/partner/event/create", formattedValues, {
-            onSuccess: () => {
-                console.log("berhasil menambahkan event baru");
-            },
-            onError: () => {
-                console.log("error");
-            },
-        });
+        if (event) {
+            router.post(`/partner/event/edit/${event.id}`, formData, {
+                forceFormData: true,
+                onSuccess: () => console.log("Event berhasil diupdate"),
+                onError: (e) => console.error(e),
+            });
+            console.log(values);
+        } else {
+            router.post("/partner/event/create", formattedValues, {
+                onSuccess: () => {
+                    console.log("berhasil menambahkan event baru");
+                },
+                onError: () => {
+                    console.log("error");
+                },
+            });
+        }
     }
-    // function onSubmitCategory(values: z.infer<typeof categoryFormSchema>) {
-    //     // Do something with the form values.
-    //     // ✅ This will be type-safe and validated.
-    //     console.log("yuhu");
-    //     console.log(values);
-    // }
 
     return (
         <>
@@ -258,117 +277,7 @@ export default function CreateEvent() {
                                 )}
                             />
                         </div>
-                        {/* <div>
-                            <div className="flex justify-between my-2 items-center">
-                                <p className="font-semibold">Kategori</p>
-                                <Dialog aria-hidden="false">
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline">
-                                            <Plus />
-                                            Tambah Kategori
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md">
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                Tambah Kategori
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                Tambah kategori tiket
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <Form {...eventForm}>
-                                            <form
-                                                onSubmit={categoryForm.handleSubmit(
-                                                    onSubmitCategory
-                                                )}
-                                                className="space-y-8"
-                                            >
-                                                <div className="space-y-2">
-                                                    {" "}
-                                                    <FormField
-                                                        control={
-                                                            categoryForm.control
-                                                        }
-                                                        name="title"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>
-                                                                    Nama
-                                                                    kategori
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="text"
-                                                                        {...field}
-                                                                    />
-                                                                </FormControl>
 
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={
-                                                            categoryForm.control
-                                                        }
-                                                        name="price"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>
-                                                                    Harga
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="number"
-                                                                        {...field}
-                                                                    />
-                                                                </FormControl>
-
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={
-                                                            categoryForm.control
-                                                        }
-                                                        name="quota"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>
-                                                                    Kuota
-                                                                </FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        id="first-dialog-input"
-                                                                        type="number"
-                                                                        {...field}
-                                                                    />
-                                                                </FormControl>
-
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                </div>
-                                                <DialogFooter className="sm:justify-end">
-                                                    <DialogClose asChild>
-                                                        <Button
-                                                            type="submit"
-                                                            variant="secondary"
-                                                        >
-                                                            Submit
-                                                        </Button>
-                                                    </DialogClose>
-                                                </DialogFooter>
-                                            </form>
-                                        </Form>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                            <hr />
-                        </div> */}
                         <Button type="submit">Submit</Button>
                     </form>
                 </Form>
