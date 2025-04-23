@@ -44,7 +44,7 @@ export default function PartnerLayout({
     return (
         <div className="flex h-screen overflow-hidden">
             {/* Sidebar */}
-            <div className="bg-slate-100 w-[24vw] h-screen shadow-md px-2 fixed ">
+            <div className="bg-slate-100 w-64 h-screen shadow-md px-2 fixed ">
                 <div className="flex px-4 my-8 space-y-2 gap-4">
                     <div className="w-16 h-16 bg-white rounded-full"></div>
                     <div>
