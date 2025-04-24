@@ -34,14 +34,37 @@ type EventDetailProps = {
 
 
 export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
-    const handleCheckout = (ticketId: number) => {
+    const handleCheckout = async (ticketId: number, quantity: number) => {
         if (!isLoggedIn) {
-            // Arahkan ke halaman login jika belum login
             window.location.href = `/login`;
-        } else {
-            console.log(`Proceeding to checkout for ticket ID: ${ticketId}`);
+            return;
         }
+    
+        try {
+            const response = await fetch('/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    ticket_id: ticketId,
+                    quantity: quantity,
+                }),
+            });
+            
+            if (response.redirected) {
+                window.location.href = response.url; // Redirect user ke halaman login
+                return;
+            }
+        } catch (error: any) {
+            console.error("DETAIL ERROR:", error);
+            alert("Terjadi kesalahan saat mengirim data: " + error.message);
+        }
+        
     };
+      
 
     console.log("Is Logged In:", isLoggedIn);
     
@@ -321,7 +344,7 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                         <Button
                                                                                             className="w-full bg-blue-600 text-white hover:bg-blue-700"
                                                                                             onClick={() =>
-                                                                                                handleCheckout(category.id)
+                                                                                                handleCheckout(category.id, quantity)
                                                                                             }
                                                                                         >
                                                                                             Lanjutkan

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -35,6 +37,37 @@ class CustomerController extends Controller
             'isLoggedIn' => Auth::check(),
         ]);
     }
+    public function storeOrder(Request $request)
+    {
+        \Log::info('Masuk ke storeOrder', $request->all()); // ✅ log masuk
+    
+        $request->validate([
+            'ticket_id' => 'required|exists:tickets,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+    
+        // Ambil data tiket terlebih dahulu
+        $ticket = \App\Models\Ticket::findOrFail($request->ticket_id);
+    
+        // Hitung total harga
+        $totalPrice = $ticket->price * $request->quantity;
+    
+        // Simpan order
+        $order = Order::create([
+            'user_id' => \Auth::id(),
+            'ticket_id' => $request->ticket_id,
+            'quantity' => $request->quantity,
+            'total_price' => $totalPrice, 
+            'event_id' => $ticket->event_id,
+            'status' => 'pending',
+        ]);
+    
+        return response()->json([
+            'message' => 'Order created successfully.',
+            'order' => $order
+        ], 201);
+    }
+    
     public function eventById($id)
     {
         $event = Event::find($id);

@@ -11,6 +11,7 @@ use App\Http\Controllers\EventController;
 
 
 
+
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
 Route::get('/event/{id}', [CustomerController::class, 'eventById']);
@@ -23,6 +24,10 @@ Route::get('/register', [AuthController::class, 'registerScreen']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::post('/orders', [CustomerController::class, 'storeOrder']);
+});
+
 Route::middleware([Authentication::class."customer"])->group( function(){
     Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
 
