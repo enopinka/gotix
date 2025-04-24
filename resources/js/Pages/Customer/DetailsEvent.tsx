@@ -5,7 +5,7 @@ import { Button } from "@/Components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon } from "lucide-react";
 import { ScrollArea } from "@/Components/ui/scroll-area"
-import { useEffect, useState } from "react";
+
 
 type Event = {
     id: number;
@@ -33,33 +33,13 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     console.log("Event data:", event);
     console.log("Categories:", event.categories);
 
-    const [eventState, setEventState] = useState<Event | null>(null);
-
-    useEffect(() => {
-        fetch("/api/events/1")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Fetched event data:", data);
-                setEventState(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching event:", error);
-            });
-    }, []);
     const eventWithDate = {
         ...event,
         date: new Date(event.date),
     };
 
-    const [open, setOpen] = useState(false);
-
-    const handleBuyTicket = (categoryId: number) => {
-        console.log(`Buying ticket for category ID: ${categoryId}`);
+    const handleBuyTicket = (ticketId: number) => {
+        console.log(`Buying ticket for ticket ID: ${ticketId}`);
         // Add your ticket purchase logic here
     };
 
@@ -70,7 +50,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                 <div className="flex flex-col md:flex-row gap-2 items-start">
                     {/* Banner with Dialog */}
                     <div>
-                        <Dialog open={open} onOpenChange={setOpen}>
+                        <Dialog>
                             <DialogTrigger asChild>
                                 <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
                                     <img
@@ -142,31 +122,33 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                 </p>
                             </TabsContent>
 
-                            <TabsContent value="ticket" className="pt-4 space-y-4">
-                                {event.categories && event.categories.length > 0 ? (
-                                    event.categories.map((category) => (
-                                        <Card key={category.id}>
-                                            <CardContent className="p-4 flex items-center justify-between">
-                                                <div>
-                                                    <h4 className="text-sm font-semibold">{category.type}</h4>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        Mulai dari Rp{category.price.toLocaleString("id-ID")}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        Kuota: {category.quota} | Tersedia: {category.available_seats}
-                                                    </p>
-                                                </div>
-                                                <Button
-                                                    onClick={() => handleBuyTicket(category.id)}
-                                                >
-                                                    Beli Tiket
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-                                    ))
-                                ) : (
-                                    <p className="text-center text-muted-foreground">Tidak ada kategori tiket tersedia.</p>
-                                )}
+                            <TabsContent value="ticket" className="pt-4">
+                                <div className="flex flex-col gap-2">
+                                    {event.categories?.length > 0 ? (
+                                        event.categories.map((category) => (
+                                            <Card key={category.id} className="w-full">
+                                                <CardContent className="p-4 flex justify-between items-center">
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold">{category.type}</h3>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Harga: Rp {category.price.toLocaleString("id-ID")}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Kuota: {category.quota} orang
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        onClick={() => handleBuyTicket(category.id)}
+                                                    >
+                                                        Beli Tiket
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
+                                        ))
+                                    ) : (
+                                        <p className="text-center text-muted-foreground">Tidak ada kategori tiket tersedia.</p>
+                                    )}
+                                </div>
                             </TabsContent>
                         </Tabs>
                         </ScrollArea>
