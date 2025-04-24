@@ -30,14 +30,38 @@ type EventDetailProps = {
 };
 
 export default function DetailsEvent({ event }: EventDetailProps) {
-    console.log(event);
+    console.log("Event data:", event);
+    console.log("Categories:", event.categories);
 
+    const [eventState, setEventState] = useState<Event | null>(null);
+
+    useEffect(() => {
+        fetch("/api/events/1")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Fetched event data:", data);
+                setEventState(data);
+            })
+            .catch((error) => {
+                console.error("Error fetching event:", error);
+            });
+    }, []);
     const eventWithDate = {
         ...event,
         date: new Date(event.date),
     };
 
     const [open, setOpen] = useState(false);
+
+    const handleBuyTicket = (categoryId: number) => {
+        console.log(`Buying ticket for category ID: ${categoryId}`);
+        // Add your ticket purchase logic here
+    };
 
     return (
         <>
@@ -128,8 +152,15 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                     <p className="text-xs text-muted-foreground">
                                                         Mulai dari Rp{category.price.toLocaleString("id-ID")}
                                                     </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Kuota: {category.quota} | Tersedia: {category.available_seats}
+                                                    </p>
                                                 </div>
-                                                <Button>Beli Tiket</Button>
+                                                <Button
+                                                    onClick={() => handleBuyTicket(category.id)}
+                                                >
+                                                    Beli Tiket
+                                                </Button>
                                             </CardContent>
                                         </Card>
                                     ))
