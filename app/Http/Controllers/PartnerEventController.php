@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PartnerEventController extends Controller
 {
-    public function index(){
-        return Inertia::render('Partner/Dashboard');
-    }
+    
     public function eventScreen(){
         $user_id = Auth::user()->getAuthIdentifier();
       

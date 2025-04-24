@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerEventController;
 use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
@@ -28,7 +29,7 @@ Route::middleware([Authentication::class."customer"])->group( function(){
 
 // diakses partner
 Route::middleware([Authentication::class.":partner"])->group(function(){
-    Route::get('/partner', [PartnerEventController::class, 'index']);
+    Route::get('/partner', [PartnerController::class, 'index']);
     Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
     Route::get('/partner/event/detail/{id}', [PartnerEventController::class, 'eventDetailScreen']);
     Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
