@@ -53,20 +53,30 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                     quantity: quantity,
                 }),
             });
-            
+    
             if (response.redirected) {
-                window.location.href = response.url; // Redirect user ke halaman login
+                window.location.href = response.url;
                 return;
+            }
+    
+            if (response.ok) {
+                // ✅ Tambahkan di sini untuk memunculkan dialog sukses
+                setShowSuccessDialog(true);
+            } else {
+                const data = await response.json();
+                alert(`Gagal memproses pesanan: ${data.message || "Terjadi kesalahan"}`);
             }
         } catch (error: any) {
             console.error("DETAIL ERROR:", error);
             alert("Terjadi kesalahan saat mengirim data: " + error.message);
         }
-        
     };
+    
       
 
     console.log("Is Logged In:", isLoggedIn);
+    
+    
     
     const eventWithDate = {
         ...event,
@@ -75,6 +85,9 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
 
     const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [showDetailDialog, setShowDetailDialog] = useState(false);
+
 
     const calculateTotal = (price: number, quantity: number) => {
         const subtotal = price * quantity;
@@ -257,7 +270,37 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                             >
                                                                                 Batal
                                                                             </Button>
-                                                                            <Dialog>
+                                                                            <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+                                                                    <DialogContent className="max-w-sm rounded-xl shadow-xl text-center">
+                                                                        <div className="flex justify-center mb-2">
+                                                                        <div className="bg-blue-200 rounded-full p-3">
+                                                                            <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            className="h-8 w-8 text-blue-600"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth={2}
+                                                                            >
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                            </svg>
+                                                                        </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <h2 className="text-xl font-semibold">Pesanan Berhasil</h2>
+                                                                            <p className="text-gray-600">
+                                                                                Selamat! Pesanan kamu telah berhasil diproses.
+                                                                            </p>
+                                                                        </div>
+                                                                            <button
+                                                                            onClick={() => setShowSuccessDialog(false)}
+                                                                            className="mt-4 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition font-semibold"
+                                                                            >
+                                                                            Ok
+                                                                            </button>
+                                                                    </DialogContent>
+                                                                    </Dialog>
+                                                                            <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
                                                                                 <DialogTrigger asChild>
                                                                                     <Button>Beli</Button>
                                                                                 </DialogTrigger>
@@ -343,10 +386,12 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                         </div>
                                                                                         <Button
                                                                                             className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                                                                                            onClick={() =>
-                                                                                                handleCheckout(category.id, quantity)
-                                                                                            }
-                                                                                        >
+                                                                                            onClick={async () => {
+                                                                                                await handleCheckout(category.id, quantity);
+                                                                                                setShowDetailDialog(false); // Tutup dialog rincian
+                                                                                                setShowSuccessDialog(true); // Munculkan dialog sukses
+                                                                                            }}
+                                                                                            >
                                                                                             Lanjutkan
                                                                                         </Button>
                                                                                     </div>
@@ -355,22 +400,24 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                         </div>
                                                                     </div>
                                                                 ) : (
-                                                                    <div className="flex justify-end">
-                                                                        <Button
-                                                                            onClick={() => {
-                                                                                if (!isLoggedIn) {
-                                                                                    // Arahkan ke halaman login jika belum login
-                                                                                    window.location.href = `/login`;
-                                                                                } else {
-                                                                                    setSelectedTicket(category.id);
-                                                                                }
-                                                                            }}
-                                                                            className="bg-blue-600 text-white hover:bg-blue-700"
-                                                                        >
-                                                                            Pilih
-                                                                        </Button>
-                                                                    </div>
+                                                                        <div className="flex justify-end">
+                                                                            <Button
+                                                                                onClick={() => {
+                                                                                    if (!isLoggedIn) {
+                                                                                        // Arahkan ke halaman login jika belum login
+                                                                                        window.location.href = `/login`;
+                                                                                    } else {
+                                                                                        setSelectedTicket(category.id);
+                                                                                    }
+                                                                                }}
+                                                                                className="bg-blue-600 text-white hover:bg-blue-700"
+                                                                            >
+                                                                                Pilih
+                                                                            </Button>
+                                                                        </div>
                                                                 )}
+
+
                                                             </CardContent>
                                                         </Card>
                                                     )
