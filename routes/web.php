@@ -13,8 +13,8 @@ use App\Http\Controllers\EventController;
 
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
-Route::get('/event/{id}', [CustomerController::class, 'event']);
-Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
+Route::get('/event/{id}', [CustomerController::class, 'eventById']);
+// Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
 Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
