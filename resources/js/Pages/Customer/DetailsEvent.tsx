@@ -14,6 +14,7 @@ import { ScrollArea } from "@/Components/ui/scroll-area";
 import { useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { router, usePage } from "@inertiajs/react";
+import ReactCardFlip from "react-card-flip";
 
 type Event = {
     id: number;
@@ -40,6 +41,8 @@ type EventDetailProps = {
 
 export default function DetailsEvent({ event }: EventDetailProps) {
     const { auth } = usePage().props;
+    const [isFlipped, setIsFlipped] = useState(false);
+    const handleClick = () => setIsFlipped((prev) => !prev);
 
     const handleCheckout = async (ticketId: number, quantity: number) => {
         if (!auth.user) {
@@ -126,17 +129,48 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     return (
         <>
             <CustomerLayout>
-                <div className="max-w-5xl mx-auto py-4 space-y-6">
-                    <div className="flex flex-col md:flex-row gap-2 items-start">
+                <div className="max-w-5xl mx-auto py-4 space-y-6 border">
+                    <div className="flex flex-col md:flex-row gap-2 items-start border">
                         {/* Banner with Dialog */}
+                        <div className="w-md border">
+                            <ReactCardFlip
+                                isFlipped={isFlipped}
+                                flipDirection="horizontal"
+                            >
+                                <div
+                                    key="front"
+                                    onClick={handleClick}
+                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                >
+                                    <img
+                                        src={event.poster}
+                                        alt={event.title}
+                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                </div>
+
+                                <div
+                                    key="back"
+                                    onClick={handleClick}
+                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                >
+                                    <img
+                                        src={event.seating_chart}
+                                        alt={event.title}
+                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                </div>
+                            </ReactCardFlip>
+                        </div>
+
                         <div>
-                            <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
+                            {/* <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
                                 <img
                                     src={event.poster}
                                     alt={event.title}
                                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                 />
-                            </div>
+                            </div> */}
                             {/* <Dialog>
                                 <DialogTrigger asChild>
                                     <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
