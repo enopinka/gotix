@@ -2,11 +2,18 @@ import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/Components/ui/tabs";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Dialog, DialogTrigger, DialogContent } from "@/Components/ui/dialog";
-import { CalendarIcon, MapPinIcon, ClockIcon } from "lucide-react";
+import {
+    Dialog,
+    DialogTitle,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+} from "@/Components/ui/dialog";
+import { CalendarIcon, MapPinIcon, ClockIcon, Plus, Minus } from "lucide-react";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { useState } from "react";
-
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { router, usePage } from "@inertiajs/react";
 
 type Event = {
     id: number;
@@ -29,55 +36,75 @@ type Event = {
 
 type EventDetailProps = {
     event: Event;
-    isLoggedIn: boolean; // Tambahkan properti ini
 };
 
+export default function DetailsEvent({ event }: EventDetailProps) {
+    const { auth } = usePage().props;
 
-export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
     const handleCheckout = async (ticketId: number, quantity: number) => {
-        if (!isLoggedIn) {
-            window.location.href = `/login`;
-            return;
+        if (!auth.user) {
+            return router.get("/login");
         }
-    
+
         try {
-            const response = await fetch('/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify({
+            router.post(
+                "/orders",
+                {
                     ticket_id: ticketId,
                     quantity: quantity,
-                }),
-            });
-    
-            if (response.redirected) {
-                window.location.href = response.url;
-                return;
-            }
-    
-            if (response.ok) {
-                // ✅ Tambahkan di sini untuk memunculkan dialog sukses
-                setShowSuccessDialog(true);
-            } else {
-                const data = await response.json();
-                alert(`Gagal memproses pesanan: ${data.message || "Terjadi kesalahan"}`);
-            }
+                },
+                {
+                    onSuccess: () => {
+                        setShowSuccessDialog(true);
+                    },
+                    onError: (error: any) => {
+                        console.error("ERROR:", error);
+                        alert(
+                            `Gagal memproses pesanan: ${
+                                error.message || "Terjadi kesalahan"
+                            }`
+                        );
+                    },
+                }
+            );
+            // const response = await fetch("/orders", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "X-CSRF-TOKEN":
+            //             document
+            //                 .querySelector('meta[name="csrf-token"]')
+            //                 ?.getAttribute("content") || "",
+            //     },
+            //     credentials: "same-origin",
+            //     body: JSON.stringify({
+            //         ticket_id: ticketId,
+            //         quantity: quantity,
+            //     }),
+            // });
+            // if (response.redirected) {
+            //     window.location.href = response.url;
+            //     return;
+            // }
+            // if (response.ok) {
+            //     // ✅ Tambahkan di sini untuk memunculkan dialog sukses
+            //     setShowSuccessDialog(true);
+            // } else {
+            //     const data = await response.json();
+            //     alert(
+            //         `Gagal memproses pesanan: ${
+            //             data.message || "Terjadi kesalahan"
+            //         }`
+            //     );
+            // }
         } catch (error: any) {
             console.error("DETAIL ERROR:", error);
             alert("Terjadi kesalahan saat mengirim data: " + error.message);
         }
     };
-    
-      
 
-    console.log("Is Logged In:", isLoggedIn);
-    
-    
-    
+    // console.log("Is Logged In:", isLoggedIn);
+
     const eventWithDate = {
         ...event,
         date: new Date(`${event.date}T${event.time}`),
@@ -88,10 +115,9 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [showDetailDialog, setShowDetailDialog] = useState(false);
 
-
     const calculateTotal = (price: number, quantity: number) => {
         const subtotal = price * quantity;
-        const serviceFee = quantity * 10000; 
+        const serviceFee = quantity * 10000;
         const tax = subtotal * 0.1; // Pajak 10%
         const total = subtotal + serviceFee + tax;
         return { subtotal, serviceFee, tax, total };
@@ -104,7 +130,14 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                     <div className="flex flex-col md:flex-row gap-2 items-start">
                         {/* Banner with Dialog */}
                         <div>
-                            <Dialog>
+                            <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
+                                <img
+                                    src={event.poster}
+                                    alt={event.title}
+                                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                />
+                            </div>
+                            {/* <Dialog>
                                 <DialogTrigger asChild>
                                     <div className="aspect-[3/4] max-w-md cursor-pointer overflow-hidden rounded-xl group">
                                         <img
@@ -114,14 +147,18 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                         />
                                     </div>
                                 </DialogTrigger>
+
                                 <DialogContent className="max-w-4xl p-0 overflow-hidden">
+                                    <DialogTitle className="hidden">
+                                        {event.title}
+                                    </DialogTitle>
                                     <img
                                         src={event.poster}
                                         alt={event.title}
                                         className="w-full h-auto object-contain"
                                     />
                                 </DialogContent>
-                            </Dialog>
+                            </Dialog> */}
                         </div>
                         <div className="px-6 flex flex-col gap-6">
                             {/* Info Card */}
@@ -216,111 +253,144 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                 <div className="flex justify-between items-center">
                                                                     <div>
                                                                         <h3 className="text-lg font-semibold">
-                                                                            {category.type}
+                                                                            {
+                                                                                category.type
+                                                                            }
                                                                         </h3>
                                                                         <p className="text-sm text-muted-foreground">
-                                                                            Harga: Rp{" "}
-                                                                            {category.price.toLocaleString("id-ID")}
+                                                                            Harga:
+                                                                            Rp{" "}
+                                                                            {category.price.toLocaleString(
+                                                                                "id-ID"
+                                                                            )}
                                                                         </p>
                                                                         <p className="text-sm text-muted-foreground">
-                                                                            Kuota: {category.quota} orang
+                                                                            Kuota
+                                                                            Tersedia:{" "}
+                                                                            {
+                                                                                category.available_seats
+                                                                            }{" "}
+                                                                            orang
                                                                         </p>
                                                                     </div>
                                                                     <span className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded">
                                                                         On Sale
                                                                     </span>
                                                                 </div>
-                                                                {selectedTicket === category.id ? (
+                                                                {selectedTicket ===
+                                                                category.id ? (
                                                                     <div>
                                                                         <div className="flex items-center gap-4">
                                                                             <Button
                                                                                 variant="outline"
                                                                                 onClick={() =>
-                                                                                    setQuantity((prev) =>
-                                                                                        prev > 1 ? prev - 1 : 1
+                                                                                    setQuantity(
+                                                                                        (
+                                                                                            prev
+                                                                                        ) =>
+                                                                                            prev >
+                                                                                            1
+                                                                                                ? prev -
+                                                                                                  1
+                                                                                                : 1
                                                                                     )
                                                                                 }
                                                                             >
-                                                                                -
+                                                                                <Minus />
                                                                             </Button>
                                                                             <span className="text-lg font-semibold">
-                                                                                {quantity}
+                                                                                {
+                                                                                    quantity
+                                                                                }
                                                                             </span>
                                                                             <Button
                                                                                 variant="outline"
                                                                                 onClick={() =>
-                                                                                    setQuantity((prev) =>
-                                                                                        prev < category.available_seats
-                                                                                            ? prev + 1
-                                                                                            : prev
+                                                                                    setQuantity(
+                                                                                        (
+                                                                                            prev
+                                                                                        ) =>
+                                                                                            prev <
+                                                                                            category.available_seats
+                                                                                                ? prev +
+                                                                                                  1
+                                                                                                : prev
                                                                                     )
                                                                                 }
-                                                                                disabled={quantity >= category.available_seats}
+                                                                                disabled={
+                                                                                    quantity >=
+                                                                                    category.available_seats
+                                                                                }
                                                                             >
-                                                                                +
+                                                                                <Plus />
                                                                             </Button>
                                                                         </div>
                                                                         <div className="flex justify-end gap-4 mt-4">
                                                                             <Button
                                                                                 variant="outline"
                                                                                 onClick={() => {
-                                                                                    setSelectedTicket(null);
-                                                                                    setQuantity(1); // Reset quantity
+                                                                                    setSelectedTicket(
+                                                                                        null
+                                                                                    );
+                                                                                    setQuantity(
+                                                                                        1
+                                                                                    ); // Reset quantity
                                                                                 }}
                                                                             >
                                                                                 Batal
                                                                             </Button>
-                                                                            <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-                                                                    <DialogContent className="max-w-sm rounded-xl shadow-xl text-center">
-                                                                        <div className="flex justify-center mb-2">
-                                                                        <div className="bg-blue-200 rounded-full p-3">
-                                                                            <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="h-8 w-8 text-blue-600"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                            strokeWidth={2}
+
+                                                                            <Dialog
+                                                                                open={
+                                                                                    showDetailDialog
+                                                                                }
+                                                                                onOpenChange={
+                                                                                    setShowDetailDialog
+                                                                                }
                                                                             >
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                                            </svg>
-                                                                        </div>
-                                                                        </div>
-                                                                        <div>
-                                                                            <h2 className="text-xl font-semibold">Pesanan Berhasil</h2>
-                                                                            <p className="text-gray-600">
-                                                                                Selamat! Pesanan kamu telah berhasil diproses.
-                                                                            </p>
-                                                                        </div>
-                                                                            <button
-                                                                            onClick={() => setShowSuccessDialog(false)}
-                                                                            className="mt-4 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition font-semibold"
-                                                                            >
-                                                                            Ok
-                                                                            </button>
-                                                                    </DialogContent>
-                                                                    </Dialog>
-                                                                            <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-                                                                                <DialogTrigger asChild>
-                                                                                    <Button>Beli</Button>
+                                                                                <DialogTrigger
+                                                                                    asChild
+                                                                                >
+                                                                                    <Button>
+                                                                                        Beli
+                                                                                    </Button>
                                                                                 </DialogTrigger>
                                                                                 <DialogContent className="max-w-lg p-6 space-y-4 rounded-lg shadow-lg bg-white">
-                                                                                    <h4 className="text-lg font-semibold">
-                                                                                        Rincian Pemesanan
-                                                                                    </h4>
+                                                                                    <div>
+                                                                                        <DialogTitle className="text-lg font-semibold">
+                                                                                            Konfirmasi
+                                                                                            Pemesanan
+                                                                                        </DialogTitle>
+                                                                                        <DialogDescription className="font-muted-foreground">
+                                                                                            Mohon
+                                                                                            cek
+                                                                                            kembali
+                                                                                            pesanan
+                                                                                            Anda
+                                                                                        </DialogDescription>
+                                                                                    </div>
+
                                                                                     <div className="space-y-4">
                                                                                         <div className="flex items-center gap-4">
                                                                                             <img
-                                                                                                src={event.poster}
-                                                                                                alt={event.title}
+                                                                                                src={
+                                                                                                    event.poster
+                                                                                                }
+                                                                                                alt={
+                                                                                                    event.title
+                                                                                                }
                                                                                                 className="w-16 h-16 rounded-lg object-cover"
                                                                                             />
                                                                                             <div>
                                                                                                 <h5 className="text-md font-semibold">
-                                                                                                    {event.title}
+                                                                                                    {
+                                                                                                        event.title
+                                                                                                    }
                                                                                                 </h5>
                                                                                                 <p className="text-sm text-muted-foreground">
-                                                                                                    {category.type}
+                                                                                                    {
+                                                                                                        category.type
+                                                                                                    }
                                                                                                 </p>
                                                                                             </div>
                                                                                         </div>
@@ -331,10 +401,11 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                     serviceFee,
                                                                                                     tax,
                                                                                                     total,
-                                                                                                } = calculateTotal(
-                                                                                                    category.price,
-                                                                                                    quantity
-                                                                                                );
+                                                                                                } =
+                                                                                                    calculateTotal(
+                                                                                                        category.price,
+                                                                                                        quantity
+                                                                                                    );
                                                                                                 return (
                                                                                                     <>
                                                                                                         <div className="flex justify-between">
@@ -350,7 +421,8 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                         </div>
                                                                                                         <div className="flex justify-between">
                                                                                                             <span>
-                                                                                                                Biaya Layanan
+                                                                                                                Biaya
+                                                                                                                Layanan
                                                                                                             </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
@@ -361,7 +433,8 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                         </div>
                                                                                                         <div className="flex justify-between">
                                                                                                             <span>
-                                                                                                                Pajak (10%)
+                                                                                                                Pajak
+                                                                                                                (10%)
                                                                                                             </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
@@ -372,7 +445,9 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                         </div>
                                                                                                         <hr />
                                                                                                         <div className="flex justify-between font-semibold">
-                                                                                                            <span>Total</span>
+                                                                                                            <span>
+                                                                                                                Total
+                                                                                                            </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
                                                                                                                 {total.toLocaleString(
@@ -387,11 +462,18 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                         <Button
                                                                                             className="w-full bg-blue-600 text-white hover:bg-blue-700"
                                                                                             onClick={async () => {
-                                                                                                await handleCheckout(category.id, quantity);
-                                                                                                setShowDetailDialog(false); // Tutup dialog rincian
-                                                                                                setShowSuccessDialog(true); // Munculkan dialog sukses
+                                                                                                await handleCheckout(
+                                                                                                    category.id,
+                                                                                                    quantity
+                                                                                                );
+                                                                                                setShowDetailDialog(
+                                                                                                    false
+                                                                                                ); // Tutup dialog rincian
+                                                                                                setShowSuccessDialog(
+                                                                                                    true
+                                                                                                ); // Munculkan dialog sukses
                                                                                             }}
-                                                                                            >
+                                                                                        >
                                                                                             Lanjutkan
                                                                                         </Button>
                                                                                     </div>
@@ -400,24 +482,28 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                         </div>
                                                                     </div>
                                                                 ) : (
-                                                                        <div className="flex justify-end">
-                                                                            <Button
-                                                                                onClick={() => {
-                                                                                    if (!isLoggedIn) {
-                                                                                        // Arahkan ke halaman login jika belum login
-                                                                                        window.location.href = `/login`;
-                                                                                    } else {
-                                                                                        setSelectedTicket(category.id);
-                                                                                    }
-                                                                                }}
-                                                                                className="bg-blue-600 text-white hover:bg-blue-700"
-                                                                            >
-                                                                                Pilih
-                                                                            </Button>
-                                                                        </div>
+                                                                    <div className="flex justify-end">
+                                                                        <Button
+                                                                            onClick={() => {
+                                                                                if (
+                                                                                    !auth.user
+                                                                                ) {
+                                                                                    // Arahkan ke halaman login jika belum login
+                                                                                    router.get(
+                                                                                        "/login"
+                                                                                    );
+                                                                                } else {
+                                                                                    setSelectedTicket(
+                                                                                        category.id
+                                                                                    );
+                                                                                }
+                                                                            }}
+                                                                            className="bg-blue-600 text-white hover:bg-blue-700"
+                                                                        >
+                                                                            Pilih
+                                                                        </Button>
+                                                                    </div>
                                                                 )}
-
-
                                                             </CardContent>
                                                         </Card>
                                                     )
@@ -435,6 +521,46 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                         </div>
                     </div>
                 </div>
+                <Dialog
+                    open={showSuccessDialog}
+                    onOpenChange={setShowSuccessDialog}
+                >
+                    <DialogContent className="max-w-sm rounded-xl shadow-xl text-center">
+                        <div className="flex justify-center mb-2">
+                            <div className="bg-blue-200 rounded-full p-3">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-8 w-8 text-blue-600"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <DialogTitle className="text-lg font-semibold">
+                                Pesanan Berhasil
+                            </DialogTitle>
+
+                            <DialogDescription className="text-gray-600">
+                                Selamat! Pesanan kamu telah berhasil diproses.
+                            </DialogDescription>
+                        </div>
+                        <button
+                            onClick={() => setShowSuccessDialog(false)}
+                            className="mt-4 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition font-semibold"
+                        >
+                            Ok
+                        </button>
+                    </DialogContent>
+                </Dialog>
             </CustomerLayout>
         </>
     );
