@@ -1,20 +1,7 @@
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Link, usePage } from "@inertiajs/react";
-import {
-    Search,
-    Home,
-    Ticket,
-    Calendar,
-    Music,
-    User,
-    Settings,
-    Menu,
-    X,
-    Bell,
-    Info,
-    HelpCircle,
-} from "lucide-react";
+import { Search, Home, User, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function CustomerLayout({
@@ -24,16 +11,10 @@ export default function CustomerLayout({
 }>) {
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-
-    const toggleNav = () => {
-        setIsNavOpen(!isNavOpen);
-    };
-
-    const toggleSidebar = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-
     const { auth } = usePage().props;
+
+    const toggleNav = () => setIsNavOpen(!isNavOpen);
+    const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
     // Close mobile nav when clicking outside
     useEffect(() => {
@@ -53,17 +34,14 @@ export default function CustomerLayout({
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
+        return () =>
             document.removeEventListener("mousedown", handleClickOutside);
-        };
     }, [isNavOpen]);
 
     // Close mobile nav when resizing to desktop
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 768) {
-                // md breakpoint
                 setIsNavOpen(false);
             }
         };
@@ -72,29 +50,21 @@ export default function CustomerLayout({
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Mobile overlay
-    const MobileOverlay = () => (
-        <div
-            className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300 ${
-                isNavOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            onClick={() => setIsNavOpen(false)}
-        />
-    );
-
-    // Navigation items
+    // Navigation items - simplified to just Beranda and Profile
     const navItems = [
         { name: "Beranda", icon: Home, href: "/" },
-        { name: "Event", icon: Music, href: "/events" },
-        { name: "Jadwal", icon: Calendar, href: "/schedule" },
-        { name: "Bantuan", icon: HelpCircle, href: "/help" },
-        { name: "Tentang Kami", icon: Info, href: "/about" },
+        { name: "Profile", icon: User, href: "/profile" },
     ];
 
     return (
         <div className="flex h-screen max-h-screen overflow-hidden bg-slate-50">
             {/* Mobile Nav Overlay */}
-            <MobileOverlay />
+            <div
+                className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300 ${
+                    isNavOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                onClick={() => setIsNavOpen(false)}
+            />
 
             {/* Mobile Menu Button */}
             <div
@@ -146,11 +116,8 @@ export default function CustomerLayout({
                     </Link>
                 </div>
 
-                {/* Navigation - Fixed height with scrollbar */}
-                <nav
-                    className="flex-1 pt-4 overflow-y-auto"
-                    style={{ overflowX: "hidden" }}
-                >
+                {/* Navigation */}
+                <nav className="flex-1 pt-4">
                     <ul className="space-y-1 px-2">
                         {navItems.map((item, index) => (
                             <li key={index}>
@@ -193,7 +160,7 @@ export default function CustomerLayout({
                         </button>
                     </div>
 
-                    {/* Auth Buttons - for logged out users */}
+                    {/* Auth Section */}
                     <div
                         className={`p-4 border-t border-indigo-700 ${
                             isCollapsed ? "flex flex-col items-center" : ""
@@ -249,17 +216,15 @@ export default function CustomerLayout({
                                 )}
                             </>
                         ) : (
-                            <>
-                                <Link href="/login" className="mb-2">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="w-8 h-8 bg-transparent border-indigo-400 text-white hover:bg-indigo-700"
-                                    >
-                                        <User size={16} />
-                                    </Button>
-                                </Link>
-                            </>
+                            <Link href={auth.user ? "/profile" : "/login"}>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="w-8 h-8 bg-transparent border-indigo-400 text-white hover:bg-indigo-700"
+                                >
+                                    <User size={16} />
+                                </Button>
+                            </Link>
                         )}
                     </div>
                 </div>
@@ -284,14 +249,14 @@ export default function CustomerLayout({
                         </div>
                     </div>
 
-                    {/* Mobile Title (Center) */}
+                    {/* Mobile Title */}
                     <div className="md:hidden mx-auto">
                         <p className="font-bold text-lg text-indigo-700">
                             GOTIX
                         </p>
                     </div>
 
-                    {/* Right Actions - Auth Buttons for desktop */}
+                    {/* Right Actions */}
                     <div className="hidden md:flex items-center gap-2">
                         {!auth.user ? (
                             <>
@@ -314,22 +279,20 @@ export default function CustomerLayout({
                                 </Link>
                             </>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <Link href="#">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="bg-transparent border-indigo-400 text-indigo-700 hover:bg-indigo-50"
-                                    >
-                                        <User size={18} />
-                                    </Button>
-                                </Link>
-                            </div>
+                            <Link href="/profile">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="bg-transparent border-indigo-400 text-indigo-700 hover:bg-indigo-50"
+                                >
+                                    <User size={18} />
+                                </Button>
+                            </Link>
                         )}
                     </div>
                 </div>
 
-                {/* Mobile Search - Below Navigation */}
+                {/* Mobile Search */}
                 <div className="p-4 md:hidden">
                     <div className="relative">
                         <Search
@@ -344,7 +307,7 @@ export default function CustomerLayout({
                     </div>
                 </div>
 
-                {/* Page Content with improved overflow handling */}
+                {/* Page Content */}
                 <div
                     className="flex-1 overflow-y-auto p-4 md:p-6 w-full"
                     style={{ overflowX: "hidden" }}
@@ -352,7 +315,7 @@ export default function CustomerLayout({
                     {children}
                 </div>
 
-                {/* Footer - always at bottom */}
+                {/* Footer */}
                 <footer className="bg-white border-t border-gray-200 py-4 px-6 w-full">
                     <div className="flex flex-col sm:flex-row justify-between items-center">
                         <div className="mb-2 sm:mb-0">
@@ -363,22 +326,10 @@ export default function CustomerLayout({
                         </div>
                         <div className="flex space-x-4 text-sm">
                             <Link
-                                href="/about"
-                                className="text-gray-500 hover:text-indigo-600"
-                            >
-                                Tentang
-                            </Link>
-                            <Link
                                 href="/help"
                                 className="text-gray-500 hover:text-indigo-600"
                             >
                                 Bantuan
-                            </Link>
-                            <Link
-                                href="/privacy"
-                                className="text-gray-500 hover:text-indigo-600"
-                            >
-                                Kebijakan
                             </Link>
                         </div>
                     </div>
