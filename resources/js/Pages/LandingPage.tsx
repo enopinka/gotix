@@ -113,7 +113,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                 <div className="max-w-7xl mx-auto py-8 px-4">
                     <h1 className="text-2xl font-bold mb-6">Upcoming Events</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {events.map((event) => (
+                        {events.slice(0, 8).map((event) => (
                             <Card key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                                 <div className="relative">
                                     <img
@@ -141,8 +141,31 @@ export default function LandingPage({ events }: LandingPageProps) {
                                 </div>
                             </Card>
                         ))}
-                        
                     </div>
+                    {/* Pagination 
+                    <div className="flex justify-center mt-8">
+                        <Pagination>
+                            <PaginationPrevious href="?page=1">Previous</PaginationPrevious>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationLink href="?page=1">1</PaginationLink>
+                                </PaginationItem>
+                                <PaginationEllipsis />
+                                <PaginationItem>
+                                    <PaginationLink href="?page=2">2</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href="?page=3">3</PaginationLink>
+                                </PaginationItem>
+                                <PaginationEllipsis />
+                                <PaginationItem>
+                                    <PaginationLink href="?page=667">667</PaginationLink>
+                                </PaginationItem>
+                            </PaginationContent>
+                            <PaginationNext href="?page=2">Next</PaginationNext>
+                        </Pagination>
+                    </div>
+                    */}
                 </div>
             </CustomerLayout>
         </>
