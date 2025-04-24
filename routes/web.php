@@ -24,7 +24,7 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
 Route::middleware([Authentication::class."customer"])->group( function(){
-
+    Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
 
 });
 
