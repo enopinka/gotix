@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 
 
+
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
 Route::get('/event/{id}', [CustomerController::class, 'event']);
