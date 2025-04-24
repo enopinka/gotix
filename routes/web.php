@@ -26,6 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware([Authentication::class."customer"])->group( function(){
     Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
 
+
 });
 
 

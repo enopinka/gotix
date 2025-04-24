@@ -32,6 +32,7 @@ type EventDetailProps = {
     isLoggedIn: boolean; // Tambahkan properti ini
 };
 
+
 export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
     const handleCheckout = (ticketId: number) => {
         if (!isLoggedIn) {
@@ -42,6 +43,8 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
         }
     };
 
+    console.log("Is Logged In:", isLoggedIn);
+    
     const eventWithDate = {
         ...event,
         date: new Date(`${event.date}T${event.time}`),
@@ -197,17 +200,23 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                             <Button
                                                                                 variant="outline"
                                                                                 onClick={() =>
-                                                                                    setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+                                                                                    setQuantity((prev) =>
+                                                                                        prev > 1 ? prev - 1 : 1
+                                                                                    )
                                                                                 }
                                                                             >
                                                                                 -
                                                                             </Button>
-                                                                            <span className="text-lg font-semibold">{quantity}</span>
+                                                                            <span className="text-lg font-semibold">
+                                                                                {quantity}
+                                                                            </span>
                                                                             <Button
                                                                                 variant="outline"
                                                                                 onClick={() =>
                                                                                     setQuantity((prev) =>
-                                                                                        prev < category.available_seats ? prev + 1 : prev
+                                                                                        prev < category.available_seats
+                                                                                            ? prev + 1
+                                                                                            : prev
                                                                                     )
                                                                                 }
                                                                                 disabled={quantity >= category.available_seats}
@@ -227,9 +236,7 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                             </Button>
                                                                             <Dialog>
                                                                                 <DialogTrigger asChild>
-                                                                                    <Button>
-                                                                                        Beli
-                                                                                    </Button>
+                                                                                    <Button>Beli</Button>
                                                                                 </DialogTrigger>
                                                                                 <DialogContent className="max-w-lg p-6 space-y-4 rounded-lg shadow-lg bg-white">
                                                                                     <h4 className="text-lg font-semibold">
@@ -253,11 +260,21 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                         </div>
                                                                                         <div className="space-y-2">
                                                                                             {(() => {
-                                                                                                const { subtotal, serviceFee, tax, total } = calculateTotal(category.price, quantity);
+                                                                                                const {
+                                                                                                    subtotal,
+                                                                                                    serviceFee,
+                                                                                                    tax,
+                                                                                                    total,
+                                                                                                } = calculateTotal(
+                                                                                                    category.price,
+                                                                                                    quantity
+                                                                                                );
                                                                                                 return (
                                                                                                     <>
                                                                                                         <div className="flex justify-between">
-                                                                                                            <span>Subtotal</span>
+                                                                                                            <span>
+                                                                                                                Subtotal
+                                                                                                            </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
                                                                                                                 {subtotal.toLocaleString(
@@ -266,7 +283,9 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                             </span>
                                                                                                         </div>
                                                                                                         <div className="flex justify-between">
-                                                                                                            <span>Biaya Layanan</span>
+                                                                                                            <span>
+                                                                                                                Biaya Layanan
+                                                                                                            </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
                                                                                                                 {serviceFee.toLocaleString(
@@ -275,7 +294,9 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                                                             </span>
                                                                                                         </div>
                                                                                                         <div className="flex justify-between">
-                                                                                                            <span>Pajak (10%)</span>
+                                                                                                            <span>
+                                                                                                                Pajak (10%)
+                                                                                                            </span>
                                                                                                             <span>
                                                                                                                 Rp{" "}
                                                                                                                 {tax.toLocaleString(
@@ -313,9 +334,14 @@ export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
                                                                 ) : (
                                                                     <div className="flex justify-end">
                                                                         <Button
-                                                                            onClick={() =>
-                                                                                setSelectedTicket(category.id)
-                                                                            }
+                                                                            onClick={() => {
+                                                                                if (!isLoggedIn) {
+                                                                                    // Arahkan ke halaman login jika belum login
+                                                                                    window.location.href = `/login`;
+                                                                                } else {
+                                                                                    setSelectedTicket(category.id);
+                                                                                }
+                                                                            }}
                                                                             className="bg-blue-600 text-white hover:bg-blue-700"
                                                                         >
                                                                             Pilih

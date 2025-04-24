@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -25,7 +26,15 @@ class CustomerController extends Controller
             'ticket' => $ticket,
         ]);
     }
+    public function show($id)
+    {
+        $event = Event::with('categories')->findOrFail($id);
 
+        return Inertia::render('Customer/DetailsEvent', [
+            'event' => $event,
+            'isLoggedIn' => Auth::check(),
+        ]);
+    }
     public function eventById($id)
     {
         $event = Event::find($id);
@@ -66,6 +75,7 @@ class CustomerController extends Controller
 
         return Inertia::render('Customer/DetailsEvent', [
             'event' => $formattedEvent,
+            'isLoggedIn' => Auth::check(), 
         ]);
     }
     
