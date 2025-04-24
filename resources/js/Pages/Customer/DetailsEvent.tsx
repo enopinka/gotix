@@ -5,6 +5,8 @@ import { Button } from "@/Components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon } from "lucide-react";
 import { ScrollArea } from "@/Components/ui/scroll-area";
+import { useState } from "react";
+
 
 type Event = {
     id: number;
@@ -27,21 +29,35 @@ type Event = {
 
 type EventDetailProps = {
     event: Event;
+    isLoggedIn: boolean; // Tambahkan properti ini
 };
 
-export default function DetailsEvent({ event }: EventDetailProps) {
-    console.log("Event data:", event);
-    console.log("Categories:", event.categories);
-
-    const handleBuyTicket = (ticketId: number) => {
-        console.log(`Buying ticket for ticket ID: ${ticketId}`);
-        // Add your ticket purchase logic here
+export default function DetailsEvent({ event, isLoggedIn }: EventDetailProps) {
+    const handleCheckout = (ticketId: number) => {
+        if (!isLoggedIn) {
+            // Arahkan ke halaman login jika belum login
+            window.location.href = `/login`;
+        } else {
+            console.log(`Proceeding to checkout for ticket ID: ${ticketId}`);
+        }
     };
 
     const eventWithDate = {
         ...event,
         date: new Date(`${event.date}T${event.time}`),
     };
+
+    const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
+
+    const calculateTotal = (price: number, quantity: number) => {
+        const subtotal = price * quantity;
+        const serviceFee = quantity * 10000; 
+        const tax = subtotal * 0.1; // Pajak 10%
+        const total = subtotal + serviceFee + tax;
+        return { subtotal, serviceFee, tax, total };
+    };
+
     return (
         <>
             <CustomerLayout>
@@ -68,7 +84,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                 </DialogContent>
                             </Dialog>
                         </div>
-                        <div className=" px-6 flex flex-col gap-6">
+                        <div className="px-6 flex flex-col gap-6">
                             {/* Info Card */}
                             <Card className="w-full">
                                 <CardContent className="p-6 space-y-4">
@@ -138,7 +154,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                     </TabsTrigger>
                                 </TabsList>
 
-                                <ScrollArea className=" h-[200px] w-[500px] rounded-md border px-4 ">
+                                <ScrollArea className="h-[320px] w-[500px] rounded-md border px-4">
                                     <TabsContent value="desc" className="pt-4">
                                         <p className="py-1 text-justify">
                                             Details: {event.description}
@@ -147,7 +163,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
 
                                     <TabsContent
                                         value="ticket"
-                                        className="pt-4"
+                                        className="py-4"
                                     >
                                         <div className="flex flex-col gap-2">
                                             {event.categories?.length > 0 ? (
@@ -157,37 +173,155 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                             key={category.id}
                                                             className="w-full"
                                                         >
-                                                            <CardContent className="p-4 flex justify-between items-center">
-                                                                <div>
-                                                                    <h3 className="text-lg font-semibold">
-                                                                        {
-                                                                            category.type
-                                                                        }
-                                                                    </h3>
-                                                                    <p className="text-sm text-muted-foreground">
-                                                                        Harga:
-                                                                        Rp{" "}
-                                                                        {category.price.toLocaleString(
-                                                                            "id-ID"
-                                                                        )}
-                                                                    </p>
-                                                                    <p className="text-sm text-muted-foreground">
-                                                                        Kuota:{" "}
-                                                                        {
-                                                                            category.quota
-                                                                        }{" "}
-                                                                        orang
-                                                                    </p>
+                                                            <CardContent className="p-4 space-y-4">
+                                                                <div className="flex justify-between items-center">
+                                                                    <div>
+                                                                        <h3 className="text-lg font-semibold">
+                                                                            {category.type}
+                                                                        </h3>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            Harga: Rp{" "}
+                                                                            {category.price.toLocaleString("id-ID")}
+                                                                        </p>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            Kuota: {category.quota} orang
+                                                                        </p>
+                                                                    </div>
+                                                                    <span className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded">
+                                                                        On Sale
+                                                                    </span>
                                                                 </div>
-                                                                <Button
-                                                                    onClick={() =>
-                                                                        handleBuyTicket(
-                                                                            category.id
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Beli Tiket
-                                                                </Button>
+                                                                {selectedTicket === category.id ? (
+                                                                    <div>
+                                                                        <div className="flex items-center gap-4">
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                onClick={() =>
+                                                                                    setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+                                                                                }
+                                                                            >
+                                                                                -
+                                                                            </Button>
+                                                                            <span className="text-lg font-semibold">{quantity}</span>
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                onClick={() =>
+                                                                                    setQuantity((prev) =>
+                                                                                        prev < category.available_seats ? prev + 1 : prev
+                                                                                    )
+                                                                                }
+                                                                                disabled={quantity >= category.available_seats}
+                                                                            >
+                                                                                +
+                                                                            </Button>
+                                                                        </div>
+                                                                        <div className="flex justify-end gap-4 mt-4">
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                onClick={() => {
+                                                                                    setSelectedTicket(null);
+                                                                                    setQuantity(1); // Reset quantity
+                                                                                }}
+                                                                            >
+                                                                                Batal
+                                                                            </Button>
+                                                                            <Dialog>
+                                                                                <DialogTrigger asChild>
+                                                                                    <Button>
+                                                                                        Beli
+                                                                                    </Button>
+                                                                                </DialogTrigger>
+                                                                                <DialogContent className="max-w-lg p-6 space-y-4 rounded-lg shadow-lg bg-white">
+                                                                                    <h4 className="text-lg font-semibold">
+                                                                                        Rincian Pemesanan
+                                                                                    </h4>
+                                                                                    <div className="space-y-4">
+                                                                                        <div className="flex items-center gap-4">
+                                                                                            <img
+                                                                                                src={event.poster}
+                                                                                                alt={event.title}
+                                                                                                className="w-16 h-16 rounded-lg object-cover"
+                                                                                            />
+                                                                                            <div>
+                                                                                                <h5 className="text-md font-semibold">
+                                                                                                    {event.title}
+                                                                                                </h5>
+                                                                                                <p className="text-sm text-muted-foreground">
+                                                                                                    {category.type}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className="space-y-2">
+                                                                                            {(() => {
+                                                                                                const { subtotal, serviceFee, tax, total } = calculateTotal(category.price, quantity);
+                                                                                                return (
+                                                                                                    <>
+                                                                                                        <div className="flex justify-between">
+                                                                                                            <span>Subtotal</span>
+                                                                                                            <span>
+                                                                                                                Rp{" "}
+                                                                                                                {subtotal.toLocaleString(
+                                                                                                                    "id-ID"
+                                                                                                                )}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                        <div className="flex justify-between">
+                                                                                                            <span>Biaya Layanan</span>
+                                                                                                            <span>
+                                                                                                                Rp{" "}
+                                                                                                                {serviceFee.toLocaleString(
+                                                                                                                    "id-ID"
+                                                                                                                )}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                        <div className="flex justify-between">
+                                                                                                            <span>Pajak (10%)</span>
+                                                                                                            <span>
+                                                                                                                Rp{" "}
+                                                                                                                {tax.toLocaleString(
+                                                                                                                    "id-ID"
+                                                                                                                )}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                        <hr />
+                                                                                                        <div className="flex justify-between font-semibold">
+                                                                                                            <span>Total</span>
+                                                                                                            <span>
+                                                                                                                Rp{" "}
+                                                                                                                {total.toLocaleString(
+                                                                                                                    "id-ID"
+                                                                                                                )}
+                                                                                                            </span>
+                                                                                                        </div>
+                                                                                                    </>
+                                                                                                );
+                                                                                            })()}
+                                                                                        </div>
+                                                                                        <Button
+                                                                                            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                                                                                            onClick={() =>
+                                                                                                handleCheckout(category.id)
+                                                                                            }
+                                                                                        >
+                                                                                            Lanjutkan
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                </DialogContent>
+                                                                            </Dialog>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex justify-end">
+                                                                        <Button
+                                                                            onClick={() =>
+                                                                                setSelectedTicket(category.id)
+                                                                            }
+                                                                            className="bg-blue-600 text-white hover:bg-blue-700"
+                                                                        >
+                                                                            Pilih
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
                                                             </CardContent>
                                                         </Card>
                                                     )

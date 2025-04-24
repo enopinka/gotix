@@ -34,4 +34,5 @@ class Authentication
 
         return $next($request);
     }
+
 }

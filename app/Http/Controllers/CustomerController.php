@@ -14,6 +14,17 @@ class CustomerController extends Controller
 
         return Inertia::render('LandingPage', ['events'=>$events]);
     }
+    
+    public function checkout($ticketId)
+    {
+        // Ambil data tiket berdasarkan ID
+        $ticket = Ticket::findOrFail($ticketId);
+
+        // Kirim data ke halaman checkout
+        return Inertia::render('Customer/Checkout', [
+            'ticket' => $ticket,
+        ]);
+    }
 
     public function eventById($id)
     {
