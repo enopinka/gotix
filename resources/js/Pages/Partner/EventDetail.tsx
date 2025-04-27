@@ -238,6 +238,16 @@ export default function EventDetail({ event, categories }: EventDetailProps) {
                         </DialogContent>
                     </Dialog>
                 </div>
+                <div className="grid grid-cols-2 w-full">
+                    <div className="p-4">
+                        <p className="text-center font-bold">Poster</p>
+                        <img src={event.poster} alt={event.title} />
+                    </div>
+                    <div className="p-4">
+                        <p className="text-center font-bold">Seating Chart</p>
+                        <img src={event.seating_chart} alt={event.title} />
+                    </div>
+                </div>
                 <div>
                     <Table>
                         <TableHeader>

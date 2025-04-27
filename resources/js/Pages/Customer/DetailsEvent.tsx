@@ -503,9 +503,6 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                 setShowDetailDialog(
                                                                                                     false
                                                                                                 ); // Tutup dialog rincian
-                                                                                                setShowSuccessDialog(
-                                                                                                    true
-                                                                                                ); // Munculkan dialog sukses
                                                                                             }}
                                                                                         >
                                                                                             Lanjutkan
