@@ -11,18 +11,20 @@ use Illuminate\Support\Facades\Route;
 
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
-Route::get('/event/{id}', [CustomerController::class, 'event']);
 Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::get('/register', [AuthController::class, 'registerScreen']);
-
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
-Route::middleware([Authentication::class."customer"])->group( function(){
-
-
+Route::middleware([Authentication::class.":customer"])->group(function(){
+    // Profile routes
+    Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
+    Route::put('/profile/update', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::put('/profile/password', [CustomerController::class, 'updatePassword'])->name('customer.profile.password');
+    Route::post('/profile/photo', [CustomerController::class, 'updatePhoto'])->name('customer.profile.photo');
+    Route::delete('/profile/photo/delete', [CustomerController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
 });
 
 
@@ -46,9 +48,6 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::delete('/partner/event/detail/{event_id}/category/{category_id}', [PartnerEventController::class, 'deleteEventCategory']);
 }); 
 
-
-
-
 // diakses admin
 Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'index']);
@@ -57,5 +56,4 @@ Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin/acara', [AdminController::class, 'acara']);
     Route::get('/admin/customer', [AdminController::class, 'customer']);
     Route::get('/admin/dashboard', [AdminController::class, 'index']);
-
 });
