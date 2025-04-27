@@ -264,4 +264,14 @@ class PartnerEventController extends Controller
         ]);
         return redirect('/partner/event/detail/$event_id')->with('success', 'Kategori event berhasil diubah!');
     }
-}
+    public function show($id)
+    {
+        // Ambil event beserta relasi kategori tiketnya
+        $event = Event::with('categories')->findOrFail($id);
+
+        // Kirim ke komponen Inertia (Vue atau React)
+        return Inertia::render('Event/Details', [
+            'event' => $event,
+        ]);
+    }
+}    

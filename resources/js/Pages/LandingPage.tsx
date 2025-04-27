@@ -7,15 +7,27 @@ import {
     CarouselPrevious,
 } from "@/Components/ui/carousel";
 import CustomerLayout from "@/Layouts/CustomerLayout";
-import Autoplay from "embla-carousel-autoplay";
 import { Link } from "@inertiajs/react";
-import React from "react";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+  } from "@/Components/ui/pagination"
+
+
 
 type Events = {
     id: number;
     title: string;
     poster: string;
     date: string;
+    time: string;
+    price: string;
+    category: string;
 };
 
 type LandingPageProps = {
@@ -23,18 +35,15 @@ type LandingPageProps = {
 };
 
 export default function LandingPage({ events }: LandingPageProps) {
-    const plugin = React.useRef(
-        Autoplay({ delay: 2000, stopOnInteraction: false })
-    );
+    
     return (
         <>
             <CustomerLayout>
                 <p>Ini halaman landing page</p>
 
                 <Carousel
-                    plugins={[plugin.current]}
+
                     className="w-full px-4 py-8"
-                    onMouseLeave={plugin.current.reset}
                 >
                     <CarouselContent>
                         {events.map((event) => (
@@ -69,9 +78,95 @@ export default function LandingPage({ events }: LandingPageProps) {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious 
+                       style={{
+                        position: 'absolute',
+                        left: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        backgroundColor: 'rgba(209, 213, 219, 0.5)', // Contoh warna dengan alpha untuk transparansi
+                        borderRadius: '9999px',
+                        padding: '0.5rem',
+                        opacity: 0.5,
+                        transition: 'opacity 0.2s ease-in-out',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.75')}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+                    />
+                    <CarouselNext 
+                         style={{
+                            position: 'absolute',
+                            right: '10px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(209, 213, 219, 0.5)', // Contoh warna dengan alpha untuk transparansi
+                            borderRadius: '9999px',
+                            padding: '0.5rem',
+                            opacity: 0.5,
+                            transition: 'opacity 0.2s ease-in-out',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.75')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+                    />
                 </Carousel>
+                
+                <div className="max-w-7xl mx-auto py-8 px-4">
+                    <h1 className="text-2xl font-bold mb-6">Upcoming Events</h1>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {events.slice(0, 8).map((event) => (
+                            <Card key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                                <div className="relative">
+                                    <img
+                                        src={event.poster}
+                                        alt={event.title}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                    <div className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded">
+                                        {event.category}
+                                    </div>
+                                    <div className="absolute top-2 right-2 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded">
+                                        {event.date}
+                                    </div>
+                                </div>
+                                <div className="p-4">
+                                    <h3 className="text-lg font-semibold truncate">{event.title}</h3>
+                                    <p className="text-sm text-gray-500">{event.time}</p>
+                                    <p className="text-sm text-gray-500">From: {event.price}</p>
+                                    <Link
+                                        href={`/event/${event.id}`}
+                                        className="mt-4 block bg-purple-600 text-white text-center text-sm font-semibold py-2 rounded hover:bg-purple-700"
+                                    >
+                                        Buy Now
+                                    </Link>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                    {/* Pagination 
+                    <div className="flex justify-center mt-8">
+                        <Pagination>
+                            <PaginationPrevious href="?page=1">Previous</PaginationPrevious>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationLink href="?page=1">1</PaginationLink>
+                                </PaginationItem>
+                                <PaginationEllipsis />
+                                <PaginationItem>
+                                    <PaginationLink href="?page=2">2</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href="?page=3">3</PaginationLink>
+                                </PaginationItem>
+                                <PaginationEllipsis />
+                                <PaginationItem>
+                                    <PaginationLink href="?page=667">667</PaginationLink>
+                                </PaginationItem>
+                            </PaginationContent>
+                            <PaginationNext href="?page=2">Next</PaginationNext>
+                        </Pagination>
+                    </div>
+                    */}
+                </div>
             </CustomerLayout>
         </>
     );
