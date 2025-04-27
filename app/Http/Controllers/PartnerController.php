@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Order;
+use App\Models\Revenue;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,7 @@ class PartnerController extends Controller
         $total_event = $event_ids->count();
         $total_ticket_sold = Order::whereIn('event_id',$event_ids)->sum('quantity');
        
-        $total_earnings = Order::whereIn('event_id', $event_ids)->sum('total_price');
+        $total_earnings = Revenue::where('user_id', $user_id)->value('total_revenue');
 
         // dd($total_event, $total_ticket_sold, $total_earnings);
 

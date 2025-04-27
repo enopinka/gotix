@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Revenue;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Ticket;
@@ -66,6 +67,21 @@ class CustomerController extends Controller
         $available_seats = $ticket->available_seats;
         $ticket->update(['available_seats' => $available_seats]);
         $ticket->save();
+
+        //update pendapatan mitra
+        $partner_id = $ticket->event->user_id;
+        $revenue = Revenue::where('user_id', $partner_id)->first();
+        if ($revenue) {
+            $revenue->total_revenue += $totalPrice;
+            $revenue->unreleased_earnings += $totalPrice;
+            $revenue->save();
+        } else {
+            Revenue::create([
+                'total_revenue' => $totalPrice,
+                'unreleased_earnings' => $totalPrice,
+                'user_id' => $partner_id,
+            ]);
+        }
 
         return redirect("/event/{$ticket->event_id}")->with('success', 'Order created successfully.');
     

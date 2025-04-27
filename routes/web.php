@@ -8,7 +8,7 @@ use App\Http\Controllers\PartnerEventController;
 use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EventController;
+use App\Http\Controllers\CustomerEventController;
 
 
 
@@ -26,12 +26,13 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
 Route::middleware(['web', 'auth'])->group(function () {
-    Route::post('/orders', [CustomerController::class, 'storeOrder']);
+   
 });
 
-Route::middleware([Authentication::class."customer"])->group( function(){
+Route::middleware([Authentication::class.":customer"])->group( function(){
     Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
-
+    
+    Route::post('/orders', [CustomerController::class, 'storeOrder']);
 
 });
 

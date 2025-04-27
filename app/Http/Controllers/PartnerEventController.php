@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Revenue;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -107,7 +109,19 @@ class PartnerEventController extends Controller
     }
 
     public function reportScreen(){
-        return Inertia::render('Partner/Report');
+        $user_id = Auth::user()->getAuthIdentifier();
+
+        $event_ids = Event::where('user_id', $user_id)->pluck('id');
+        $ticket_solds = Order::whereIn('event_id',$event_ids)->sum('quantity');
+        
+        $total_revenue = Revenue::where('user_id', $user_id)->value('total_revenue');
+        $unreleased_earnings = Revenue::where('user_id', $user_id)->value('unreleased_earnings');
+
+        return Inertia::render('Partner/Report', [
+            'ticket_solds' => $ticket_solds,
+            'total_revenue' => $total_revenue,
+            'unreleased_earnings' => $unreleased_earnings,
+        ]);
     }
 
     public function createEvent(Request $request){
