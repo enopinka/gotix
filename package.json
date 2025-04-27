@@ -45,6 +45,7 @@
         "embla-carousel-react": "^8.6.0",
         "lucide-react": "^0.479.0",
         "npm": "^11.2.0",
+        "react-card-flip": "^1.2.3",
         "react-day-picker": "^8.10.1",
         "react-hook-form": "^7.55.0",
         "react-tabs": "^6.1.0",
