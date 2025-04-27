@@ -39,8 +39,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import React from "react";
-import { set } from "date-fns";
+import React, { useState } from "react";
 
 const formSchema = z.object({
     title: z.string().min(2).max(50),
@@ -73,10 +72,11 @@ type EventDetailProps = {
 };
 
 export default function EventDetail({ event, categories }: EventDetailProps) {
-    const [isEditing, setIsEditing] = React.useState(false);
-    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-    const [selectedCategory, setSelectedCategory] =
-        React.useState<Category | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+        null
+    );
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -125,7 +125,7 @@ export default function EventDetail({ event, categories }: EventDetailProps) {
     return (
         <>
             <PartnerLayout>
-                <div className="flex justify-between mb-4">
+                <div className="flex justify-between mb-4 border">
                     <div className="space-y-2 text-sm text-muted-foreground">
                         <h2 className="text-xl font-semibold text-accent-foreground">
                             {event.title}

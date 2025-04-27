@@ -32,6 +32,11 @@ class Authentication
             abort(403, 'Anda tidak mendapatkan akses halaman ini!');
         }
 
+        if (Auth::check() && $request->routeIs('login')) {
+            return redirect('/'); // Arahkan pengguna yang sudah login ke halaman utama
+        }
+        
         return $next($request);
     }
+
 }

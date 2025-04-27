@@ -7,11 +7,15 @@ use App\Http\Controllers\PartnerEventController;
 use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventController;
+
+
 
 
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
-Route::get('/event/{id}', [CustomerController::class, 'event']);
+Route::get('/event/{id}', [CustomerController::class, 'eventById']);
+// Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
 Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
@@ -20,7 +24,12 @@ Route::get('/register', [AuthController::class, 'registerScreen']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::post('/orders', [CustomerController::class, 'storeOrder']);
+});
+
 Route::middleware([Authentication::class."customer"])->group( function(){
+    Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
 
 
 });
