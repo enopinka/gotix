@@ -1,25 +1,55 @@
 import { Button } from "@/Components/ui/button";
 import { Link, usePage } from "@inertiajs/react";
-import { Search, Home, User, Menu, LogOut, ChevronDown } from "lucide-react";
+import {
+    Search,
+    Home,
+    User,
+    Menu,
+    LogOut,
+    ChevronDown,
+    Ticket,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function CustomerLayout({
     children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+    children: React.ReactNode;
+}) {
     const { auth } = usePage().props as any;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
-    // Mengatur event listener untuk mendeteksi scroll
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    const navLinkClass = `flex items-center gap-2 font-medium transition-colors ${
+        isScrolled
+            ? "text-gray-700 hover:text-indigo-600"
+            : "text-white/90 hover:text-white"
+    }`;
+
+    const getProfileImageUrl = () => {
+        if (!auth.user || !auth.user.photo) {
+            return "https://via.placeholder.com/40";
+        }
+
+        // Fix: Properly handle photo path
+        if (auth.user.photo.startsWith("http")) {
+            return auth.user.photo;
+        } else {
+            // Ensure path starts with /storage/ for Laravel storage
+            return auth.user.photo.includes("/storage/")
+                ? auth.user.photo
+                : `/storage/${auth.user.photo}`;
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-            {/* Navbar*/}
             <header
                 className={`fixed top-0 w-full z-50 transition-all duration-300 ${
                     isScrolled
@@ -38,29 +68,26 @@ export default function CustomerLayout({
                         </h1>
                     </Link>
 
-                    {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <Link
-                            href="/"
-                            className={`flex items-center gap-2 font-medium transition-colors ${
-                                isScrolled
-                                    ? "text-gray-700 hover:text-indigo-600"
-                                    : "text-white/90 hover:text-white"
-                            }`}
-                        >
+                        <Link href="/" className={navLinkClass}>
                             <Home size={16} />
                             <span>Beranda</span>
                         </Link>
+                        {auth.user && (
+                            <Link href="/tickets" className={navLinkClass}>
+                                <Ticket size={16} />
+                                <span>Tiket Saya</span>
+                            </Link>
+                        )}
                     </nav>
 
-                    {/* Search dan User Section */}
                     <div className="flex items-center gap-4">
                         <div
-                            className={`hidden md:flex items-center ${
+                            className={`hidden md:flex items-center rounded-full px-3 py-1.5 transition-colors ${
                                 isScrolled
                                     ? "bg-gray-100 text-gray-600"
                                     : "bg-indigo-700/50 text-white"
-                            } rounded-full px-3 py-1.5 transition-colors`}
+                            }`}
                         >
                             <Search size={16} />
                             <input
@@ -74,7 +101,6 @@ export default function CustomerLayout({
                             />
                         </div>
 
-                        {/* Mobile Search */}
                         <button
                             className={`md:hidden p-2 rounded-full transition ${
                                 isScrolled
@@ -85,20 +111,22 @@ export default function CustomerLayout({
                             <Search size={18} />
                         </button>
 
-                        {/* User Authentication */}
                         {auth.user ? (
                             <div className="relative group">
                                 <button className="flex items-center gap-2 group">
-                                    {/* Foto profil dengan status online */}
                                     <div className="relative">
                                         <img
-                                            src={
-                                                auth.user.photo
-                                                    ? `/storage/${auth.user.photo}`
-                                                    : "https://via.placeholder.com/40"
-                                            }
+                                            src={getProfileImageUrl()}
                                             className="w-10 h-10 rounded-full object-cover ring-2 ring-offset-2 ring-indigo-500/30 group-hover:ring-indigo-500/70 transition-all"
                                             alt="Profile"
+                                            onError={(e) => {
+                                                console.log(
+                                                    "Image failed to load in header:",
+                                                    getProfileImageUrl()
+                                                );
+                                                e.currentTarget.src =
+                                                    "https://via.placeholder.com/40";
+                                            }}
                                         />
                                         <span
                                             className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 ${
@@ -118,7 +146,6 @@ export default function CustomerLayout({
                                     />
                                 </button>
 
-                                {/* Dropdown menu */}
                                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-xl py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100">
                                     <div className="px-4 py-3 border-b">
                                         <p className="text-sm font-bold text-gray-800">
@@ -138,6 +165,16 @@ export default function CustomerLayout({
                                         />
                                         <span>Profile</span>
                                     </Link>
+                                    <Link
+                                        href="/tickets"
+                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Ticket
+                                            size={16}
+                                            className="text-indigo-500"
+                                        />
+                                        <span>Tiket Saya</span>
+                                    </Link>
                                     <div className="border-t my-1"></div>
                                     <Link
                                         href="/logout"
@@ -150,7 +187,6 @@ export default function CustomerLayout({
                             </div>
                         ) : (
                             <div className="flex items-center gap-3">
-                                {/* Tombol registrasi (hanya desktop) */}
                                 <Link
                                     href="/register"
                                     className="hidden md:block"
@@ -180,7 +216,6 @@ export default function CustomerLayout({
                             </div>
                         )}
 
-                        {/* Tombol menu mobile */}
                         <button
                             className="md:hidden p-2 rounded-full transition-colors"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -195,7 +230,6 @@ export default function CustomerLayout({
                     </div>
                 </div>
 
-                {/* Menu mobile */}
                 {isMenuOpen && (
                     <div className="md:hidden absolute w-full bg-white shadow-lg border-t border-gray-100 animate-in slide-in-from-top">
                         <nav className="flex flex-col py-2">
@@ -207,7 +241,19 @@ export default function CustomerLayout({
                                 <Home size={18} className="text-indigo-500" />
                                 <span>Beranda</span>
                             </Link>
-
+                            {auth.user && (
+                                <Link
+                                    href="/tickets"
+                                    className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 text-gray-700"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    <Ticket
+                                        size={18}
+                                        className="text-indigo-500"
+                                    />
+                                    <span>Tiket Saya</span>
+                                </Link>
+                            )}
                             {!auth.user && (
                                 <div className="border-t mt-2 pt-2">
                                     <Link
@@ -224,12 +270,10 @@ export default function CustomerLayout({
                 )}
             </header>
 
-            {/* Konten utama */}
             <main className="flex-1 mt-16 pt-8">
                 <div className="container mx-auto px-4">{children}</div>
             </main>
 
-            {/* Footer */}
             <footer className="py-6 bg-white border-t">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col md:flex-row justify-between items-center">
@@ -242,8 +286,6 @@ export default function CustomerLayout({
                             </p>
                         </div>
                     </div>
-
-                    {/* Copyright */}
                     <div className="mt-6 pt-4 border-t text-center text-xs text-gray-500">
                         <p>
                             © {new Date().getFullYear()} GOTIX. All rights
