@@ -29,15 +29,15 @@ Route::middleware([Authentication::class.":customer"])->group(function(){
     // Profile routes
     Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('customer.profile');
     Route::get('/checkout/{ticketId}', [CustomerEventController::class, 'checkout'])->name('checkout');
-    
+
     Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
     Route::post('/orders', [CustomerEventController::class, 'storeOrder']);
-    
+
     Route::put('/profile/update', [CustomerProfileController::class, 'updateProfile'])->name('customer.profile.update');
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
-    
+
     Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
-    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');  
+    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');
 });
 
 
@@ -54,12 +54,12 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
     Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
     Route::post('/partner/event/{id}/category', [PartnerEventController::class, 'createEventCategory']);
     Route::post('/partner/event/edit/{event_id}', [PartnerEventController::class, 'editEvent']);
-    
+
     Route::put('/partner/event/detail/{event_id}/category/{category_id}', [PartnerEventController::class, 'editEventCategory']);
-    
+
     Route::delete('/partner/event/{id}/delete', [PartnerEventController::class, 'deleteEvent']);
     Route::delete('/partner/event/detail/{event_id}/category/{category_id}', [PartnerEventController::class, 'deleteEventCategory']);
-}); 
+});
 
 
 
@@ -71,6 +71,4 @@ Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin/laporan', [AdminController::class, 'laporan']);
     Route::get('/admin/acara', [AdminController::class, 'acara']);
     Route::get('/admin/customer', [AdminController::class, 'customer']);
-    Route::get('/admin/dashboard', [AdminController::class, 'index']);
-
 });
