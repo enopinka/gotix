@@ -78,68 +78,89 @@ export default function Login() {
                     </Alert>
                 </div>
             )}
-            <div className="flex justify-center items-center h-screen">
-                <Card className="w-1/2 shadow-md ">
-                    <CardHeader>
-                        <CardTitle className="text-center my-4">
-                            Login
-                        </CardTitle>
-                        <CardContent>
-                            <Form {...form}>
-                                <form
-                                    onSubmit={form.handleSubmit(onSubmit)}
-                                    className="space-y-8"
-                                >
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Email"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Password"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="flex flex-col space-y-4">
-                                        <Button
-                                            type="submit"
-                                            className="w-fit justify-center px-8 mx-auto"
-                                        >
-                                            Login
-                                        </Button>
-                                        <p className="text-center">
-                                            Belum Punya akun?{" "}
-                                            <span>
-                                                <Link href="/register">
-                                                    Register
+            <div className="flex h-screen">
+                
+                <div className="w-1/2 bg-gradient-to-br from-purple-500 via-pink-400 to-yellow-300 flex items-center justify-center">
+                    <h1 className="text-white text-5xl font-bold">Welcome Back!</h1>
+                </div>
+
+                
+                <div className="w-1/2 flex justify-center items-center">
+                    <Card className="w-full max-w-md shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="text-center text-2xl font-bold my-4">
+                                Login
+                            </CardTitle>
+                            <CardContent>
+                                <p className="text-center text-gray-500 mb-6">
+                                    Welcome back! Please login to your account.
+                                </p>
+                                <Form {...form}>
+                                    <form
+                                        onSubmit={form.handleSubmit(onSubmit)}
+                                        className="space-y-6"
+                                    >
+                                        <FormField
+                                            control={form.control}
+                                            name="email"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="email"
+                                                            placeholder="User Name"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="password"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="password"
+                                                            placeholder="Password"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center space-x-2">
+                                                <input type="checkbox" id="remember" className="w-4 h-4" />
+                                                <label htmlFor="remember" className="text-gray-600">Remember Me</label>
+                                            </div>
+                                            <Link href="/forgot-password" className="text-purple-500 hover:underline">
+                                                Forgot Password?
+                                            </Link>
+                                        </div>
+                                        <div className="flex flex-col space-y-4 mt-4">
+                                            <Button
+                                                type="submit"
+                                                className="w-full justify-center px-8"
+                                            >
+                                                Login
+                                            </Button>
+                                            <p className="text-center text-gray-600 text-sm">
+                                                New User?{" "}
+                                                <Link href="/register" className="text-purple-500 hover:underline">
+                                                    Signup
                                                 </Link>
-                                            </span>
-                                        </p>
-                                    </div>
-                                </form>
-                            </Form>
-                        </CardContent>
-                    </CardHeader>
-                </Card>
+                                            </p>
+                                        </div>
+                                    </form>
+                                </Form>
+                            </CardContent>
+                        </CardHeader>
+                    </Card>
+                </div>
             </div>
+
         </>
     );
 }
