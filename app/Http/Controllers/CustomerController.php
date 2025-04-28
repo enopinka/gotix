@@ -24,20 +24,6 @@ class CustomerController extends Controller
         return Inertia::render('LandingPage', ['events' => $events]);
     }
 
-    public function eventById($id)
-{
-    $event = Event::with(['tickets', 'user'])->find($id);
-
-    if (!$event) {
-        abort(404, 'Event not found');
-    }
-
-    return Inertia::render('Customer/DetailsEvent', [
-        'event' => $event,
-    ]);
-}
-    
-
     /**
      * Show user profile
      *

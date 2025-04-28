@@ -15,7 +15,7 @@ use App\Http\Controllers\CustomerEventController;
 
 // diakses publik
 Route::get('/', [CustomerController::class, "index"]);
-Route::get('/event/{id}', [CustomerController::class, 'eventById'])->name('event.detail');
+Route::get('/event/{id}', [CustomerController::class, 'eventById']);
 // Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
 Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
@@ -65,6 +65,6 @@ Route::middleware([Authentication::class.":admin"])->group(function(){
     Route::get('/admin/laporan', [AdminController::class, 'laporan']);
     Route::get('/admin/acara', [AdminController::class, 'acara']);
     Route::get('/admin/customer', [AdminController::class, 'customer']);
-    // Route::get('/admin/dashboard', [AdminController::class, 'index']);
+    //Route::get('/admin/dashboard', [AdminController::class, 'index']);
 
 });
