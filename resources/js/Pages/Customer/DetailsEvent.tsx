@@ -133,34 +133,44 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                     <div className="flex flex-col md:flex-row gap-2 items-start ">
                         {/* Banner with Dialog */}
                         <div className="w-md">
-                            <ReactCardFlip
-                                isFlipped={isFlipped}
-                                flipDirection="horizontal"
-                            >
-                                <div
-                                    key="front"
-                                    onClick={handleClick}
-                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                            {event.seating_chart ? (
+                                <ReactCardFlip
+                                    isFlipped={isFlipped}
+                                    flipDirection="horizontal"
                                 >
+                                    <div
+                                        key="front"
+                                        onClick={handleClick}
+                                        className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                    >
+                                        <img
+                                            src={event.poster}
+                                            alt={event.title}
+                                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+
+                                    <div
+                                        key="back"
+                                        onClick={handleClick}
+                                        className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                    >
+                                        <img
+                                            src={event.seating_chart}
+                                            alt={`${event.title} Seating Chart`}
+                                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+                                </ReactCardFlip>
+                            ) : (
+                                <div className="aspect-[3/4] w-md overflow-hidden rounded-xl group">
                                     <img
                                         src={event.poster}
                                         alt={event.title}
                                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                     />
                                 </div>
-
-                                <div
-                                    key="back"
-                                    onClick={handleClick}
-                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
-                                >
-                                    <img
-                                        src={event.seating_chart}
-                                        alt={event.title}
-                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                </div>
-                            </ReactCardFlip>
+                            )}
                         </div>
 
                         <div>
