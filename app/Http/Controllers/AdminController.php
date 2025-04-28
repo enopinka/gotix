@@ -15,7 +15,13 @@ class AdminController extends Controller
 
     public function promotor()
     {
-        return Inertia::render('Admin/Promotor');
+        $promotors = User::with('events') // pastikan ada relasi 'events'
+            ->where('role', 'partner')
+            ->get();
+
+        return Inertia::render('Admin/Promotor', [
+            'promotors' => $promotors,
+        ]);
     }
 
     public function laporan()
