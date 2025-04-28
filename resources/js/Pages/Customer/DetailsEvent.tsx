@@ -129,38 +129,48 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     return (
         <>
             <CustomerLayout>
-                <div className="max-w-5xl mx-auto py-4 space-y-6 border">
-                    <div className="flex flex-col md:flex-row gap-2 items-start border">
+                <div className="max-w-5xl mx-auto py-4 space-y-6 ">
+                    <div className="flex flex-col md:flex-row gap-2 items-start ">
                         {/* Banner with Dialog */}
-                        <div className="w-md border">
-                            <ReactCardFlip
-                                isFlipped={isFlipped}
-                                flipDirection="horizontal"
-                            >
-                                <div
-                                    key="front"
-                                    onClick={handleClick}
-                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                        <div className="w-md">
+                            {event.seating_chart ? (
+                                <ReactCardFlip
+                                    isFlipped={isFlipped}
+                                    flipDirection="horizontal"
                                 >
+                                    <div
+                                        key="front"
+                                        onClick={handleClick}
+                                        className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                    >
+                                        <img
+                                            src={event.poster}
+                                            alt={event.title}
+                                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+
+                                    <div
+                                        key="back"
+                                        onClick={handleClick}
+                                        className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
+                                    >
+                                        <img
+                                            src={event.seating_chart}
+                                            alt={`${event.title} Seating Chart`}
+                                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+                                </ReactCardFlip>
+                            ) : (
+                                <div className="aspect-[3/4] w-md overflow-hidden rounded-xl group">
                                     <img
                                         src={event.poster}
                                         alt={event.title}
                                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                     />
                                 </div>
-
-                                <div
-                                    key="back"
-                                    onClick={handleClick}
-                                    className="aspect-[3/4] w-md cursor-pointer overflow-hidden rounded-xl group"
-                                >
-                                    <img
-                                        src={event.seating_chart}
-                                        alt={event.title}
-                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                </div>
-                            </ReactCardFlip>
+                            )}
                         </div>
 
                         <div>
@@ -266,9 +276,14 @@ export default function DetailsEvent({ event }: EventDetailProps) {
 
                                 <ScrollArea className="h-[320px] w-[500px] rounded-md border px-4">
                                     <TabsContent value="desc" className="pt-4">
-                                        <p className="py-1 text-justify">
+                                        <Card>
+                                            <CardContent className="p-4">
+                                            <p className="py-1 text-justify">
                                             Details: {event.description}
-                                        </p>
+                                            </p>
+                                            </CardContent>
+                                        </Card>
+                                        
                                     </TabsContent>
 
                                     <TabsContent
@@ -281,7 +296,11 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                     (category) => (
                                                         <Card
                                                             key={category.id}
-                                                            className="w-full"
+                                                            className={`w-full ${
+                                                                category.available_seats === 0
+                                                                    ? "bg-gray-200 text-gray-500"
+                                                                    : ""
+                                                            }`}
                                                         >
                                                             <CardContent className="p-4 space-y-4">
                                                                 <div className="flex justify-between items-center">
@@ -307,8 +326,16 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                             orang
                                                                         </p>
                                                                     </div>
-                                                                    <span className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded">
-                                                                        On Sale
+                                                                    <span
+                                                                        className={`px-2 py-1 text-xs font-semibold rounded ${
+                                                                            category.available_seats === 0
+                                                                                ? "bg-gray-300 text-gray-500"
+                                                                                : "text-blue-600 bg-blue-100"
+                                                                        }`}
+                                                                    >
+                                                                        {category.available_seats === 0
+                                                                            ? "Habis"
+                                                                            : "On Sale"}
                                                                     </span>
                                                                 </div>
                                                                 {selectedTicket ===
@@ -516,20 +543,18 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                     <div className="flex justify-end">
                                                                         <Button
                                                                             onClick={() => {
-                                                                                if (
-                                                                                    !auth.user
-                                                                                ) {
-                                                                                    // Arahkan ke halaman login jika belum login
-                                                                                    router.get(
-                                                                                        "/login"
-                                                                                    );
+                                                                                if (!auth.user) {
+                                                                                    router.get("/login");
                                                                                 } else {
-                                                                                    setSelectedTicket(
-                                                                                        category.id
-                                                                                    );
+                                                                                    setSelectedTicket(category.id);
                                                                                 }
                                                                             }}
-                                                                            className="bg-blue-600 text-white hover:bg-blue-700"
+                                                                            disabled={category.available_seats === 0}
+                                                                            className={`${
+                                                                                category.available_seats === 0
+                                                                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                                                            }`}
                                                                         >
                                                                             Pilih
                                                                         </Button>

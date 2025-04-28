@@ -46,9 +46,11 @@ export default function LandingPage({ events }: LandingPageProps) {
                     className="w-full px-4 py-8"
                 >
                     <CarouselContent>
-                        {events.map((event) => (
-                            <CarouselItem
-                                key={event.id}
+                    {events
+                    .sort((b, a) => new Date(b.date).getTime() - new Date(a.date).getTime()) 
+                    .map((event) => (
+                        <CarouselItem
+                        key={event.id}//                                 year: "numeric",
                                 className=" pl-4 basis-auto w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px]"
                             >
                                 <div className="p-1">
@@ -58,7 +60,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                                                 <img
                                                     src={event.poster}
                                                     alt={event.title}
-                                                    className="rounded-lg relative object-cover aspect-[2/3] w-full"
+                                                    className="rounded-lg relative object-cover aspect-[3/4] w-full"
                                                 />
                                                 <div className="absolute inset-0 bg-black bg-opacity-50
                                                                 opacity-0 group-hover:opacity-100
@@ -121,17 +123,17 @@ export default function LandingPage({ events }: LandingPageProps) {
                                         alt={event.title}
                                         className="w-full h-48 object-cover"
                                     />
-                                    <div className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded">
-                                        {event.category}
-                                    </div>
-                                    <div className="absolute top-2 right-2 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded">
-                                        {event.date}
+                                    <div
+                                    className={`absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded 
+                                        ${new Date(event.date) >= new Date() ? 'bg-green-500' : 'bg-red-500'}`}
+                                    >
+                                    {new Date(event.date) >= new Date() ? 'Upcoming' : 'Late'}
                                     </div>
                                 </div>
                                 <div className="p-4">
                                     <h3 className="text-lg font-semibold truncate">{event.title}</h3>
                                     <p className="text-sm text-gray-500">{event.time}</p>
-                                    <p className="text-sm text-gray-500">From: {event.price}</p>
+                                    <p className="text-sm text-gray-500"> {event.date}</p>
                                     <Link
                                         href={`/event/${event.id}`}
                                         className="mt-4 block bg-purple-600 text-white text-center text-sm font-semibold py-2 rounded hover:bg-purple-700"
