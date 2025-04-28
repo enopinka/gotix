@@ -25,15 +25,13 @@ Route::get('/register', [AuthController::class, 'registerScreen']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
-Route::middleware(['web', 'auth'])->group(function () {
-   
-});
-
-Route::middleware([Authentication::class.":customer"])->group( function(){
-    Route::get('/checkout/{ticketId}', [CustomerController::class, 'checkout'])->name('checkout');
-    
-    Route::post('/orders', [CustomerController::class, 'storeOrder']);
-
+Route::middleware([Authentication::class.":customer"])->group(function(){
+    // Profile routes
+    Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
+    Route::put('/profile/update', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::put('/profile/password', [CustomerController::class, 'updatePassword'])->name('customer.profile.password');
+    Route::post('/profile/photo', [CustomerController::class, 'updatePhoto'])->name('customer.profile.photo');
+    Route::delete('/profile/photo/delete', [CustomerController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
 });
 
 
