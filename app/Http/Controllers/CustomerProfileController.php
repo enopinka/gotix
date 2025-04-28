@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Order; // Missing import for Order model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -149,5 +150,25 @@ class CustomerProfileController extends Controller
             ]);
             
         return redirect()->back()->with('success', 'Profile photo removed successfully');
+    }
+    
+    /**
+     * Display user's purchased tickets
+     *
+     * @return \Inertia\Response
+     */
+    public function myTickets()
+    {
+        $user = Auth::user();
+        
+        // Get all orders for the current user with their related event and ticket info
+        $orders = Order::with(['event', 'ticket'])
+                    ->where('user_id', $user->id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+        
+        return Inertia::render('Customer/MyTickets', [
+            'orders' => $orders
+        ]);
     }
 }

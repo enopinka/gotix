@@ -37,7 +37,7 @@ Route::middleware([Authentication::class.":customer"])->group(function(){
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
     
     Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
-     
+    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');  
 });
 
 
