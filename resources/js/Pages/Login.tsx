@@ -80,9 +80,16 @@ export default function Login() {
             )}
             <div className="flex h-screen">
                 
-                <div className="w-1/2 bg-gradient-to-br from-purple-500 via-pink-400 to-yellow-300 flex items-center justify-center">
-                    <h1 className="text-white text-5xl font-bold">Welcome Back!</h1>
-                </div>
+            <div className="w-1/2 relative flex items-center justify-center overflow-hidden">
+                <img
+                    src="/storage/images/asset/login.jpg"
+                    alt="Background"
+                    className="w-full h-full object-cover"
+                />
+                <h1 className="absolute text-white text-5xl font-bold">
+                    Welcome Back!
+                </h1>
+            </div>
 
                 
                 <div className="w-1/2 flex justify-center items-center">
@@ -108,7 +115,7 @@ export default function Login() {
                                                     <FormControl>
                                                         <Input
                                                             type="email"
-                                                            placeholder="User Name"
+                                                            placeholder="Email (ex: kipli@gmail.com)"
                                                             {...field}
                                                         />
                                                     </FormControl>
@@ -130,15 +137,7 @@ export default function Login() {
                                                 </FormItem>
                                             )}
                                         />
-                                        <div className="flex items-center justify-between text-sm">
-                                            <div className="flex items-center space-x-2">
-                                                <input type="checkbox" id="remember" className="w-4 h-4" />
-                                                <label htmlFor="remember" className="text-gray-600">Remember Me</label>
-                                            </div>
-                                            <Link href="/forgot-password" className="text-purple-500 hover:underline">
-                                                Forgot Password?
-                                            </Link>
-                                        </div>
+
                                         <div className="flex flex-col space-y-4 mt-4">
                                             <Button
                                                 type="submit"
@@ -149,7 +148,7 @@ export default function Login() {
                                             <p className="text-center text-gray-600 text-sm">
                                                 New User?{" "}
                                                 <Link href="/register" className="text-purple-500 hover:underline">
-                                                    Signup
+                                                    Register
                                                 </Link>
                                             </p>
                                         </div>
