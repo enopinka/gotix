@@ -129,10 +129,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     return (
         <>
             <CustomerLayout>
-                <div className="max-w-5xl mx-auto py-4 space-y-6 border">
-                    <div className="flex flex-col md:flex-row gap-2 items-start border">
+                <div className="max-w-5xl mx-auto py-4 space-y-6 ">
+                    <div className="flex flex-col md:flex-row gap-2 items-start ">
                         {/* Banner with Dialog */}
-                        <div className="w-md border">
+                        <div className="w-md">
                             <ReactCardFlip
                                 isFlipped={isFlipped}
                                 flipDirection="horizontal"
@@ -266,9 +266,14 @@ export default function DetailsEvent({ event }: EventDetailProps) {
 
                                 <ScrollArea className="h-[320px] w-[500px] rounded-md border px-4">
                                     <TabsContent value="desc" className="pt-4">
-                                        <p className="py-1 text-justify">
+                                        <Card>
+                                            <CardContent className="p-4">
+                                            <p className="py-1 text-justify">
                                             Details: {event.description}
-                                        </p>
+                                            </p>
+                                            </CardContent>
+                                        </Card>
+                                        
                                     </TabsContent>
 
                                     <TabsContent
