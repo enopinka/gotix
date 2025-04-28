@@ -39,17 +39,17 @@ export default function Dashboard({
                     <StatCard
                         icon={<CalendarRangeIcon />}
                         title="Total Acara"
-                        value={events.toString()}
+                        value={events ? events.toString() : "0"}
                     />
                     <StatCard
                         icon={<Ticket />}
                         title="Tiket Terjual"
-                        value={ticket_solds.toString()}
+                        value={ticket_solds ? ticket_solds.toString() : "0"}
                     />
                     <StatCard
                         icon={<CircleDollarSign />}
                         title="Pendapatan Total"
-                        value={`Rp ${earnings.toString()}`}
+                        value={earnings ? `Rp ${earnings.toString()}` : "Rp 0"}
                     />
                 </div>
             </div>
