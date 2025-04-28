@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class CustomerController extends Controller
+class CustomerProfileController extends Controller
 {
     /**
      * Display landing page with events listing

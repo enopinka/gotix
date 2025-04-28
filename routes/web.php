@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerEventController;
 use App\Http\Controllers\PartnerOrderController;
@@ -14,8 +14,8 @@ use App\Http\Controllers\CustomerEventController;
 
 
 // diakses publik
-Route::get('/', [CustomerController::class, "index"]);
-Route::get('/event/{id}', [CustomerController::class, 'eventById']);
+Route::get('/', [CustomerEventController::class, "index"]);
+Route::get('/event/{id}', [CustomerEventController::class, 'eventById']);
 // Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');
 Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,11 +27,17 @@ Route::post('/register', [AuthController::class, 'register']);
 // diakses customer
 Route::middleware([Authentication::class.":customer"])->group(function(){
     // Profile routes
-    Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
-    Route::put('/profile/update', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
-    Route::put('/profile/password', [CustomerController::class, 'updatePassword'])->name('customer.profile.password');
-    Route::post('/profile/photo', [CustomerController::class, 'updatePhoto'])->name('customer.profile.photo');
-    Route::delete('/profile/photo/delete', [CustomerController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
+    Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('customer.profile');
+    Route::get('/checkout/{ticketId}', [CustomerEventController::class, 'checkout'])->name('checkout');
+    
+    Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
+    Route::post('/orders', [CustomerEventController::class, 'storeOrder']);
+    
+    Route::put('/profile/update', [CustomerProfileController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
+    
+    Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
+     
 });
 
 
