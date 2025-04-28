@@ -286,7 +286,11 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                     (category) => (
                                                         <Card
                                                             key={category.id}
-                                                            className="w-full"
+                                                            className={`w-full ${
+                                                                category.available_seats === 0
+                                                                    ? "bg-gray-200 text-gray-500"
+                                                                    : ""
+                                                            }`}
                                                         >
                                                             <CardContent className="p-4 space-y-4">
                                                                 <div className="flex justify-between items-center">
@@ -312,8 +316,16 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                             orang
                                                                         </p>
                                                                     </div>
-                                                                    <span className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded">
-                                                                        On Sale
+                                                                    <span
+                                                                        className={`px-2 py-1 text-xs font-semibold rounded ${
+                                                                            category.available_seats === 0
+                                                                                ? "bg-gray-300 text-gray-500"
+                                                                                : "text-blue-600 bg-blue-100"
+                                                                        }`}
+                                                                    >
+                                                                        {category.available_seats === 0
+                                                                            ? "Habis"
+                                                                            : "On Sale"}
                                                                     </span>
                                                                 </div>
                                                                 {selectedTicket ===
@@ -521,20 +533,18 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                     <div className="flex justify-end">
                                                                         <Button
                                                                             onClick={() => {
-                                                                                if (
-                                                                                    !auth.user
-                                                                                ) {
-                                                                                    // Arahkan ke halaman login jika belum login
-                                                                                    router.get(
-                                                                                        "/login"
-                                                                                    );
+                                                                                if (!auth.user) {
+                                                                                    router.get("/login");
                                                                                 } else {
-                                                                                    setSelectedTicket(
-                                                                                        category.id
-                                                                                    );
+                                                                                    setSelectedTicket(category.id);
                                                                                 }
                                                                             }}
-                                                                            className="bg-blue-600 text-white hover:bg-blue-700"
+                                                                            disabled={category.available_seats === 0}
+                                                                            className={`${
+                                                                                category.available_seats === 0
+                                                                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                                                            }`}
                                                                         >
                                                                             Pilih
                                                                         </Button>
