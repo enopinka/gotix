@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // <- Import User model
+use App\Models\User;
+use App\Models\Event;
 use Inertia\Inertia;
 
 class AdminController extends Controller
@@ -31,7 +32,11 @@ class AdminController extends Controller
 
     public function acara()
     {
-        return Inertia::render('Admin/Acara');
+        $events = Event::all();
+
+        return Inertia::render('Admin/Acara', [
+            'events' => $events,
+        ]);
     }
 
     public function customer()
