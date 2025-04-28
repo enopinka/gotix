@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Order;
 use App\Models\User;
-use App\Models\Order; // Missing import for Order model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,34 +16,24 @@ class CustomerProfileController extends Controller
 {
     /**
      * Display landing page with events listing
-     *
-     * @return \Inertia\Response
      */
     public function index()
     {
         $events = Event::with(['tickets', 'user'])->get();
-        return Inertia::render('LandingPage', ['events' => $events]);
+        return Inertia::render('LandingPage', compact('events'));
     }
 
     /**
      * Show user profile
-     *
-     * @return \Inertia\Response
      */
     public function profile()
     {
         $user = Auth::user();
-        
-        return Inertia::render('Customer/Profile', [
-            'user' => $user
-        ]);
+        return Inertia::render('Customer/Profile', compact('user'));
     }
 
     /**
      * Update user profile information
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateProfile(Request $request)
     {
@@ -51,9 +41,10 @@ class CustomerProfileController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => "required|string|email|max:255|unique:users,email,{$user->id}",
         ]);
         
+        // Menggunakan DB query untuk menghindari masalah dengan model
         DB::table('users')
             ->where('id', $user->id)
             ->update([
@@ -66,9 +57,6 @@ class CustomerProfileController extends Controller
     
     /**
      * Update user password
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function updatePassword(Request $request)
     {
@@ -94,9 +82,6 @@ class CustomerProfileController extends Controller
 
     /**
      * Update profile photo
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function updatePhoto(Request $request)
     {
@@ -107,21 +92,18 @@ class CustomerProfileController extends Controller
         $user = Auth::user();
         
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
-                Storage::disk('public')->delete($user->photo);
-            }
+            // Hapus foto lama jika ada
+            $this->deleteExistingPhoto($user);
             
-            // Store the new photo with a sanitized filename
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-]/', '', pathinfo($request->file('photo')->getClientOriginalName(), PATHINFO_FILENAME));
-            $extension = $request->file('photo')->getClientOriginalExtension();
-            $path = $request->file('photo')->storeAs('profile-photos', $filename . '.' . $extension, 'public');
+            // Sanitasi nama file untuk keamanan
+            $filename = time() . '_' . $this->sanitizeFilename($request->file('photo'));
+            
+            // Simpan foto baru
+            $path = $request->file('photo')->storeAs('profile-photos', $filename, 'public');
             
             DB::table('users')
                 ->where('id', $user->id)
-                ->update([
-                    'photo' => $path,
-                ]);
+                ->update(['photo' => $path]);
                 
             return redirect()->back()->with('success', 'Profile photo updated successfully');
         }
@@ -131,44 +113,53 @@ class CustomerProfileController extends Controller
 
     /**
      * Delete profile photo
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function deletePhoto()
     {
         $user = Auth::user();
         
-        // Delete the photo file if it exists
-        if ($user->photo && Storage::disk('public')->exists($user->photo)) {
-            Storage::disk('public')->delete($user->photo);
-        }
+        $this->deleteExistingPhoto($user);
         
         DB::table('users')
             ->where('id', $user->id)
-            ->update([
-                'photo' => null,
-            ]);
+            ->update(['photo' => null]);
             
         return redirect()->back()->with('success', 'Profile photo removed successfully');
     }
     
     /**
      * Display user's purchased tickets
-     *
-     * @return \Inertia\Response
      */
     public function myTickets()
     {
-        $user = Auth::user();
-        
-        // Get all orders for the current user with their related event and ticket info
         $orders = Order::with(['event', 'ticket'])
-                    ->where('user_id', $user->id)
-                    ->orderBy('created_at', 'desc')
+                    ->where('user_id', Auth::id())
+                    ->latest()
                     ->get();
         
-        return Inertia::render('Customer/MyTickets', [
-            'orders' => $orders
-        ]);
+        return Inertia::render('Customer/MyTickets', compact('orders'));
+    }
+    
+    /**
+     * Helper untuk menghapus foto yang sudah ada
+     */
+    private function deleteExistingPhoto($user): void
+    {
+        if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+            Storage::disk('public')->delete($user->photo);
+        }
+    }
+    
+    /**
+     * Helper untuk sanitasi nama file
+     */
+    private function sanitizeFilename($file): string
+    {
+        $originalName = $file->getClientOriginalName();
+        $name = pathinfo($originalName, PATHINFO_FILENAME);
+        $extension = $file->getClientOriginalExtension();
+        $sanitized = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
+        
+        return "{$sanitized}.{$extension}";
     }
 }
