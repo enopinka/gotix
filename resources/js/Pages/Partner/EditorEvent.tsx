@@ -92,7 +92,11 @@ export default function EditorEvent({ event }: eventProps) {
         formData.append("place", values.place);
         if (values.poster instanceof File)
             formData.append("poster", values.poster);
-        if (values.seat instanceof File) formData.append("seat", values.seat);
+        if (values.seat instanceof File) 
+            formData.append("seat", values.seat);
+        if (values.banner instanceof File) 
+            formData.append("banner", values.banner);
+
 
         const formattedValues = {
             ...values,
