@@ -294,7 +294,7 @@ export default function CustomerLayout({
                 <div className="container mx-auto px-4 py-4">{children}</div>
             </main>
 
-            <footer className="py-8 bg-white border-t">
+            <footer className="m py-8 bg-white border-t">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className="mb-4 md:mb-0">

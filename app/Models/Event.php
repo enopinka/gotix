@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Event extends Model
 {
-    
+
 
     use HasFactory;
     protected $fillable = [
@@ -19,6 +19,7 @@ class Event extends Model
         'poster',
         'seating_chart',
         'user_id',
+        'banner'
     ];
 
     public function user(){

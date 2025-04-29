@@ -43,63 +43,72 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
     );
 
     // Komponen untuk kartu tiket
-    const TicketCard: React.FC<TicketCardProps> = ({ order }) => (
-        <div key={order.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row justify-between gap-2">
-                {/* Info Event */}
-                <div className="flex-1">
-                    <h2 className="text-xl font-bold text-gray-800 mb-1">
-                        {order.event.title}
-                    </h2>
-                    <EventInfo
-                        icon={Calendar}
-                        text={new Date(order.event.date).toLocaleDateString(
-                            "id-ID",
-                            {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            }
-                        )}
-                    />
-                    <EventInfo icon={Clock} text={order.event.time} />
-                    <EventInfo icon={MapPin} text={order.event.place} />
+    const TicketCard: React.FC<TicketCardProps> = ({ order }) => {
+        const isPastEvent = new Date(order.event.date) < new Date();
+
+        return (
+            <div
+                key={order.id}
+                className={`bg-white rounded-lg shadow p-4 sm:p-6 ${
+                    isPastEvent ? "opacity-50 pointer-events-none" : ""
+                }`}
+            >
+                <div className="flex flex-col sm:flex-row justify-between gap-2">
+                    {/* Info Event */}
+                    <div className="flex-1">
+                        <h2 className="text-xl font-bold text-gray-800 mb-1">
+                            {order.event.title}
+                        </h2>
+                        <EventInfo
+                            icon={Calendar}
+                            text={new Date(order.event.date).toLocaleDateString(
+                                "id-ID",
+                                {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                }
+                            )}
+                        />
+                        <EventInfo icon={Clock} text={order.event.time} />
+                        <EventInfo icon={MapPin} text={order.event.place} />
+                    </div>
+
+                    {/* Info Tiket */}
+                    <div className="text-right">
+                        <div className="inline-block bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                            {order.ticket.type}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                            Order ID: #{order.id}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Info Tiket */}
-                <div className="text-right">
-                    <div className="inline-block bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
-                        {order.ticket.type}
+                {/* Info Harga dan Status */}
+                <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                    <div>
+                        <div className="text-sm text-gray-600">
+                            <span className="font-medium">{order.quantity}x</span>{" "}
+                            tiket
+                        </div>
+                        <div className="text-lg font-bold text-gray-800">
+                            Rp {order.total_price.toLocaleString("id-ID")}
+                        </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                        Order ID: #{order.id}
-                    </div>
+                    <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                            order.status === "paid"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                        }`}
+                    >
+                        {order.status === "paid" ? "Sukses" : "Pending"}
+                    </span>
                 </div>
             </div>
-
-            {/* Info Harga dan Status */}
-            <div className="mt-4 pt-4 border-t flex justify-between items-center">
-                <div>
-                    <div className="text-sm text-gray-600">
-                        <span className="font-medium">{order.quantity}x</span>{" "}
-                        tiket
-                    </div>
-                    <div className="text-lg font-bold text-gray-800">
-                        Rp {order.total_price.toLocaleString("id-ID")}
-                    </div>
-                </div>
-                <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        order.status === "paid"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                    }`}
-                >
-                    {order.status === "paid" ? "Sukses" : "Pending"}
-                </span>
-            </div>
-        </div>
-    );
+        );
+    };
 
     // Komponen untuk status kosong
     const EmptyState = () => (
@@ -139,7 +148,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                 {orders.length === 0 ? (
                     <EmptyState />
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 py-4">
                         {orders.map((order) => (
                             <TicketCard key={order.id} order={order} />
                         ))}
