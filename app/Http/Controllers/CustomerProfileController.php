@@ -173,4 +173,38 @@ class CustomerProfileController extends Controller
         
         return "{$sanitized}.{$extension}";
     }
+
+    public function profileScreenV2(){
+        $user = Auth::user();
+
+        return Inertia::render('Customer/UserProfile', [
+            'user' => $user,
+        ]);
+    }
+
+    public function updateProfileV2(Request $request){
+        $user_id = Auth::user()->getAuthIdentifier();
+       
+
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => "required",
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $user = User::find($user_id);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        // Handle file jika ada
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('images', 'public');
+            $user->photo = "/storage/{$photoPath}";
+        }
+
+    $user->save();
+
+    return redirect('/profile')->with('success', 'Profile telah diupdate!');
+
+    }
 }

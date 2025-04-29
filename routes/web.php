@@ -9,7 +9,7 @@ use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerEventController;
-
+use Inertia\Inertia;
 
 
 
@@ -27,17 +27,18 @@ Route::post('/register', [AuthController::class, 'register']);
 // diakses customer
 Route::middleware([Authentication::class.":customer"])->group(function(){
     // Profile routes
-    Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('customer.profile');
+    Route::get('/profile', [CustomerProfileController::class, 'profileScreenV2']);
     Route::get('/checkout/{ticketId}', [CustomerEventController::class, 'checkout'])->name('checkout');
-
-    Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
+    
+    // Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
     Route::post('/orders', [CustomerEventController::class, 'storeOrder']);
-
-    Route::put('/profile/update', [CustomerProfileController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
+    
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
+    
+    // Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
+    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');  
 
-    Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
-    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');
 });
 
 
