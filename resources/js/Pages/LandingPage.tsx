@@ -19,6 +19,7 @@ type Events = {
     time: string;
     price: string;
     category: string;
+    banner: string;
 };
 
 type LandingPageProps = {
@@ -62,21 +63,22 @@ export default function LandingPage({ events }: LandingPageProps) {
                 >
                     <CarouselContent>
                     {events
-                    .filter((event) => new Date(event.date) >= new Date()) // Filter out events that are late
+                    .filter((event) => new Date(event.date) >= new Date() && event.banner) // Filter out events that are late or missing a banner
                     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Sort by closest date
+                    .slice(0, 5) // Limit to 5 closest events
                     .map((event) => (
                         <CarouselItem
                             key={event.id}
-                            className="pl-4 basis-auto w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px]"
+                            className="px-4" // Adjusted sizes
                         >
-                            <div className="p-1">
+                            <div className="p-2">
                                 <Card>
                                     <Link href={`/event/${event.id}`}>
                                         <CardContent className="relative p-0 border-none group overflow-hidden">
                                             <img
-                                                src={event.poster}
+                                                src={event.banner}
                                                 alt={event.title}
-                                                className="rounded-lg relative object-cover aspect-[3/4] w-full"
+                                                className="rounded-lg relative object-cover aspect-[9/3] w-full"
                                             />
                                             <div className="absolute inset-0 bg-black bg-opacity-50
                                                             opacity-0 group-hover:opacity-100
@@ -154,7 +156,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                                         </div>
                                         <div className="p-4">
                                             <h3 className="text-lg font-semibold truncate">{event.title}</h3>
-                                            <p className="text-sm text-gray-500">{eventTime}</p>
+                                            <p className="text-sm text-gray-500">{eventTime} WIB</p>
                                             <p className="text-sm text-gray-500">{event.date}</p>
                                             <Link
                                                 href={`/event/${event.id}`}
