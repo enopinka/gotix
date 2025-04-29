@@ -291,7 +291,7 @@ export default function CustomerLayout({
             </header>
 
             <main className="flex-1 mt-16 pt-8">
-                <div className="container mx-auto px-4">{children}</div>
+                <div className="container mx-auto px-4 py-4">{children}</div>
             </main>
 
             <footer className="py-8 bg-white border-t">
