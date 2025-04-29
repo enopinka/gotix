@@ -37,7 +37,7 @@ export default function CustomerLayout({
     // Menangani path foto profil
     const getProfileImageUrl = () => {
         if (!auth.user || !auth.user.photo) {
-            return "https://via.placeholder.com/40";
+            return "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";
         }
 
         if (auth.user.photo.startsWith("http")) {
@@ -117,7 +117,7 @@ export default function CustomerLayout({
                                             alt="Profile"
                                             onError={(e) => {
                                                 e.currentTarget.src =
-                                                    "https://via.placeholder.com/40";
+                                                    "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";
                                             }}
                                         />
                                         <span

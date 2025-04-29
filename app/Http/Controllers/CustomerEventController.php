@@ -6,13 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Event;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
 use App\Models\Ticket;
 use App\Models\Order;
 use App\Models\Revenue;
@@ -20,141 +13,126 @@ use App\Models\User;
 
 class CustomerEventController extends Controller
 {
-    /**
-     * Display landing page with events listing
-     *
-     * @return \Inertia\Response
-     */
-    public function index()
-    {
-        $events = Event::with(['tickets', 'user'])->get();
-        return Inertia::render('LandingPage', ['events' => $events]);
-    }
+    public function index(){
+        $events = Event::all();
 
-    /**
-     * Show user profile
-     *
-     * @return \Inertia\Response
-     */
-    public function profile()
-    {
-        $user = Auth::user();
-        
-        return Inertia::render('Customer/Profile', [
-            'user' => $user
-        ]);
-    }
-
-    /**
-     * Update user profile information
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateProfile(Request $request)
-    {
-        $user = Auth::user();
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-        ]);
-        
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-            ]);
-        
-        return redirect()->back()->with('success', 'Profile updated successfully');
+        return Inertia::render('LandingPage', ['events'=>$events]);
     }
     
-    /**
-     * Update user password
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updatePassword(Request $request)
+    public function checkout($ticketId)
+    {
+        // Ambil data tiket berdasarkan ID
+        $ticket = Ticket::findOrFail($ticketId);
+
+        // Kirim data ke halaman checkout
+        return Inertia::render('Customer/Checkout', [
+            'ticket' => $ticket,
+        ]);
+    }
+    public function show($id)
+    {
+        $event = Event::with('categories')->findOrFail($id);
+
+        return Inertia::render('Customer/DetailsEvent', [
+            'event' => $event,     
+        ]);
+    }
+    public function storeOrder(Request $request)
     {
         $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
+            'ticket_id' => 'required|exists:tickets,id',
+            'quantity' => 'required|integer|min:1',
         ]);
-        
-        $user = Auth::user();
-        
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'The current password is incorrect']);
-        }
-        
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'password' => Hash::make($request->password),
-            ]);
-        
-        return redirect()->back()->with('success', 'Password updated successfully');
-    }
+    
+        // Ambil data tiket terlebih dahulu
+        $ticket = Ticket::findOrFail($request->ticket_id);
+    
+        // Hitung total harga
+        $totalPrice = $ticket->price * $request->quantity;
 
-    /**
-     * Update profile photo
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updatePhoto(Request $request)
-    {
-        $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // ngurangi kuota tiket
+        $ticket->available_seats -= $request->quantity;
+    
+        // Simpan order
+        $order = Order::create([
+            'user_id' => Auth::id(),
+            'ticket_id' => $request->ticket_id,
+            'quantity' => $request->quantity,
+            // 'available_seats' => $ticket->available_seats,
+            'total_price' => $totalPrice, 
+            'event_id' => $ticket->event_id,
+            'status' => 'pending',
         ]);
-        
-        $user = Auth::user();
-        
-        if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
-                Storage::disk('public')->delete($user->photo);
-            }
-            
-            // Store the new photo with a sanitized filename
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-]/', '', pathinfo($request->file('photo')->getClientOriginalName(), PATHINFO_FILENAME));
-            $extension = $request->file('photo')->getClientOriginalExtension();
-            $path = $request->file('photo')->storeAs('profile-photos', $filename . '.' . $extension, 'public');
-            
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update([
-                    'photo' => $path,
-                ]);
-                
-            return redirect()->back()->with('success', 'Profile photo updated successfully');
-        }
-        
-        return redirect()->back()->withErrors(['photo' => 'Failed to upload photo']);
-    }
+        // update kuota tiket
+        $available_seats = $ticket->available_seats;
+        $ticket->update(['available_seats' => $available_seats]);
+        $ticket->save();
 
-    /**
-     * Delete profile photo
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function deletePhoto()
+        //update pendapatan mitra
+        $partner_id = $ticket->event->user_id;
+        $revenue = Revenue::where('user_id', $partner_id)->first();
+        if ($revenue) {
+            $revenue->total_revenue += $totalPrice;
+            $revenue->unreleased_earnings += $totalPrice;
+            $revenue->save();
+        } else {
+            Revenue::create([
+                'total_revenue' => $totalPrice,
+                'unreleased_earnings' => $totalPrice,
+                'user_id' => $partner_id,
+            ]);
+        }
+
+        return redirect("/event/{$ticket->event_id}")->with('success', 'Order created successfully.');
+    
+        // return response()->json([
+        //     'message' => 'Order created successfully.',
+        //     'order' => $order
+        // ], 201);
+    }
+    
+    public function eventById($id)
     {
-        $user = Auth::user();
+        $event = Event::find($id);
+
         
-        // Delete the photo file if it exists
-        if ($user->photo && Storage::disk('public')->exists($user->photo)) {
-            Storage::disk('public')->delete($user->photo);
+        if (!$event) {
+            return redirect()->back()->withErrors(['message' => 'Event tidak ditemukan']);
         }
         
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'photo' => null,
-            ]);
-            
-        return redirect()->back()->with('success', 'Profile photo removed successfully');
+        
+        $categories = $event->tickets->map(function ($ticket) {
+            return [
+                'id' => $ticket->id,
+                'type' => $ticket->type,
+                'price' => $ticket->price,
+                'quota' => $ticket->quota,
+                'available_seats' => $ticket->available_seats,
+            ];
+        });
+
+        $partner_id = $event->user_id;
+        $partner = User::where('id', $partner_id)->first();
+        $partner_name = $partner ? $partner->name : 'Unknown';
+    
+       
+        $formattedEvent = [
+            'id' => $event->id,
+            'title' => $event->title,
+            'description' => $event->description,
+            'partner_name' => $partner_name ,
+            'date' => $event->date,
+            'time' => $event->time,
+            'place' => $event->place,
+            'poster' => $event->poster,
+            'seating_chart' => $event->seating_chart,
+            'categories' => $categories,
+        ];
+
+        return Inertia::render('Customer/DetailsEvent', [
+            'event' => $formattedEvent,
+            'isLoggedIn' => Auth::check(), 
+        ]);
     }
+    
 }
