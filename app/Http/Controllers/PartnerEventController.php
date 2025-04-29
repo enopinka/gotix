@@ -63,24 +63,39 @@ class PartnerEventController extends Controller
             'date' => ['nullable', 'date'],
             'place' => ['nullable', 'string'],
             'time' => ['nullable', 'string'],
+            'poster' => ['nullable'],
+            'seat' => ['nullable'],
+            'banner' => ['nullable'],
         ]);
 
         if ($user_id != $event_user_id) {
             return Inertia::render('Partner/Error', ['message' => 'Anda tidak memiliki akses ke acara ini']);
         }
 
-        $posterPath = $request ->file('poster')->store('images', 'public');
-        $seatPath = $request ->file('seat')->store('images', 'public');
-
-        $event->update([
-            'title'=>$validated['title'],
-            'description'=>$validated['description'],
-            'date'=>$validated['date'],
-            'place'=>$validated['place'],
-            'time'=>$validated['time'],
-            'poster'=>"/storage/{$posterPath}",
-            'seating_chart'=>"/storage/{$seatPath}",
-        ]);
+        $data = [
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'date' => $validated['date'],
+            'place' => $validated['place'],
+            'time' => $validated['time'],
+        ];
+        
+        if ($request->poster) {
+            $posterPath = $request->file('poster')->store('images', 'public');
+            $data['poster'] = "/storage/{$posterPath}";
+        }
+        
+        if ($request->seat) {
+            $seatPath = $request->file('seat')->store('images', 'public');
+            $data['seating_chart'] = "/storage/{$seatPath}";
+        }
+        
+        if ($request->banner) {
+            $bannerPath = $request->file('banner')->store('images', 'public');
+            $data['banner'] = "/storage/{$bannerPath}";
+        }
+        
+        $event->update($data);
         return redirect('/partner/event')->with('success', 'Event berhasil diubah!');
     }
 
@@ -133,11 +148,14 @@ class PartnerEventController extends Controller
             'time' => ['required'],
             'place' => ['required'],
             'poster' => ['required'],
-            'seat' => ['required'],
+            'seat' => ['nullable'],
+            'banner' => ['nullable'],
         ]);
         
         $posterPath = $request ->file('poster')->store('images', 'public');
-        $seatPath = $request ->file('seat')->store('images', 'public');
+        if ($request->seat) $seatPath = $request ->file('seat')->store('images', 'public');
+        if ($request->banner) $bannerPath = $request ->file('banner')->store('images', 'public');
+        
         
         $user = Auth::user()->getAuthIdentifier();
 
@@ -149,6 +167,7 @@ class PartnerEventController extends Controller
             'time'=>$validated['time'],
             'poster'=>"/storage/{$posterPath}",
             'seating_chart'=>"/storage/{$seatPath}",
+            'banner'=>"/storage/{$bannerPath}",
             'user_id'=>$user,
        ]);
         
