@@ -112,41 +112,47 @@ export default function LandingPage({ events }: LandingPageProps) {
                         onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
                     />
                 </Carousel>
-                
                 <div className="max-w-7xl mx-auto py-8 px-4">
                     <h1 className="text-2xl font-bold mb-6">Upcoming Events</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {events
                             .filter((event) => new Date(event.date) >= new Date())
                             .slice(0, 8)
-                            .map((event) => (
-                                <Card
-                                    key={event.id}
-                                    className="bg-white rounded-lg shadow-md overflow-hidden"
-                                >
-                                    <div className="relative">
-                                        <img
-                                            src={event.poster}
-                                            alt={event.title}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                        <div className="absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded bg-green-500">
-                                            Upcoming
+                            .map((event) => {
+                                const eventTime = new Date(event.date + 'T' + event.time).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false ,
+                                });
+                                return (
+                                    <Card
+                                        key={event.id}
+                                        className="bg-white rounded-lg shadow-md overflow-hidden"
+                                    >
+                                        <div className="relative">
+                                            <img
+                                                src={event.poster}
+                                                alt={event.title}
+                                                className="w-full h-48 object-cover"
+                                            />
+                                            <div className="absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded bg-green-500">
+                                                Upcoming
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="text-lg font-semibold truncate">{event.title}</h3>
-                                        <p className="text-sm text-gray-500">{event.time}</p>
-                                        <p className="text-sm text-gray-500"> {event.date}</p>
-                                        <Link
-                                            href={`/event/${event.id}`}
-                                            className="mt-4 block text-center text-sm font-semibold py-2 rounded bg-purple-600 text-white hover:bg-purple-700"
-                                        >
-                                            Buy Now
-                                        </Link>
-                                    </div>
-                                </Card>
-                            ))}
+                                        <div className="p-4">
+                                            <h3 className="text-lg font-semibold truncate">{event.title}</h3>
+                                            <p className="text-sm text-gray-500">{eventTime} WIB</p>
+                                            <p className="text-sm text-gray-500">{event.date}</p>
+                                            <Link
+                                                href={`/event/${event.id}`}
+                                                className="mt-4 block text-center text-sm font-semibold py-2 rounded bg-purple-600 text-white hover:bg-purple-700"
+                                            >
+                                                Buy Now
+                                            </Link>
+                                        </div>
+                                    </Card>
+                                );
+                            })}
                     </div>
 
                     <h1 className="text-2xl font-bold mt-12 mb-6">Passed Events</h1>
@@ -154,31 +160,37 @@ export default function LandingPage({ events }: LandingPageProps) {
                         {events
                             .filter((event) => new Date(event.date) < new Date())
                             .slice(0, 8)
-                            .map((event) => (
-                                <Card
-                                    key={event.id}
-                                    className="bg-white rounded-lg shadow-md overflow-hidden opacity-50 pointer-events-none"
-                                >
-                                    <div className="relative">
-                                        <img
-                                            src={event.poster}
-                                            alt={event.title}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                        <div className="absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded bg-red-500">
-                                            Passed
+                            .map((event) => {
+                                const eventTime = new Date(event.date + 'T' + event.time).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                });
+                                return (
+                                    <Card
+                                        key={event.id}
+                                        className="bg-white rounded-lg shadow-md overflow-hidden opacity-50 pointer-events-none"
+                                    >
+                                        <div className="relative">
+                                            <img
+                                                src={event.poster}
+                                                alt={event.title}
+                                                className="w-full h-48 object-cover"
+                                            />
+                                            <div className="absolute top-2 left-2 text-white text-xs font-bold px-2 py-1 rounded bg-red-500">
+                                                Passed
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="text-lg font-semibold truncate">{event.title}</h3>
-                                        <p className="text-sm text-gray-500">{event.time}</p>
-                                        <p className="text-sm text-gray-500"> {event.date}</p>
-                                        <span className="mt-4 block text-center text-sm font-semibold py-2 rounded bg-gray-400 text-gray-700 cursor-not-allowed">
-                                            Unavailable
-                                        </span>
-                                    </div>
-                                </Card>
-                            ))}
+                                        <div className="p-4">
+                                            <h3 className="text-lg font-semibold truncate">{event.title}</h3>
+                                            <p className="text-sm text-gray-500">{eventTime}</p>
+                                            <p className="text-sm text-gray-500">{event.date}</p>
+                                            <span className="mt-4 block text-center text-sm font-semibold py-2 rounded bg-gray-400 text-gray-700 cursor-not-allowed">
+                                                Unavailable
+                                            </span>
+                                        </div>
+                                    </Card>
+                                );
+                            })}
                     </div>
                 
                     {/* Pagination 

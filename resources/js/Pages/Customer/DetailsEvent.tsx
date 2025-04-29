@@ -278,8 +278,8 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                     <TabsContent value="desc" className="pt-4">
                                         <Card>
                                             <CardContent className="p-4">
-                                            <p className="py-1 text-justify">
-                                            Details: {event.description}
+                                            <p className="py-1 text-justify whitespace-pre-line text-sm">
+                                                {event.description}
                                             </p>
                                             </CardContent>
                                         </Card>
