@@ -80,16 +80,15 @@ export default function LandingPage({ events }: LandingPageProps) {
                                                 alt={event.title}
                                                 className="rounded-lg relative object-cover aspect-[9/3] w-full"
                                             />
-                                            <div className="absolute inset-0 bg-black bg-opacity-50
+                                            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 transition-opacity duration-200 group-hover:opacity-0">
+                                                <p className="text-white text-3xl font-bold truncate">{event.title}</p>
+                                            </div>
+                                            <div className="absolute inset-0 bg-black bg-opacity-75
                                                             opacity-0 group-hover:opacity-100
                                                             transition-opacity duration-200
                                                             flex flex-col justify-end p-4">
-                                                <p className="text-white text-base font-semibold truncate">
-                                                    {event.title}
-                                                </p>
-                                                <p className="text-sm font-light">
-                                                    {event.date}
-                                                </p>
+                                                <p className="text-white text-xl font-bold truncate">{event.title}</p>
+                                                <p className="text-white text-sm font-light">{event.date}</p>
                                             </div>
                                         </CardContent>
                                     </Link>
