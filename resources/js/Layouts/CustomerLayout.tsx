@@ -37,7 +37,7 @@ export default function CustomerLayout({
     // Menangani path foto profil
     const getProfileImageUrl = () => {
         if (!auth.user || !auth.user.photo) {
-            return "https://via.placeholder.com/40";
+            return "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";
         }
 
         if (auth.user.photo.startsWith("http")) {
@@ -117,7 +117,7 @@ export default function CustomerLayout({
                                             alt="Profile"
                                             onError={(e) => {
                                                 e.currentTarget.src =
-                                                    "https://via.placeholder.com/40";
+                                                    "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";
                                             }}
                                         />
                                         <span
@@ -291,10 +291,10 @@ export default function CustomerLayout({
             </header>
 
             <main className="flex-1 mt-16 pt-8">
-                <div className="container mx-auto px-4">{children}</div>
+                <div className="container mx-auto px-4 py-4">{children}</div>
             </main>
 
-            <footer className="py-8 bg-white border-t">
+            <footer className="m py-8 bg-white border-t">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col md:flex-row justify-between items-center">
                         <div className="mb-4 md:mb-0">

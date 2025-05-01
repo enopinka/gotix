@@ -19,6 +19,7 @@ class Event extends Model
         'poster',
         'seating_chart',
         'user_id',
+        'banner'
     ];
 
     public function user(){

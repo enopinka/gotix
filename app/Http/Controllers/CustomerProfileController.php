@@ -40,6 +40,7 @@ class CustomerProfileController extends Controller
         $user = Auth::user();
         
         $validated = $request->validate([
+            'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|string|max:255',
             'email' => "required|string|email|max:255|unique:users,email,{$user->id}",
         ]);
@@ -50,6 +51,7 @@ class CustomerProfileController extends Controller
             ->update([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'photo' => $validated['photo'] ?? $user->photo,
             ]);
         
         return redirect()->back()->with('success', 'Profile updated successfully');
@@ -85,13 +87,16 @@ class CustomerProfileController extends Controller
      */
     public function updatePhoto(Request $request)
     {
-        $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        dd($request->file('photo'));
+
+        $validated = $request->validate([
+            'photo' => 'required',
         ]);
+        dd($validated);
         
         $user = Auth::user();
-        
         if ($request->hasFile('photo')) {
+            
             // Hapus foto lama jika ada
             $this->deleteExistingPhoto($user);
             
@@ -101,13 +106,19 @@ class CustomerProfileController extends Controller
             // Simpan foto baru
             $path = $request->file('photo')->storeAs('profile-photos', $filename, 'public');
             
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update(['photo' => $path]);
-                
-            return redirect()->back()->with('success', 'Profile photo updated successfully');
-        }
         
+        // Update data foto pada user
+        // $user->update(['photo' => $path]);
+
+        // Debug untuk melihat path file yang disimpan
+        
+        // DB::table('users')
+        //     ->where('id', $user->id)
+        //     ->update(['photo' => $path]);
+        
+        return redirect()->back()->with('success', 'Profile photo updated successfully');
+    
+        }
         return redirect()->back()->withErrors(['photo' => 'Failed to upload photo']);
     }
 
@@ -161,5 +172,39 @@ class CustomerProfileController extends Controller
         $sanitized = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
         
         return "{$sanitized}.{$extension}";
+    }
+
+    public function profileScreenV2(){
+        $user = Auth::user();
+
+        return Inertia::render('Customer/UserProfile', [
+            'user' => $user,
+        ]);
+    }
+
+    public function updateProfileV2(Request $request){
+        $user_id = Auth::user()->getAuthIdentifier();
+       
+
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => "required",
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $user = User::find($user_id);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        // Handle file jika ada
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('images', 'public');
+            $user->photo = "/storage/{$photoPath}";
+        }
+
+    $user->save();
+
+    return redirect('/profile')->with('success', 'Profile telah diupdate!');
+
     }
 }

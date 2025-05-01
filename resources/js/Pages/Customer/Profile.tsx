@@ -46,14 +46,17 @@ export default function Profile({
     flash?: FlashMessages;
 }) {
     // Penanganan form untuk berbagai bagian
-    const profileForm = useForm({ name: user.name, email: user.email });
+    const profileForm = useForm({
+        name: user.name,
+        email: user.email,
+        photo: user.photo,
+    });
     const passwordForm = useForm({
         current_password: "",
         password: "",
         password_confirmation: "",
     });
     const photoForm = useForm<{ photo: File | null }>({ photo: null });
-
     // Refs dan manajemen state
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -105,6 +108,7 @@ export default function Profile({
         // Upload file
         setIsUploading(true);
         photoForm.setData("photo", file);
+        console.log(photoForm);
         photoForm.post("/profile/photo", {
             onSuccess: () => {
                 toast.success("Foto profil berhasil diperbarui");
@@ -115,7 +119,9 @@ export default function Profile({
                 resetUpload();
             },
             preserveScroll: true,
+            forceFormData: true,
         });
+        console.log("halo");
     };
 
     const resetUpload = () => {
@@ -167,7 +173,7 @@ export default function Profile({
         previewImage ||
         (user.photo
             ? `/storage/${user.photo}`
-            : "https://via.placeholder.com/150");
+            : "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png");
 
     // Komponen input yang dapat digunakan kembali dengan label
     const LabelInput = ({
@@ -222,57 +228,6 @@ export default function Profile({
                 <div className="bg-white rounded-lg shadow-sm">
                     {/* Bagian Foto dan Informasi Profil */}
                     <div className="p-6 flex flex-col sm:flex-row sm:space-x-6">
-                        {/* Bagian Upload Foto */}
-                        <div className="relative mb-4 sm:mb-0">
-                            <div className="w-24 h-24 rounded-full overflow-hidden border">
-                                {isUploading ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                        <Loader2 className="animate-spin text-gray-500" />
-                                    </div>
-                                ) : (
-                                    <img
-                                        src={getPhotoUrl()}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.currentTarget.src =
-                                                "https://via.placeholder.com/150";
-                                        }}
-                                    />
-                                )}
-                            </div>
-                            <div className="mt-2 flex space-x-2">
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="px-2 py-1 h-8"
-                                    onClick={() =>
-                                        fileInputRef.current?.click()
-                                    }
-                                >
-                                    <Camera size={14} className="mr-1" /> Ubah
-                                </Button>
-                                {user.photo && (
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="px-2 py-1 h-8 text-red-500"
-                                        onClick={deletePhoto}
-                                    >
-                                        Hapus
-                                    </Button>
-                                )}
-                            </div>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                aria-label="Upload foto profil"
-                            />
-                        </div>
-
                         {/* Form Edit Profil */}
                         <div className="w-full">
                             <h2 className="text-lg font-medium mb-4">
@@ -286,44 +241,104 @@ export default function Profile({
                                 )}
                                 className="space-y-4"
                             >
-                                <LabelInput
-                                    id="name"
-                                    label="Nama"
-                                    value={profileForm.data.name}
-                                    onChange={(e) =>
-                                        profileForm.setData(
-                                            "name",
-                                            e.target.value
-                                        )
-                                    }
-                                />
-                                <LabelInput
-                                    id="email"
-                                    label="Email"
-                                    type="email"
-                                    value={profileForm.data.email}
-                                    onChange={(e) =>
-                                        profileForm.setData(
-                                            "email",
-                                            e.target.value
-                                        )
-                                    }
-                                />
-                                <Button
-                                    type="submit"
-                                    disabled={profileForm.processing}
-                                    className="bg-indigo-600 hover:bg-indigo-700"
-                                >
-                                    {profileForm.processing ? (
-                                        <Loader2
-                                            size={16}
-                                            className="mr-2 animate-spin"
+                                <div className="flex gap-8">
+                                    {" "}
+                                    {/* Bagian Upload Foto */}
+                                    <div className="relative mb-4 sm:mb-0">
+                                        <div className="w-24 h-24 rounded-full overflow-hidden border">
+                                            {isUploading ? (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <Loader2 className="animate-spin text-gray-500" />
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={getPhotoUrl()}
+                                                    alt="Profile"
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.currentTarget.src =
+                                                            "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="mt-2 flex space-x-2">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="px-2 py-1 h-8"
+                                                onClick={() =>
+                                                    fileInputRef.current?.click()
+                                                }
+                                            >
+                                                <Camera
+                                                    size={14}
+                                                    className="mr-1"
+                                                />{" "}
+                                                Ubah
+                                            </Button>
+                                            {user.photo && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="px-2 py-1 h-8 text-red-500"
+                                                    onClick={deletePhoto}
+                                                >
+                                                    Hapus
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            name="photo"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            aria-label="Upload foto profil"
                                         />
-                                    ) : (
-                                        <Save className="mr-2 w-4 h-4" />
-                                    )}
-                                    Simpan Perubahan
-                                </Button>
+                                    </div>
+                                    <div className="w-full space-y-4">
+                                        <LabelInput
+                                            id="name"
+                                            label="Nama"
+                                            value={profileForm.data.name}
+                                            onChange={(e) =>
+                                                profileForm.setData(
+                                                    "name",
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                        <LabelInput
+                                            id="email"
+                                            label="Email"
+                                            type="email"
+                                            value={profileForm.data.email}
+                                            onChange={(e) =>
+                                                profileForm.setData(
+                                                    "email",
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                        <Button
+                                            type="submit"
+                                            disabled={profileForm.processing}
+                                            className="bg-indigo-600 hover:bg-indigo-700"
+                                        >
+                                            {profileForm.processing ? (
+                                                <Loader2
+                                                    size={16}
+                                                    className="mr-2 animate-spin"
+                                                />
+                                            ) : (
+                                                <Save className="mr-2 w-4 h-4" />
+                                            )}
+                                            Simpan Perubahan
+                                        </Button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
