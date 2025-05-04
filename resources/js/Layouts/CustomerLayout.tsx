@@ -70,12 +70,12 @@ export default function CustomerLayout({
                     </Link>
 
                     {/* Menu navigasi utama - Tiket Saya dipindahkan ke dropdown */}
-                    <nav className="hidden md:flex items-center space-x-8">
+                    {/* <nav className="hidden md:flex items-center space-x-8">
                         <Link href="/" className={navLinkClass}>
                             <Home size={16} />
                             <span>Beranda</span>
                         </Link>
-                    </nav>
+                    </nav> */}
 
                     <div className="flex items-center gap-3">
                         <div
