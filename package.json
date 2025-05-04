@@ -44,7 +44,7 @@
         "dayjs": "^1.11.13",
         "embla-carousel-autoplay": "^8.6.0",
         "embla-carousel-react": "^8.6.0",
-        "framer-motion": "^12.9.2",
+        "framer-motion": "^12.9.4",
         "lucide-react": "^0.479.0",
         "npm": "^11.2.0",
         "react-card-flip": "^1.2.3",
