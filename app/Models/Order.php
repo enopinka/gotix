@@ -12,7 +12,8 @@ class Order extends Model
         'quantity',
         'total_price',
         'event_id',
-        'status'
+        'status',
+        'snap_token'
     ];
 
     public function user()

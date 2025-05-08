@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Head } from "@inertiajs/react";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Calendar, Clock, MapPin, Ticket } from "lucide-react";
+import { Button } from "@/Components/ui/button";
+import { env } from "node:process";
 
 // Tipe data yang digunakan
 interface TicketType {
@@ -22,6 +24,7 @@ interface OrderType {
     status: string;
     ticket: TicketType;
     event: EventType;
+    snap_token: string;
 }
 
 interface EventInfoProps {
@@ -45,6 +48,44 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
     // Komponen untuk kartu tiket
     const TicketCard: React.FC<TicketCardProps> = ({ order }) => {
         const isPastEvent = new Date(order.event.date) < new Date();
+        useEffect(() => {
+            const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
+
+            const script = document.createElement("script");
+            script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+            script.setAttribute("data-client-key", clientKey);
+            script.async = true;
+
+            document.body.appendChild(script);
+
+            return () => {
+                document.body.removeChild(script);
+            };
+        }, []);
+
+        const handlePay = (snap_token: string) => {
+            if (window.snap) {
+                window.snap.pay(snap_token, {
+                    onSuccess: function (result) {
+                        console.log("Success:", result);
+                        // Optional: redirect or update state
+                    },
+                    onPending: function (result) {
+                        console.log("Pending:", result);
+                    },
+                    onError: function (result) {
+                        console.log("Error:", result);
+                    },
+                    onClose: function () {
+                        console.log(
+                            "Customer closed the popup without finishing the payment"
+                        );
+                    },
+                });
+            } else {
+                console.error("Snap not loaded");
+            }
+        };
 
         return (
             <div
@@ -89,7 +130,9 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                 <div className="mt-4 pt-4 border-t flex justify-between items-center">
                     <div>
                         <div className="text-sm text-gray-600">
-                            <span className="font-medium">{order.quantity}x</span>{" "}
+                            <span className="font-medium">
+                                {order.quantity}x
+                            </span>{" "}
                             tiket
                         </div>
                         <div className="text-lg font-bold text-gray-800">
@@ -106,6 +149,17 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                         {order.status === "paid" ? "Sukses" : "Pending"}
                     </span>
                 </div>
+                <Button
+                    className={`bg-indigo-600 hover:bg-indigo-700 justify-end ${
+                        order.status !== "pending" ? "hidden" : "block"
+                    }`}
+                >
+                    Bayar
+                </Button>
+                <button onClick={() => handlePay(order.snap_token)}>
+                    Bayar
+                </button>
+                <div id="snap-container" style={{ marginTop: "20px" }}></div>
             </div>
         );
     };

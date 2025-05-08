@@ -44,7 +44,11 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     const [isFlipped, setIsFlipped] = useState(false);
     const handleClick = () => setIsFlipped((prev) => !prev);
 
-    const handleCheckout = async (ticketId: number, quantity: number) => {
+    const handleCheckout = async (
+        ticketId: number,
+        quantity: number,
+        totalPrice: number
+    ) => {
         if (!auth.user) {
             return router.get("/login");
         }
@@ -55,6 +59,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                 {
                     ticket_id: ticketId,
                     quantity: quantity,
+                    total_price: totalPrice,
                 },
                 {
                     onSuccess: () => {
@@ -278,12 +283,11 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                     <TabsContent value="desc" className="pt-4">
                                         <Card>
                                             <CardContent className="p-4">
-                                            <p className="py-1 text-justify whitespace-pre-line text-sm">
-                                                {event.description}
-                                            </p>
+                                                <p className="py-1 text-justify whitespace-pre-line text-sm">
+                                                    {event.description}
+                                                </p>
                                             </CardContent>
                                         </Card>
-                                        
                                     </TabsContent>
 
                                     <TabsContent
@@ -297,7 +301,8 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                         <Card
                                                             key={category.id}
                                                             className={`w-full ${
-                                                                category.available_seats === 0
+                                                                category.available_seats ===
+                                                                0
                                                                     ? "bg-gray-200 text-gray-500"
                                                                     : ""
                                                             }`}
@@ -328,12 +333,14 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                     </div>
                                                                     <span
                                                                         className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                                            category.available_seats === 0
+                                                                            category.available_seats ===
+                                                                            0
                                                                                 ? "bg-gray-300 text-gray-500"
                                                                                 : "text-blue-600 bg-blue-100"
                                                                         }`}
                                                                     >
-                                                                        {category.available_seats === 0
+                                                                        {category.available_seats ===
+                                                                        0
                                                                             ? "Habis"
                                                                             : "On Sale"}
                                                                     </span>
@@ -516,24 +523,25 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                                 )}
                                                                                                             </span>
                                                                                                         </div>
+                                                                                                        <Button
+                                                                                                            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                                                                                                            onClick={async () => {
+                                                                                                                await handleCheckout(
+                                                                                                                    category.id,
+                                                                                                                    quantity,
+                                                                                                                    total
+                                                                                                                );
+                                                                                                                setShowDetailDialog(
+                                                                                                                    false
+                                                                                                                ); // Tutup dialog rincian
+                                                                                                            }}
+                                                                                                        >
+                                                                                                            Lanjutkan
+                                                                                                        </Button>
                                                                                                     </>
                                                                                                 );
                                                                                             })()}
                                                                                         </div>
-                                                                                        <Button
-                                                                                            className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                                                                                            onClick={async () => {
-                                                                                                await handleCheckout(
-                                                                                                    category.id,
-                                                                                                    quantity
-                                                                                                );
-                                                                                                setShowDetailDialog(
-                                                                                                    false
-                                                                                                ); // Tutup dialog rincian
-                                                                                            }}
-                                                                                        >
-                                                                                            Lanjutkan
-                                                                                        </Button>
                                                                                     </div>
                                                                                 </DialogContent>
                                                                             </Dialog>
@@ -543,15 +551,25 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                     <div className="flex justify-end">
                                                                         <Button
                                                                             onClick={() => {
-                                                                                if (!auth.user) {
-                                                                                    router.get("/login");
+                                                                                if (
+                                                                                    !auth.user
+                                                                                ) {
+                                                                                    router.get(
+                                                                                        "/login"
+                                                                                    );
                                                                                 } else {
-                                                                                    setSelectedTicket(category.id);
+                                                                                    setSelectedTicket(
+                                                                                        category.id
+                                                                                    );
                                                                                 }
                                                                             }}
-                                                                            disabled={category.available_seats === 0}
+                                                                            disabled={
+                                                                                category.available_seats ===
+                                                                                0
+                                                                            }
                                                                             className={`${
-                                                                                category.available_seats === 0
+                                                                                category.available_seats ===
+                                                                                0
                                                                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                                                                     : "bg-blue-600 text-white hover:bg-blue-700"
                                                                             }`}

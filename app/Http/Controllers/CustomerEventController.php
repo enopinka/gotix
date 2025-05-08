@@ -13,28 +13,30 @@ use App\Models\User;
 
 class CustomerEventController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $events = Event::all();
 
-        return Inertia::render('LandingPage', ['events'=>$events]);
+        return Inertia::render('LandingPage', ['events' => $events]);
     }
-    
-    public function checkout($ticketId)
-    {
-        // Ambil data tiket berdasarkan ID
-        $ticket = Ticket::findOrFail($ticketId);
 
-        // Kirim data ke halaman checkout
-        return Inertia::render('Customer/Checkout', [
-            'ticket' => $ticket,
-        ]);
-    }
-    public function show($id)
+    // public function checkout($ticketId)
+    // {
+    //     // Ambil data tiket berdasarkan ID
+    //     $ticket = Ticket::findOrFail($ticketId);
+
+    //     // Kirim data ke halaman checkout
+    //     return Inertia::render('Customer/Checkout', [
+    //         'ticket' => $ticket,
+    //     ]);
+    // }
+
+    public function detailEventScreen($id)
     {
         $event = Event::with('categories')->findOrFail($id);
 
         return Inertia::render('Customer/DetailsEvent', [
-            'event' => $event,     
+            'event' => $event,
         ]);
     }
     public function storeOrder(Request $request)
@@ -42,24 +44,25 @@ class CustomerEventController extends Controller
         $request->validate([
             'ticket_id' => 'required|exists:tickets,id',
             'quantity' => 'required|integer|min:1',
+            'total_price' => 'required'
         ]);
-    
+
         // Ambil data tiket terlebih dahulu
         $ticket = Ticket::findOrFail($request->ticket_id);
-    
+
         // Hitung total harga
-        $totalPrice = $ticket->price * $request->quantity;
+        $partner_revenue = $ticket->price * $request->quantity;
 
         // ngurangi kuota tiket
         $ticket->available_seats -= $request->quantity;
-    
+
         // Simpan order
         $order = Order::create([
             'user_id' => Auth::id(),
             'ticket_id' => $request->ticket_id,
             'quantity' => $request->quantity,
             // 'available_seats' => $ticket->available_seats,
-            'total_price' => $totalPrice, 
+            'total_price' => $request->total_price,
             'event_id' => $ticket->event_id,
             'status' => 'pending',
         ]);
@@ -72,35 +75,35 @@ class CustomerEventController extends Controller
         $partner_id = $ticket->event->user_id;
         $revenue = Revenue::where('user_id', $partner_id)->first();
         if ($revenue) {
-            $revenue->total_revenue += $totalPrice;
-            $revenue->unreleased_earnings += $totalPrice;
+            $revenue->total_revenue += $partner_revenue;
+            $revenue->unreleased_earnings += $partner_revenue;
             $revenue->save();
         } else {
             Revenue::create([
-                'total_revenue' => $totalPrice,
-                'unreleased_earnings' => $totalPrice,
+                'total_revenue' => $partner_revenue,
+                'unreleased_earnings' => $partner_revenue,
                 'user_id' => $partner_id,
             ]);
         }
 
         return redirect("/event/{$ticket->event_id}")->with('success', 'Order created successfully.');
-    
+
         // return response()->json([
         //     'message' => 'Order created successfully.',
         //     'order' => $order
         // ], 201);
     }
-    
+
     public function eventById($id)
     {
         $event = Event::find($id);
 
-        
+
         if (!$event) {
             return redirect()->back()->withErrors(['message' => 'Event tidak ditemukan']);
         }
-        
-        
+
+
         $categories = $event->tickets->map(function ($ticket) {
             return [
                 'id' => $ticket->id,
@@ -114,13 +117,13 @@ class CustomerEventController extends Controller
         $partner_id = $event->user_id;
         $partner = User::where('id', $partner_id)->first();
         $partner_name = $partner ? $partner->name : 'Unknown';
-    
-       
+
+
         $formattedEvent = [
             'id' => $event->id,
             'title' => $event->title,
             'description' => $event->description,
-            'partner_name' => $partner_name ,
+            'partner_name' => $partner_name,
             'date' => $event->date,
             'time' => $event->time,
             'place' => $event->place,
@@ -131,8 +134,7 @@ class CustomerEventController extends Controller
 
         return Inertia::render('Customer/DetailsEvent', [
             'event' => $formattedEvent,
-            'isLoggedIn' => Auth::check(), 
+            'isLoggedIn' => Auth::check(),
         ]);
     }
-    
 }
