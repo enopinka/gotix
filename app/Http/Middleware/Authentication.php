@@ -17,10 +17,26 @@ class Authentication
     public function handle(Request $request, Closure $next, string $role): Response
     {
        
-        if(Auth::check() && Auth::user()->role == $role){
-            return $next($request);
+        // if(Auth::check() && Auth::user()->role == $role){
+        //     return $next($request);
+        // }
+
+        if (!Auth::check()) {
+            // Simpan URL yang diakses
+            session(['url.intended' => $request->fullUrl()]);
+            return redirect()->route('login');
         }
 
-        return response()->json(["message"=>"Anda tidak mendapatkan akses halaman ini!"], 403);
+        // Kalau login tapi role tidak sesuai
+        if (Auth::user()->role !== $role) {
+            abort(403, 'Anda tidak mendapatkan akses halaman ini!');
+        }
+
+        if (Auth::check() && $request->routeIs('login')) {
+            return redirect('/'); // Arahkan pengguna yang sudah login ke halaman utama
+        }
+        
+        return $next($request);
     }
+
 }

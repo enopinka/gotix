@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('partners', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->string('name');
-            $table->mediumText('address');
-            $table->foreignId('user_id')->constrained('users');
+        Schema::table('events', function (Blueprint $table) {
+            $table->string('banner')->nullable(); 
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('partners');
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropColumn('banner'); 
+        });
     }
 };

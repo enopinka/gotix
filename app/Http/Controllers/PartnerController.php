@@ -1,13 +1,33 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Event;
+use App\Models\Order;
+use App\Models\Revenue;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class PartnerController extends Controller
 {
     public function index(){
-        return Inertia::render('Partner/Dashboard');
+        $user_id = Auth::user()->getAuthIdentifier();
+
+        
+        $event_ids = Event::where('user_id', $user_id)->pluck('id');
+
+        $total_event = $event_ids->count();
+        $total_ticket_sold = Order::whereIn('event_id',$event_ids)->sum('quantity');
+       
+        $total_earnings = Revenue::where('user_id', $user_id)->value('total_revenue');
+
+        // dd($total_event, $total_ticket_sold, $total_earnings);
+
+        return Inertia::render('Partner/Dashboard', [
+            'events' => $total_event,
+            'ticket_solds' => $total_ticket_sold,
+            'earnings' => $total_earnings
+        ]);
     }
 }

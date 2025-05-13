@@ -56,94 +56,102 @@ export default function Register() {
     }
     return (
         <>
-            <div className="flex justify-center items-center h-screen">
-                <Card className="w-1/2 shadow-md ">
-                    <CardHeader>
-                        <CardTitle className="text-center my-4">
-                            Register
-                        </CardTitle>
-                        <CardContent>
-                            <Form {...form}>
-                                <form
-                                    onSubmit={form.handleSubmit(onSubmit)}
-                                    className="space-y-8"
+        <div className="relative h-screen w-screen overflow-hidden">
+                {/* Gambar sebagai background */}
+        <img
+            src="/storage/images/asset/login.jpg"
+            alt="Background"
+            className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        />
+
+        {/* Card di atas gambar */}
+        <div className="relative flex items-center justify-center h-full z-10">
+            <Card className="w-full max-w-md shadow-lg">
+                <CardHeader>
+                    <CardTitle className="text-center my-4">Register</CardTitle>
+                    <CardContent>
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-8"
+                            >
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Nama"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Email (ex: kipli@gmail.com)"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Password"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="confirm_password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Konfirmasi Password"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="flex flex-col space-y-4">
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800"
                                 >
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Nama"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Email"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Password"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="confirm_password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Konfirmasi Password"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="flex flex-col space-y-4">
-                                        <Button
-                                            type="submit"
-                                            className="w-fit justify-center px-8 mx-auto"
-                                        >
-                                            Register
-                                        </Button>
-                                        <p className="text-center">
-                                            Sudah Punya akun?{" "}
-                                            <span>
-                                                <Link href="/login">Login</Link>
-                                            </span>
-                                        </p>
-                                    </div>
-                                </form>
-                            </Form>
-                        </CardContent>
-                    </CardHeader>
-                </Card>
-            </div>
+                                    Register
+                                </Button>
+                                <p className="text-center text-sm">
+                                    Sudah Punya akun?{" "}
+                                    <Link href="/login" className="text-purple-600 hover:underline">
+                                        Login
+                                    </Link>
+                                </p>
+                                </div>
+                            </form>
+                        </Form>
+                    </CardContent>
+                </CardHeader>
+            </Card>
+        </div>
+    </div>
         </>
     );
 }

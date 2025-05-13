@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('revenues', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('title');
-            $table->text('description');
-            $table->date('date');
-            $table->time('time');
-            $table->mediumText('place');
+            $table->unsignedBigInteger('total_revenue');
+            $table->unsignedBigInteger('unreleased_earnings');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('poster');
-            $table->string('seating_chart');
         });
     }
 
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('revenue');
     }
 };
