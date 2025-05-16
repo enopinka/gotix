@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Calendar, Clock, MapPin, Ticket } from "lucide-react";
 import { Button } from "@/Components/ui/button";
@@ -38,7 +38,7 @@ interface TicketCardProps {
 
 export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
     // Komponen untuk menampilkan info event dengan icon
-    const EventInfo: React.FC<EventInfoProps> = ({ icon: Icon, text }) => (
+    const EventInfo = ({ icon: Icon, text }: EventInfoProps) => (
         <div className="flex items-center text-gray-600 mb-1">
             <Icon size={16} className="mr-1" />
             <span className="text-sm">{text}</span>
@@ -46,7 +46,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
     );
 
     // Komponen untuk kartu tiket
-    const TicketCard: React.FC<TicketCardProps> = ({ order }) => {
+    const TicketCard = ({ order }: TicketCardProps) => {
         const isPastEvent = new Date(order.event.date) < new Date();
         useEffect(() => {
             const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
@@ -63,12 +63,23 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
             };
         }, []);
 
-        const handlePay = (snap_token: string) => {
+        const handlePay = (snap_token: string, id: number) => {
             if (window.snap) {
                 window.snap.pay(snap_token, {
-                    onSuccess: function (result) {
+                    onSuccess: async function (result) {
                         console.log("Success:", result);
-                        // Optional: redirect or update state
+
+                        // Kirim hasil pembayaran ke server
+                        await fetch(`/checkout/${id}`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(result),
+                        });
+
+                        // Redirect ke halaman sukses
+                        window.location.href = "/tickets";
                     },
                     onPending: function (result) {
                         console.log("Pending:", result);
@@ -153,12 +164,11 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                     className={`bg-indigo-600 hover:bg-indigo-700 justify-end ${
                         order.status !== "pending" ? "hidden" : "block"
                     }`}
+                    onClick={() => handlePay(order.snap_token, order.id)}
                 >
                     Bayar
                 </Button>
-                <button onClick={() => handlePay(order.snap_token)}>
-                    Bayar
-                </button>
+
                 <div id="snap-container" style={{ marginTop: "20px" }}></div>
             </div>
         );

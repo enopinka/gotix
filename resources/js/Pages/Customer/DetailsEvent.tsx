@@ -628,7 +628,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                             </DialogDescription>
                         </div>
                         <button
-                            onClick={() => setShowSuccessDialog(false)}
+                            onClick={() => {
+                                setShowSuccessDialog(false);
+                                router.get("/tickets");
+                            }}
                             className="mt-4 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition font-semibold"
                         >
                             Ok

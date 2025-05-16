@@ -48,19 +48,6 @@ class CustomerOrderController extends Controller
         // Set 3DS transaction for credit card to true
         \Midtrans\Config::$is3ds = true;
 
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => rand(),
-                'gross_amount' => $request->total_price,
-            ),
-            'customer_details' => array(
-                'name' => Auth::user()->name,
-                'email' => Auth::user()->email,
-            ),
-        );
-
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
-
         // Simpan order
         $order = Order::create([
             'user_id' => Auth::id(),
@@ -69,9 +56,25 @@ class CustomerOrderController extends Controller
             'total_price' => $request->total_price,
             'event_id' => $ticket->event_id,
             'status' => 'pending',
-            'snap_token' => $snapToken,
         ]);
+
+        $get_order_id = $order->id;
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $get_order_id,
+                'gross_amount' => $request->total_price,
+            ),
+            'customer_details' => array(
+                'name' => Auth::user()->name,
+                'email' => Auth::user()->email,
+            ),
+        );
+
         // dapetin snap token
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        $order->update(["snap_token" => $snapToken]);
+
         $available_seats = $ticket->available_seats;
         $ticket->update(['available_seats' => $available_seats]);
         $ticket->save();
@@ -102,34 +105,8 @@ class CustomerOrderController extends Controller
         // ], 201);
     }
 
-    public function chekoutPayment(Request $request)
+    public function checkoutPayment(Request $request)
     {
-
-        $user = Auth::user();
-
-
-        // Set your Merchant Server Key
-        \Midtrans\Config::$serverKey = config('midtrans.serverKey');
-        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
-        // Set sanitization on (default)
-        \Midtrans\Config::$isSanitized = true;
-        // Set 3DS transaction for credit card to true
-        \Midtrans\Config::$is3ds = true;
-
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => rand(),
-                'gross_amount' => 10000,
-            ),
-            'customer_details' => array(
-                'first_name' => 'budi',
-                'last_name' => 'pratama',
-                'email' => 'budi.pra@example.com',
-                'phone' => '08111222333',
-            ),
-        );
-
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        dd($request);
     }
 }
