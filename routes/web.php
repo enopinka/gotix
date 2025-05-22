@@ -9,6 +9,7 @@ use App\Http\Controllers\PartnerOrderController;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerEventController;
+use App\Http\Controllers\CustomerOrderController;
 use Inertia\Inertia;
 
 
@@ -25,32 +26,34 @@ Route::get('/register', [AuthController::class, 'registerScreen']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
-Route::middleware([Authentication::class.":customer"])->group(function(){
+Route::middleware([Authentication::class . ":customer"])->group(function () {
     // Profile routes
     Route::get('/profile', [CustomerProfileController::class, 'profileScreenV2']);
     Route::get('/checkout/{ticketId}', [CustomerEventController::class, 'checkout'])->name('checkout');
-    
+    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');
+
     // Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
-    Route::post('/orders', [CustomerEventController::class, 'storeOrder']);
+    Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
     Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
-    
+
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
-    
+    Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
+
     // Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
-    Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');  
 
 });
 
 
 // diakses partner
-Route::middleware([Authentication::class.":partner"])->group(function(){
+Route::middleware([Authentication::class . ":partner"])->group(function () {
     Route::get('/partner', [PartnerController::class, 'index']);
     Route::get('/partner/event', [PartnerEventController::class, 'eventScreen']);
     Route::get('/partner/event/detail/{id}', [PartnerEventController::class, 'eventDetailScreen']);
     Route::get('/partner/event/create', [PartnerEventController::class, 'createEventScreen']);
     Route::get('/partner/event/edit/{id}', [PartnerEventController::class, 'editEventScreen']);
     Route::get('/partner/report', [PartnerEventController::class, 'reportScreen']);
-    Route::get('/partner/order', [PartnerOrderController::class, 'index']);
+    Route::get('/partner/order', [PartnerOrderController::class, 'order']);
+    Route::get('/partner/order/{id}', [PartnerOrderController::class, 'orderDetail']);
 
     Route::post('/partner/event/create', [PartnerEventController::class, 'createEvent']);
     Route::post('/partner/event/{id}/category', [PartnerEventController::class, 'createEventCategory']);
@@ -66,7 +69,7 @@ Route::middleware([Authentication::class.":partner"])->group(function(){
 
 
 // diakses admin
-Route::middleware([Authentication::class.":admin"])->group(function(){
+Route::middleware([Authentication::class . ":admin"])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index']);
     Route::get('/admin/promotor', [AdminController::class, 'promotor']);
     Route::get('/admin/laporan', [AdminController::class, 'laporan']);
