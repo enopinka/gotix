@@ -460,6 +460,13 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                         category.type
                                                                                                     }
                                                                                                 </p>
+                                                                                                <p className="text-sm text-muted-foreground">
+                                                                                                    Jumlah:{" "}
+                                                                                                    {
+                                                                                                        quantity
+                                                                                                    }{" "}
+                                                                                                    tiket
+                                                                                                </p>
                                                                                             </div>
                                                                                         </div>
                                                                                         <div className="space-y-2">

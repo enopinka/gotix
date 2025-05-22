@@ -25,7 +25,7 @@ export default function Dashboard({
                 </div>
 
                 {/* Welcome Message */}
-                <div className="bg-white shadow-md rounded-xl p-6">
+                <div className="bg-purple-200 shadow-md rounded-xl p-6">
                     <h2 className="text-xl font-semibold mb-2">
                         Selamat Datang, {auth.user.name}! 🎉
                     </h2>
@@ -35,11 +35,12 @@ export default function Dashboard({
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatCard
+                <div className="grid grid-cols-1 md:grid-cols-3 purple gap-6">
+                    <StatCard 
                         icon={<CalendarRangeIcon />}
                         title="Total Acara"
                         value={events ? events.toString() : "0"}
+                          
                     />
                     <StatCard
                         icon={<Ticket />}

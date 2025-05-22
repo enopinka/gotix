@@ -125,7 +125,7 @@ export default function EventDetail({ event, categories }: EventDetailProps) {
     return (
         <>
             <PartnerLayout>
-                <div className="flex justify-between mb-4 border">
+                <div className="flex justify-between mb-4 ">
                     <div className="space-y-2 text-sm text-muted-foreground">
                         <h2 className="text-xl font-semibold text-accent-foreground">
                             {event.title}
