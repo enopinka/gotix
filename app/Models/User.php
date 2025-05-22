@@ -47,11 +47,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function events(){
+    public function events()
+    {
         return $this->hasMany(Event::class, 'user_id');
     }
 
-    public function orders(){
+    public function orders()
+    {
         return $this->hasMany(Order::class, 'user_id');
     }
 
