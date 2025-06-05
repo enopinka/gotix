@@ -60,7 +60,7 @@ export default function CustomerLayout({
             >
                 <div className="container mx-auto px-4 flex items-center justify-between">
                     <Link href="/" className="flex items-center">
-                        <h1
+                        <h1  
                             className={`font-extrabold text-2xl tracking-tight ${
                                 isScrolled ? "text-indigo-600" : "text-white"
                             }`}
