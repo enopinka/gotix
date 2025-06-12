@@ -13,10 +13,41 @@ use App\Models\User;
 
 class CustomerEventController extends Controller
 {
-    public function index(){
-        $events = Event::all();
+    public function index(Request $request){
+        $query = Event::query();
+        
+        // Handle search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('place', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
 
-        return Inertia::render('LandingPage', ['events'=>$events]);
+        // Get events with basic relations
+        $events = $query->with(['user:id,name'])
+                       ->orderBy('date', 'asc')
+                       ->get()
+                       ->map(function ($event) {
+                           return [
+                               'id' => $event->id,
+                               'title' => $event->title,
+                               'description' => $event->description,
+                               'date' => $event->date,
+                               'time' => $event->time,
+                               'place' => $event->place,
+                               'poster' => $event->poster,
+                               'partner_name' => $event->user->name ?? 'Unknown',
+                           ];
+                       });
+
+        return Inertia::render('LandingPage', [
+            'events' => $events,
+            'searchQuery' => $request->search ?? '',
+            'totalResults' => $events->count(),
+        ]);
     }
     
     public function checkout($ticketId)
@@ -29,6 +60,7 @@ class CustomerEventController extends Controller
             'ticket' => $ticket,
         ]);
     }
+
     public function show($id)
     {
         $event = Event::with('categories')->findOrFail($id);
@@ -37,6 +69,7 @@ class CustomerEventController extends Controller
             'event' => $event,     
         ]);
     }
+
     public function storeOrder(Request $request)
     {
         $request->validate([
@@ -58,11 +91,11 @@ class CustomerEventController extends Controller
             'user_id' => Auth::id(),
             'ticket_id' => $request->ticket_id,
             'quantity' => $request->quantity,
-            // 'available_seats' => $ticket->available_seats,
             'total_price' => $totalPrice, 
             'event_id' => $ticket->event_id,
             'status' => 'pending',
         ]);
+
         // update kuota tiket
         $available_seats = $ticket->available_seats;
         $ticket->update(['available_seats' => $available_seats]);
@@ -84,22 +117,15 @@ class CustomerEventController extends Controller
         }
 
         return redirect("/event/{$ticket->event_id}")->with('success', 'Order created successfully.');
-    
-        // return response()->json([
-        //     'message' => 'Order created successfully.',
-        //     'order' => $order
-        // ], 201);
     }
     
     public function eventById($id)
     {
         $event = Event::find($id);
 
-        
         if (!$event) {
             return redirect()->back()->withErrors(['message' => 'Event tidak ditemukan']);
         }
-        
         
         $categories = $event->tickets->map(function ($ticket) {
             return [
@@ -115,12 +141,11 @@ class CustomerEventController extends Controller
         $partner = User::where('id', $partner_id)->first();
         $partner_name = $partner ? $partner->name : 'Unknown';
     
-       
         $formattedEvent = [
             'id' => $event->id,
             'title' => $event->title,
             'description' => $event->description,
-            'partner_name' => $partner_name ,
+            'partner_name' => $partner_name,
             'date' => $event->date,
             'time' => $event->time,
             'place' => $event->place,
@@ -134,5 +159,35 @@ class CustomerEventController extends Controller
             'isLoggedIn' => Auth::check(), 
         ]);
     }
-    
+
+    /**
+     * Search events via AJAX for autocomplete
+     */
+    public function searchEvents(Request $request)
+    {
+        $query = $request->get('query', '');
+        
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $events = Event::where('title', 'LIKE', '%' . $query . '%')
+                      ->orWhere('description', 'LIKE', '%' . $query . '%')
+                      ->orWhere('place', 'LIKE', '%' . $query . '%')
+                      ->with(['user:id,name'])
+                      ->limit(10)
+                      ->get()
+                      ->map(function ($event) {
+                          return [
+                              'id' => $event->id,
+                              'title' => $event->title,
+                              'date' => $event->date,
+                              'place' => $event->place,
+                              'poster' => $event->poster,
+                              'partner_name' => $event->user->name ?? 'Unknown',
+                          ];
+                      });
+
+        return response()->json($events);
+    }
 }
