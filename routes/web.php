@@ -22,7 +22,7 @@ Route::get('/login', [AuthController::class, "index"]);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::get('/register', [AuthController::class, 'registerScreen']);
-
+Route::get('/api/search-events', [CustomerEventController::class, 'searchEvents']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // diakses customer
@@ -33,11 +33,11 @@ Route::middleware([Authentication::class . ":customer"])->group(function () {
     Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');
 
     // Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
-    Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
+    // Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
     Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
 
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
-    Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
+    // Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
 
     // Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
 
