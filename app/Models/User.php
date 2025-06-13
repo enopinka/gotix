@@ -53,17 +53,8 @@ class User extends Authenticatable
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function events()
+    
     {
         return $this->hasMany(Event::class, 'user_id');
-    }
-
-    /**
-     * Get the orders associated with this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function orders()
-    {
-        return $this->hasMany(Order::class, 'user_id');
     }
 }

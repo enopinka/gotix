@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Revenue;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
 class PartnerEventController extends Controller
 {
-    public function index(){
-        return Inertia::render('Partner/Dashboard');
-    }
+    
     public function eventScreen(){
         $user_id = Auth::user()->getAuthIdentifier();
       
@@ -63,24 +63,39 @@ class PartnerEventController extends Controller
             'date' => ['nullable', 'date'],
             'place' => ['nullable', 'string'],
             'time' => ['nullable', 'string'],
+            'poster' => ['nullable'],
+            'seat' => ['nullable'],
+            'banner' => ['nullable'],
         ]);
 
         if ($user_id != $event_user_id) {
             return Inertia::render('Partner/Error', ['message' => 'Anda tidak memiliki akses ke acara ini']);
         }
 
-        $posterPath = $request ->file('poster')->store('images', 'public');
-        $seatPath = $request ->file('seat')->store('images', 'public');
-
-        $event->update([
-            'title'=>$validated['title'],
-            'description'=>$validated['description'],
-            'date'=>$validated['date'],
-            'place'=>$validated['place'],
-            'time'=>$validated['time'],
-            'poster'=>"/storage/{$posterPath}",
-            'seating_chart'=>"/storage/{$seatPath}",
-        ]);
+        $data = [
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'date' => $validated['date'],
+            'place' => $validated['place'],
+            'time' => $validated['time'],
+        ];
+        
+        if ($request->poster) {
+            $posterPath = $request->file('poster')->store('images', 'public');
+            $data['poster'] = "/storage/{$posterPath}";
+        }
+        
+        if ($request->seat) {
+            $seatPath = $request->file('seat')->store('images', 'public');
+            $data['seating_chart'] = "/storage/{$seatPath}";
+        }
+        
+        if ($request->banner) {
+            $bannerPath = $request->file('banner')->store('images', 'public');
+            $data['banner'] = "/storage/{$bannerPath}";
+        }
+        
+        $event->update($data);
         return redirect('/partner/event')->with('success', 'Event berhasil diubah!');
     }
 
@@ -109,7 +124,19 @@ class PartnerEventController extends Controller
     }
 
     public function reportScreen(){
-        return Inertia::render('Partner/Report');
+        $user_id = Auth::user()->getAuthIdentifier();
+
+        $event_ids = Event::where('user_id', $user_id)->pluck('id');
+        $ticket_solds = Order::whereIn('event_id',$event_ids)->sum('quantity');
+        
+        $total_revenue = Revenue::where('user_id', $user_id)->value('total_revenue');
+        $unreleased_earnings = Revenue::where('user_id', $user_id)->value('unreleased_earnings');
+
+        return Inertia::render('Partner/Report', [
+            'ticket_solds' => $ticket_solds,
+            'total_revenue' => $total_revenue,
+            'unreleased_earnings' => $unreleased_earnings,
+        ]);
     }
 
     public function createEvent(Request $request){
@@ -121,11 +148,14 @@ class PartnerEventController extends Controller
             'time' => ['required'],
             'place' => ['required'],
             'poster' => ['required'],
-            'seat' => ['required'],
+            'seat' => ['nullable'],
+            'banner' => ['nullable'],
         ]);
         
         $posterPath = $request ->file('poster')->store('images', 'public');
-        $seatPath = $request ->file('seat')->store('images', 'public');
+        if ($request->seat) $seatPath = $request ->file('seat')->store('images', 'public');
+        if ($request->banner) $bannerPath = $request ->file('banner')->store('images', 'public');
+        
         
         $user = Auth::user()->getAuthIdentifier();
 
@@ -137,6 +167,7 @@ class PartnerEventController extends Controller
             'time'=>$validated['time'],
             'poster'=>"/storage/{$posterPath}",
             'seating_chart'=>"/storage/{$seatPath}",
+            'banner'=>"/storage/{$bannerPath}",
             'user_id'=>$user,
        ]);
         
@@ -266,4 +297,14 @@ class PartnerEventController extends Controller
         ]);
         return redirect('/partner/event/detail/$event_id')->with('success', 'Kategori event berhasil diubah!');
     }
-}
+    public function show($id)
+    {
+        // Ambil event beserta relasi kategori tiketnya
+        $event = Event::with('categories')->findOrFail($id);
+
+        // Kirim ke komponen Inertia (Vue atau React)
+        return Inertia::render('Event/Details', [
+            'event' => $event,
+        ]);
+    }
+}    

@@ -41,37 +41,35 @@ type Event = {
     place?: string;
     poster?: File;
     seat?: File;
+    banner?: File;
 };
 
 type eventProps = {
     event?: Event;
 };
 
-const formSchema = z.object({
-    title: z.string().min(2),
-    description: z.string().min(2),
-    date: z.date({
-        required_error: "Tanggal tidak boleh kosong",
-    }),
-    time: z.string().min(2),
-    place: z.string().min(2),
-    poster: z
-        .any()
-        .optional()
-        .refine((file) => file instanceof File, {
-            message: "File tidak valid",
-        }),
-    seat: z
-        .any()
-        .optional()
-        .refine((file) => file instanceof File, {
-            message: "File tidak valid",
-        }),
-});
+const formSchema = (isEdit: boolean) =>
+    z.object({
+        title: z.string().min(2),
+        description: z.string().min(2),
+        date: z.date({ required_error: "Tanggal tidak boleh kosong" }),
+        time: z.string().min(2),
+        place: z.string().min(2),
+        poster: isEdit
+            ? z.any().optional()
+            : z.any().refine((file) => file instanceof File, {
+                  message: "Poster wajib diisi dan harus file yang valid",
+              }),
+        seat: z.any().optional(),
+        banner: z.any().optional(),
+    });
 
 export default function EditorEvent({ event }: eventProps) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const isEdit = !!event;
+    const schema = formSchema(isEdit);
+
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
         defaultValues: {
             title: event?.title ? event.title : "",
             description: event?.description ? event.description : "",
@@ -80,10 +78,11 @@ export default function EditorEvent({ event }: eventProps) {
             date: event?.date ? new Date(event.date) : undefined,
             poster: event?.poster ? event.poster : undefined,
             seat: event?.seat ? event.seat : undefined,
+            banner: event?.banner ? event.banner : undefined,
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    function onSubmit(values: z.infer<typeof schema>) {
         const formData = new FormData();
 
         formData.append("title", values.title);
@@ -93,7 +92,11 @@ export default function EditorEvent({ event }: eventProps) {
         formData.append("place", values.place);
         if (values.poster instanceof File)
             formData.append("poster", values.poster);
-        if (values.seat instanceof File) formData.append("seat", values.seat);
+        if (values.seat instanceof File) 
+            formData.append("seat", values.seat);
+        if (values.banner instanceof File) 
+            formData.append("banner", values.banner);
+
 
         const formattedValues = {
             ...values,
@@ -261,6 +264,27 @@ export default function EditorEvent({ event }: eventProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Upload Denah</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) =>
+                                                    field.onChange(
+                                                        e.target.files?.[0]
+                                                    )
+                                                }
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="banner"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Upload Banner</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="file"
