@@ -1,5 +1,14 @@
-import { Link } from "@inertiajs/react";
-import { CalendarRangeIcon, Ticket, Banknote, LogOut, UsersIcon, HandshakeIcon, BookOpenIcon, LayoutDashboardIcon} from "lucide-react";
+import { Link, usePage } from "@inertiajs/react";
+import {
+    CalendarRangeIcon,
+    Ticket,
+    Banknote,
+    LogOut,
+    UsersIcon,
+    HandshakeIcon,
+    BookOpenIcon,
+    LayoutDashboardIcon,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 const menuItems = [
@@ -38,14 +47,17 @@ const menuItems = [
 export default function AdminLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
+    const { auth } = usePage().props;
+    console.log(auth.user);
+
     return (
         <div className="flex h-screen overflow-hidden">
             {/* Sidebar */}
             <div className="bg-slate-100 w-64 h-screen shadow-md px-2 fixed">
                 <div className="flex flex-col justify-center items-center my-16 space-y-2">
-                    <div className="w-16 h-16 bg-white rounded-full"></div>
-                    <p>Admin 1</p>
-                    <p>admin1@gmail.com</p>
+                    <div>{/* <img src={auth.user.photo}></img> */}</div>
+                    <p>{auth.user.name}</p>
+                    <p>{auth.user.email}</p>
                 </div>
                 <hr />
                 <nav className="mt-4">
