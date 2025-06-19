@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -6,7 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 import {
     Form,
     FormControl,
@@ -15,9 +15,9 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
+} from "@/Components/ui/form";
 import PartnerLayout from "@/Layouts/PartnerLayout";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -38,7 +38,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import React, { useState } from "react";
 
 const formSchema = z.object({

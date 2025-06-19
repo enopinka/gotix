@@ -1,16 +1,15 @@
 import CustomerLayout from "@/Layouts/CustomerLayout";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/Components/ui/tabs";
+import { Card, CardContent } from "@/Components/ui/card";
+import { Button } from "@/Components/ui/button";
 import {
     Dialog,
     DialogTitle,
     DialogTrigger,
     DialogContent,
     DialogHeader,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon, Plus, Minus } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { router, usePage } from "@inertiajs/react";

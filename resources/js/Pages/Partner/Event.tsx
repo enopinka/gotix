@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import {
     Table,
     TableBody,
@@ -7,7 +7,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { Link, router } from "@inertiajs/react";
 import { Banknote, LogOut, Plus, Ticket, Trash, Trash2 } from "lucide-react";

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/dialog";
 
 type Report = {
     id: number;
