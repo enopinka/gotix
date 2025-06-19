@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -10,8 +10,8 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { useRef, useState } from "react";
 import {

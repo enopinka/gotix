@@ -1,4 +1,4 @@
-import StatCard from "@/Components/StatCard";
+import StatCard from "@/components/StatCard";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { usePage } from "@inertiajs/react";
 import { CalendarRangeIcon, Ticket, CircleDollarSign } from "lucide-react";
@@ -36,11 +36,10 @@ export default function Dashboard({
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 purple gap-6">
-                    <StatCard 
+                    <StatCard
                         icon={<CalendarRangeIcon />}
                         title="Total Acara"
                         value={events ? events.toString() : "0"}
-                          
                     />
                     <StatCard
                         icon={<Ticket />}

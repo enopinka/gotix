@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import CustomerLayout from "@/Layouts/CustomerLayout";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Camera, Loader2, Eye, EyeOff, Save } from "lucide-react";
 import { toast } from "react-hot-toast";
 

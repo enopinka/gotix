@@ -11,7 +11,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -19,15 +19,15 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
-import { Calendar } from "@/Components/ui/calendar";
-import { Textarea } from "@/Components/ui/textarea";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/Components/ui/popover";
+} from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -92,11 +92,9 @@ export default function EditorEvent({ event }: eventProps) {
         formData.append("place", values.place);
         if (values.poster instanceof File)
             formData.append("poster", values.poster);
-        if (values.seat instanceof File) 
-            formData.append("seat", values.seat);
-        if (values.banner instanceof File) 
+        if (values.seat instanceof File) formData.append("seat", values.seat);
+        if (values.banner instanceof File)
             formData.append("banner", values.banner);
-
 
         const formattedValues = {
             ...values,
