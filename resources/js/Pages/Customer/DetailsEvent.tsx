@@ -52,6 +52,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
         if (!auth.user) {
             return router.get("/login");
         }
+        console.log(totalPrice);
 
         try {
             router.post(
@@ -565,27 +566,27 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                                         )}
                                                                                                                     </span>
                                                                                                                 </div>
+                                                                                                                <Button
+                                                                                                                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 shadow-lg hover:shadow-cyan-500/25"
+                                                                                                                    onClick={async () => {
+                                                                                                                        await handleCheckout(
+                                                                                                                            category.id,
+                                                                                                                            quantity,
+                                                                                                                            total
+                                                                                                                        );
+                                                                                                                        setShowDetailDialog(
+                                                                                                                            false
+                                                                                                                        );
+                                                                                                                    }}
+                                                                                                                >
+                                                                                                                    Konfirmasi
+                                                                                                                    &
+                                                                                                                    Bayar
+                                                                                                                </Button>
                                                                                                             </>
                                                                                                         );
                                                                                                     })()}
                                                                                                 </div>
-
-                                                                                                <Button
-                                                                                                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 shadow-lg hover:shadow-cyan-500/25"
-                                                                                                    onClick={async () => {
-                                                                                                        await handleCheckout(
-                                                                                                            category.id,
-                                                                                                            quantity
-                                                                                                        );
-                                                                                                        setShowDetailDialog(
-                                                                                                            false
-                                                                                                        );
-                                                                                                    }}
-                                                                                                >
-                                                                                                    Konfirmasi
-                                                                                                    &
-                                                                                                    Bayar
-                                                                                                </Button>
                                                                                             </div>
                                                                                         </DialogContent>
                                                                                     </Dialog>

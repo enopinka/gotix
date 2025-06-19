@@ -13,35 +13,36 @@ use App\Models\User;
 
 class CustomerEventController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $query = Event::query();
 
         // Handle search functionality
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('place', 'LIKE', '%' . $searchTerm . '%');
+                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('place', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 
         // Get events with basic relations
         $events = $query->with(['user:id,name'])
-                       ->orderBy('date', 'asc')
-                       ->get()
-                       ->map(function ($event) {
-                           return [
-                               'id' => $event->id,
-                               'title' => $event->title,
-                               'description' => $event->description,
-                               'date' => $event->date,
-                               'time' => $event->time,
-                               'place' => $event->place,
-                               'poster' => $event->poster,
-                               'partner_name' => $event->user->name ?? 'Unknown',
-                           ];
-                       });
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'description' => $event->description,
+                    'date' => $event->date,
+                    'time' => $event->time,
+                    'place' => $event->place,
+                    'poster' => $event->poster,
+                    'partner_name' => $event->user->name ?? 'Unknown',
+                ];
+            });
 
         return Inertia::render('LandingPage', [
             'events' => $events,
@@ -50,10 +51,10 @@ class CustomerEventController extends Controller
         ]);
     }
 
-    // public function checkout($ticketId)
-    // {
-    //     // Ambil data tiket berdasarkan ID
-    //     $ticket = Ticket::findOrFail($ticketId);
+    public function checkout($ticketId)
+    {
+        // Ambil data tiket berdasarkan ID
+        $ticket = Ticket::findOrFail($ticketId);
 
         // Kirim data ke halaman checkout
         return Inertia::render('Customer/Checkout', [
@@ -72,6 +73,7 @@ class CustomerEventController extends Controller
 
     public function storeOrder(Request $request)
     {
+        dd($request->total_price);
         $request->validate([
             'ticket_id' => 'required|exists:tickets,id',
             'quantity' => 'required|integer|min:1',
@@ -92,7 +94,7 @@ class CustomerEventController extends Controller
             'user_id' => Auth::id(),
             'ticket_id' => $request->ticket_id,
             'quantity' => $request->quantity,
-            'total_price' => $totalPrice,
+            'total_price' => $request->totalPrice,
             'event_id' => $ticket->event_id,
             'status' => 'pending',
         ]);
@@ -173,21 +175,21 @@ class CustomerEventController extends Controller
         }
 
         $events = Event::where('title', 'LIKE', '%' . $query . '%')
-                      ->orWhere('description', 'LIKE', '%' . $query . '%')
-                      ->orWhere('place', 'LIKE', '%' . $query . '%')
-                      ->with(['user:id,name'])
-                      ->limit(10)
-                      ->get()
-                      ->map(function ($event) {
-                          return [
-                              'id' => $event->id,
-                              'title' => $event->title,
-                              'date' => $event->date,
-                              'place' => $event->place,
-                              'poster' => $event->poster,
-                              'partner_name' => $event->user->name ?? 'Unknown',
-                          ];
-                      });
+            ->orWhere('description', 'LIKE', '%' . $query . '%')
+            ->orWhere('place', 'LIKE', '%' . $query . '%')
+            ->with(['user:id,name'])
+            ->limit(10)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'date' => $event->date,
+                    'place' => $event->place,
+                    'poster' => $event->poster,
+                    'partner_name' => $event->user->name ?? 'Unknown',
+                ];
+            });
 
         return response()->json($events);
     }
