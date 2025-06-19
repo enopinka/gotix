@@ -1,4 +1,4 @@
-import StatCard from "@/Components/StatCard";
+import StatCard from "@/components/StatCard";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { usePage } from "@inertiajs/react";
 import { CalendarRangeIcon, Ticket, CircleDollarSign } from "lucide-react";

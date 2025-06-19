@@ -1,4 +1,4 @@
-import StatCard from "@/Components/StatCard";
+import StatCard from "@/components/StatCard";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { Link } from "@inertiajs/react";
 import { Banknote, CircleDollarSign, LogOut, Ticket } from "lucide-react";

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\MidtransAPIController;
+use App\Http\Controllers\MidtransApiController;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Authentication;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware([Authentication::class . ":customer"])->group(function () {
-  Route::post('/payment-handler', [MidtransAPIController::class, 'payment_handler']);
-});
+// Route::middleware([Authentication::class . ":customer"])->group(function () {
+//   Route::post('/payment-handler', [MidtransApiController::class, 'payment_handler']);
+// });

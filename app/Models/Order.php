@@ -13,7 +13,11 @@ class Order extends Model
         'total_price',
         'event_id',
         'status',
-        'snap_token'
+        'snap_token',
+        'transaction_id',
+        'payment_type',
+        'payment_code',
+        'pdf_url',
     ];
 
     public function user()

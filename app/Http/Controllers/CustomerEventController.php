@@ -87,7 +87,7 @@ class CustomerEventController extends Controller
         $partner_revenue = $ticket->price * $request->quantity;
 
         // ngurangi kuota tiket
-        $ticket->available_seats -= $request->quantity;
+        $ticket->availablxe_seats -= $request->quantity;
 
         // Simpan order
         $order = Order::create([

@@ -1,4 +1,4 @@
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Link, usePage, router } from "@inertiajs/react";
 import { Search, Home, User, Menu, LogOut, Ticket, X } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -10,7 +10,7 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 const AVATAR_FALLBACK =
     "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_640.png";

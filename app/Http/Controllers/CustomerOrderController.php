@@ -24,6 +24,7 @@ class CustomerOrderController extends Controller
 
     public function storeOrder(Request $request)
     {
+        dd($request->total_price);
         $request->validate([
             'ticket_id' => 'required|exists:tickets,id',
             'quantity' => 'required|integer|min:1',
@@ -42,11 +43,11 @@ class CustomerOrderController extends Controller
         // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = config('midtrans.serverKey');
         // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isProduction = config('midtrans.isProduction');
         // Set sanitization on (default)
-        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$isSanitized = config('midtrans.isSanitized');
         // Set 3DS transaction for credit card to true
-        \Midtrans\Config::$is3ds = true;
+        \Midtrans\Config::$is3ds = config('midtrans.isSanitized');
 
         // Simpan order
         $order = Order::create([
@@ -55,8 +56,9 @@ class CustomerOrderController extends Controller
             'quantity' => $request->quantity,
             'total_price' => $request->total_price,
             'event_id' => $ticket->event_id,
-            'status' => 'pending',
+
         ]);
+
 
         $get_order_id = $order->id;
 
@@ -97,7 +99,7 @@ class CustomerOrderController extends Controller
             ]);
         }
 
-        return redirect("/event/{$ticket->event_id}")->with('success', 'Order created successfully.');
+        return redirect("/tickets")->with('success', 'Order created successfully.');
 
         // return response()->json([
         //     'message' => 'Order created successfully.',
@@ -105,8 +107,20 @@ class CustomerOrderController extends Controller
         // ], 201);
     }
 
-    public function checkoutPayment(Request $request)
+    public function payment_post(Request $request)
     {
-        dd($request);
+        $json = json_decode($request->get('json'));
+        $order = new Order();
+        $order->status = $json->transaction_status;
+        $order->transaction_id = $json->transaction_id;
+        $order->order_id = $json->order_id;
+        $order->payment_type = $json->payment_type;
+        $order->payment_code = isset($json->payment_code) ? $json->payment_code : null;
+        $order->pdf_url = isset($json->pdf_url) ? $json->pdf_url : null;
+        return $order->save() ? redirect(url('/tickets'))->with('alert-success', 'Order berhasil dibuat') : redirect(url('/'))->with('alert-failed', 'Terjadi kesalahan');
     }
+    // public function checkoutPayment(Request $request)
+    // {
+    //     dd($request);
+    // }
 }

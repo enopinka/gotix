@@ -1,11 +1,11 @@
-import { Card, CardContent } from "@/Components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/Components/ui/carousel";
+} from "@/components/ui/carousel";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";

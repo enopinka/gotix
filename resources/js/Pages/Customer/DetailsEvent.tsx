@@ -43,6 +43,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     const { auth } = usePage().props;
     const [isFlipped, setIsFlipped] = useState(false);
     const handleClick = () => setIsFlipped((prev) => !prev);
+    const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [showDetailDialog, setShowDetailDialog] = useState(false);
 
     const handleCheckout = async (
         ticketId: number,
@@ -87,15 +91,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
         date: new Date(`${event.date}T${event.time}`),
     };
 
-    const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
-    const [quantity, setQuantity] = useState<number>(1);
-    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-    const [showDetailDialog, setShowDetailDialog] = useState(false);
-
     const calculateTotal = (price: number, quantity: number) => {
         const subtotal = price * quantity;
-        const serviceFee = quantity * 10000;
-        const tax = subtotal * 0.1; // Pajak 10%
+        const serviceFee = 0;
+        const tax = 1; // Pajak 10%
         const total = subtotal + serviceFee + tax;
         return { subtotal, serviceFee, tax, total };
     };
@@ -269,7 +268,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                 value="ticket"
                                                 className="w-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white text-gray-300 rounded-lg font-semibold transition-all duration-300"
                                             >
-                                                Tiket
+                                                TiketSS
                                             </TabsTrigger>
                                         </TabsList>
 
@@ -683,7 +682,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                 </DialogDescription>
                             </div>
                             <button
-                                onClick={() => setShowSuccessDialog(false)}
+                                onClick={() => {
+                                    setShowSuccessDialog(false);
+                                    router.get("/tickets");
+                                }}
                                 className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
                             >
                                 Tutup

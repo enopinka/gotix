@@ -38,13 +38,13 @@ class CustomerProfileController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-        
+
         $validated = $request->validate([
             'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|string|max:255',
             'email' => "required|string|email|max:255|unique:users,email,{$user->id}",
         ]);
-        
+
         // Menggunakan DB query untuk menghindari masalah dengan model
         DB::table('users')
             ->where('id', $user->id)
@@ -53,10 +53,10 @@ class CustomerProfileController extends Controller
                 'email' => $validated['email'],
                 'photo' => $validated['photo'] ?? $user->photo,
             ]);
-        
+
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
-    
+
     /**
      * Update user password
      */
@@ -66,19 +66,19 @@ class CustomerProfileController extends Controller
             'current_password' => 'required',
             'password' => 'required|string|min:8|confirmed',
         ]);
-        
+
         $user = Auth::user();
-        
+
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'The current password is incorrect']);
         }
-        
+
         DB::table('users')
             ->where('id', $user->id)
             ->update([
                 'password' => Hash::make($request->password),
             ]);
-        
+
         return redirect()->back()->with('success', 'Password updated successfully');
     }
 
@@ -93,31 +93,30 @@ class CustomerProfileController extends Controller
             'photo' => 'required',
         ]);
         dd($validated);
-        
+
         $user = Auth::user();
         if ($request->hasFile('photo')) {
-            
+
             // Hapus foto lama jika ada
             $this->deleteExistingPhoto($user);
-            
+
             // Sanitasi nama file untuk keamanan
             $filename = time() . '_' . $this->sanitizeFilename($request->file('photo'));
-            
+
             // Simpan foto baru
             $path = $request->file('photo')->storeAs('profile-photos', $filename, 'public');
-            
-        
-        // Update data foto pada user
-        // $user->update(['photo' => $path]);
 
-        // Debug untuk melihat path file yang disimpan
-        
-        // DB::table('users')
-        //     ->where('id', $user->id)
-        //     ->update(['photo' => $path]);
-        
-        return redirect()->back()->with('success', 'Profile photo updated successfully');
-    
+
+            // Update data foto pada user
+            // $user->update(['photo' => $path]);
+
+            // Debug untuk melihat path file yang disimpan
+
+            // DB::table('users')
+            //     ->where('id', $user->id)
+            //     ->update(['photo' => $path]);
+
+            return redirect()->back()->with('success', 'Profile photo updated successfully');
         }
         return redirect()->back()->withErrors(['photo' => 'Failed to upload photo']);
     }
@@ -128,29 +127,36 @@ class CustomerProfileController extends Controller
     public function deletePhoto()
     {
         $user = Auth::user();
-        
+
         $this->deleteExistingPhoto($user);
-        
+
         DB::table('users')
             ->where('id', $user->id)
             ->update(['photo' => null]);
-            
+
         return redirect()->back()->with('success', 'Profile photo removed successfully');
     }
-    
+
     /**
      * Display user's purchased tickets
      */
     public function myTickets()
     {
         $orders = Order::with(['event', 'ticket'])
-                    ->where('user_id', Auth::id())
-                    ->latest()
-                    ->get();
-        
-        return Inertia::render('Customer/MyTickets', compact('orders'));
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return Inertia::render('Customer/MyTickets', [
+            'orders' => $orders,
+            'midtrans' => [
+                'clientKey' => \Midtrans\Config::$clientKey,
+                'snapBaseUrl' => \Midtrans\Config::getSnapBaseUrl(),
+            ],
+        ]);
     }
-    
+
+
     /**
      * Helper untuk menghapus foto yang sudah ada
      */
@@ -160,7 +166,7 @@ class CustomerProfileController extends Controller
             Storage::disk('public')->delete($user->photo);
         }
     }
-    
+
     /**
      * Helper untuk sanitasi nama file
      */
@@ -170,11 +176,12 @@ class CustomerProfileController extends Controller
         $name = pathinfo($originalName, PATHINFO_FILENAME);
         $extension = $file->getClientOriginalExtension();
         $sanitized = preg_replace('/[^A-Za-z0-9\-]/', '', $name);
-        
+
         return "{$sanitized}.{$extension}";
     }
 
-    public function profileScreenV2(){
+    public function profileScreenV2()
+    {
         $user = Auth::user();
 
         return Inertia::render('Customer/UserProfile', [
@@ -182,9 +189,10 @@ class CustomerProfileController extends Controller
         ]);
     }
 
-    public function updateProfileV2(Request $request){
+    public function updateProfileV2(Request $request)
+    {
         $user_id = Auth::user()->getAuthIdentifier();
-       
+
 
         $validated = $request->validate([
             'name' => 'required',
@@ -202,9 +210,8 @@ class CustomerProfileController extends Controller
             $user->photo = "/storage/{$photoPath}";
         }
 
-    $user->save();
+        $user->save();
 
-    return redirect('/profile')->with('success', 'Profile telah diupdate!');
-
+        return redirect('/profile')->with('success', 'Profile telah diupdate!');
     }
 }
