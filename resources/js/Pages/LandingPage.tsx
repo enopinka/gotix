@@ -74,8 +74,8 @@ export default function LandingPage({ events }: LandingPageProps) {
         <Card
             className={`group rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
                 isPast
-                    ? "bg-gray-800/60 opacity-60 hover:opacity-80 border-gray-700"
-                    : "bg-gray-800 shadow-lg hover:shadow-xl border-gray-700"
+                    ? "bg-gray-800/60 opacity-60 hover:opacity-80 "
+                    : "bg-gray-800 shadow-lg hover:shadow-xl "
             }`}
         >
             <div className="relative overflow-hidden">
@@ -94,23 +94,23 @@ export default function LandingPage({ events }: LandingPageProps) {
                                 : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold"
                         }`}
                     >
-                        {isPast ? "Selesai" : "Upcoming"}
+                        {isPast ? "Passed" : "Upcoming"}
                     </span>
                 </div>
             </div>
             <div className="p-4">
                 <h3
                     className={`font-semibold mb-2 line-clamp-2 ${
-                        isPast ? "text-gray-500" : "text-white"
+                        isPast ? "text-white" : "text-white"
                     }`}
                 >
                     {event.title}
                 </h3>
                 <div className="space-y-1 mb-4 text-sm">
-                    <p className={isPast ? "text-gray-500" : "text-gray-300"}>
+                    <p className={isPast ? "text-white" : "text-gray-300"}>
                         {formatEventTime(event.date, event.time)} WIB
                     </p>
-                    <p className={isPast ? "text-gray-500" : "text-gray-300"}>
+                    <p className={isPast ? "text-white" : "text-gray-300"}>
                         {formatEventDate(event.date)}
                     </p>
                 </div>
@@ -143,7 +143,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                                     .slice(0, 5)
                                     .map((event) => (
                                         <CarouselItem key={event.id}>
-                                            <Card className="border-0 rounded-2xl overflow-hidden bg-gray-800 shadow-2xl">
+                                            <Card className="rounded-2xl overflow-hidden bg-gray-800 shadow-2xl">
                                                 <Link
                                                     href={`/event/${event.id}`}
                                                 >

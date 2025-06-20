@@ -273,7 +273,12 @@ export default function CustomerLayout({
                 <motion.input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDownCapture={(e) => {
+                        if (e.key === "Enter") {
+                            setShowSearchResults(false);
+                            setSearchFocused(false);
+                        }
+                    }}
                     placeholder="Cari event impian Anda..."
                     className={cn(
                         "w-full pl-12 pr-6 py-3.5 bg-gray-700/80 backdrop-blur-xl border border-gray-600 text-white placeholder:text-gray-400",
@@ -323,7 +328,6 @@ export default function CustomerLayout({
                         <p className="text-sm font-semibold text-white max-w-32 truncate">
                             {auth.user.name}
                         </p>
-                        <p className="text-xs text-gray-400">Member Premium</p>
                     </div>
                 </motion.button>
             </DropdownMenuTrigger>

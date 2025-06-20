@@ -386,7 +386,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                         : 1
                                                                                             )
                                                                                         }
-                                                                                        className="border-gray-600 text-white hover:bg-gray-700"
+                                                                                        className="border-gray-600 text-black hover:bg-gray-700"
                                                                                     >
                                                                                         <Minus className="w-4 h-4" />
                                                                                     </Button>
@@ -414,7 +414,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                             quantity >=
                                                                                             category.available_seats
                                                                                         }
-                                                                                        className="border-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
+                                                                                        className="border-gray-600 text-black hover:bg-gray-700 disabled:opacity-50"
                                                                                     >
                                                                                         <Plus className="w-4 h-4" />
                                                                                     </Button>
@@ -431,7 +431,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                 1
                                                                                             );
                                                                                         }}
-                                                                                        className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                                                                                        className="flex-1"
                                                                                     >
                                                                                         Batal
                                                                                     </Button>
