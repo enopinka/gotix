@@ -39,7 +39,7 @@ const ANIMATIONS = {
         exit: { scale: 0.95, opacity: 0 },
         transition: { duration: 0.2 },
     },
-};
+} as const;
 
 interface SearchResult {
     id: number;
@@ -171,7 +171,6 @@ export default function CustomerLayout({
         setSearchFocused(false);
         setSearchQuery("");
     };
-
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("id-ID", {

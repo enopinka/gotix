@@ -10,7 +10,6 @@ import {
     DialogHeader,
 } from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon, Plus, Minus } from "lucide-react";
-import { ScrollArea } from "@/Components/ui/scroll-area";
 import { useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { router, usePage } from "@inertiajs/react";
