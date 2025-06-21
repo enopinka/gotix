@@ -76,6 +76,6 @@ Route::middleware([Authentication::class . ":admin"])->group(function () {
     Route::get('/admin/acara', [AdminController::class, 'acara']);
     Route::get('/admin/customer', [AdminController::class, 'customer']);
     Route::delete('/admin/customer/{id}', [AdminController::class, 'deleteCustomer']);
+    Route::delete('/admin/partner/{id}', [AdminController::class, 'deletePartner']);
     Route::delete('/admin/acara/{id}', [AdminController::class, 'deleteEvent']);
-
 });

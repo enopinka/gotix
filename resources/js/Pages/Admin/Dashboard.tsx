@@ -42,7 +42,7 @@ interface Statistics {
     orders: {
         total: number;
         pending: number;
-        completed: number;
+        paid: number; // Updated from 'completed' to 'paid'
         cancelled: number;
     };
     revenue: {
@@ -86,22 +86,12 @@ interface RecentEvent {
 interface TopPromotor {
     id: number;
     name: string;
-    description: string | null;
-    profile_picture: string | null;
+    email: string;
+    role: string;
+    created_at: string;
+    updated_at: string;
+    email_verified_at: string | null;
     total_revenue: number;
-    events: Array<{
-        id: number;
-        title: string;
-        description: string;
-        date: string;
-        time: string;
-        place: string;
-        user_id: number;
-        poster: string | null;
-        seating_chart: string | null;
-        created_at: string;
-        updated_at: string;
-    }>;
 }
 
 interface ChartData {
@@ -196,15 +186,15 @@ const OrderItem = memo(
                 </p>
                 <span
                     className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        order.status === "completed"
+                        order.status === "paid"
                             ? "bg-emerald-600 text-white"
                             : order.status === "pending"
                             ? "bg-yellow-600 text-white"
                             : "bg-red-600 text-white"
                     }`}
                 >
-                    {order.status === "completed"
-                        ? "Selesai"
+                    {order.status === "paid"
+                        ? "Terbayar"
                         : order.status === "pending"
                         ? "Pending"
                         : "Dibatalkan"}
@@ -336,7 +326,7 @@ export default function Dashboard({
                         icon={<ShoppingCart className="w-6 h-6" />}
                         title="Total Pesanan"
                         value={statistics.orders.total.toLocaleString()}
-                        subtitle={`${statistics.orders.completed} Selesai • ${statistics.orders.pending} Pending`}
+                        subtitle={`${statistics.orders.paid} Terbayar • ${statistics.orders.pending} Pending`}
                         color="purple"
                     />
                     <StatCard
@@ -405,11 +395,11 @@ export default function Dashboard({
                                 <div className="flex items-center space-x-2">
                                     <CheckCircle className="w-4 h-4 text-emerald-400" />
                                     <span className="text-gray-300">
-                                        Selesai
+                                        Terbayar
                                     </span>
                                 </div>
                                 <span className="font-bold text-white">
-                                    {statistics.orders.completed}
+                                    {statistics.orders.paid}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">

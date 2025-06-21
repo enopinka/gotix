@@ -3,10 +3,18 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { usePage, router } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 import { motion } from "framer-motion";
-import { Trash2, Mail, Calendar, User } from "lucide-react";
+import {
+    Trash2,
+    Mail,
+    Calendar,
+    User,
+    Ticket,
+    ShoppingBag,
+    DollarSign,
+} from "lucide-react";
 import { useState } from "react";
 
-// Bikin Customer type
+// Bikin Customer type dengan tambahan data tiket
 interface Customer {
     id: number;
     name: string;
@@ -14,6 +22,9 @@ interface Customer {
     phone?: string;
     created_at: string;
     profile_picture?: string;
+    total_spent: number;
+    total_orders: number;
+    total_tickets_purchased: number;
 }
 
 // Extend PageProps, bukan replace
@@ -58,6 +69,22 @@ export default function Customer() {
         }
     };
 
+    // Format currency untuk IDR
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(amount);
+    };
+
+    // Hitung total tiket yang terbeli
+    const totalTicketsPurchased = customers.reduce(
+        (sum, customer) => sum + customer.total_tickets_purchased,
+        0
+    );
+
     return (
         <AdminLayout>
             <div className="p-6 text-white">
@@ -77,7 +104,8 @@ export default function Customer() {
                         </h1>
                     </div>
                     <p className="text-gray-400">
-                        Kelola semua data pelanggan Anda
+                        Kelola semua data pelanggan dan aktivitas pembelian
+                        mereka
                     </p>
 
                     {/* Stats Bar */}
@@ -114,6 +142,15 @@ export default function Customer() {
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                                             Email
+                                        </th>
+                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                                            Tiket Dibeli
+                                        </th>
+                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                                            Total Pesanan
+                                        </th>
+                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                                            Total Pengeluaran
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                                             Terdaftar
@@ -168,10 +205,63 @@ export default function Customer() {
                                                 </div>
                                             </td>
 
+                                            {/* Total Tickets Purchased */}
+                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <Ticket className="w-4 h-4 text-purple-400" />
+                                                    <span
+                                                        className={`text-sm font-semibold ${
+                                                            customer.total_tickets_purchased >
+                                                            0
+                                                                ? "text-purple-400"
+                                                                : "text-gray-500"
+                                                        }`}
+                                                    >
+                                                        {
+                                                            customer.total_tickets_purchased
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {/* Total Orders */}
+                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <ShoppingBag className="w-4 h-4 text-cyan-400" />
+                                                    <span
+                                                        className={`text-sm font-semibold ${
+                                                            customer.total_orders >
+                                                            0
+                                                                ? "text-cyan-400"
+                                                                : "text-gray-500"
+                                                        }`}
+                                                    >
+                                                        {customer.total_orders}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {/* Total Spent */}
+                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                <span
+                                                    className={`text-sm font-semibold ${
+                                                        customer.total_spent > 0
+                                                            ? "text-green-400"
+                                                            : "text-gray-500"
+                                                    }`}
+                                                >
+                                                    {customer.total_spent > 0
+                                                        ? formatCurrency(
+                                                              customer.total_spent
+                                                          )
+                                                        : "Rp 0"}
+                                                </span>
+                                            </td>
+
                                             {/* Created At */}
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-2 text-gray-400">
-                                                    <Calendar className="w-4 h-4 text-purple-400" />
+                                                    <Calendar className="w-4 h-4 text-orange-400" />
                                                     <span className="text-sm">
                                                         {new Date(
                                                             customer.created_at

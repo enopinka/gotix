@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { usePage } from "@inertiajs/react";
+import { usePage, router } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 import {
     Users,
@@ -12,6 +12,8 @@ import {
     TrendingUp,
     Image as ImageIcon,
     User,
+    Trash2,
+    AlertTriangle,
 } from "lucide-react";
 
 interface Event {
@@ -26,13 +28,16 @@ interface Event {
     user_id: number;
     poster: string;
     seating_chart: string;
+    revenue: number;
 }
 
 interface Promotor {
     id: number;
     name: string;
+    email: string;
     description?: string;
     profile_picture?: string;
+    total_revenue: number;
     events: Event[];
 }
 
@@ -47,6 +52,14 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             month: "short",
             year: "numeric",
         });
+    };
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
     };
 
     return (
@@ -82,7 +95,83 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
                             <MapPin className="w-3 h-3 text-purple-400" />
                             <span className="truncate">{event.place}</span>
                         </div>
+                        {event.revenue > 0 && (
+                            <div className="flex items-center gap-2 text-xs text-emerald-400">
+                                <TrendingUp className="w-3 h-3" />
+                                <span>{formatCurrency(event.revenue)}</span>
+                            </div>
+                        )}
                     </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const DeleteConfirmationModal = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    promotorName,
+    isLoading,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    promotorName: string;
+    isLoading: boolean;
+}) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-xl max-w-md w-full p-6 border border-gray-700">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-red-500/20 p-2 rounded-lg">
+                        <AlertTriangle className="w-6 h-6 text-red-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-white">
+                        Konfirmasi Hapus
+                    </h3>
+                </div>
+
+                <p className="text-gray-300 mb-6">
+                    Apakah Anda yakin ingin menghapus promotor{" "}
+                    <span className="font-semibold text-white">
+                        {promotorName}
+                    </span>
+                    ?
+                    <br />
+                    <span className="text-sm text-red-400 mt-2 block">
+                        Tindakan ini tidak dapat dibatalkan.
+                    </span>
+                </p>
+
+                <div className="flex gap-3 justify-end">
+                    <button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        disabled={isLoading}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                        {isLoading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Menghapus...
+                            </>
+                        ) : (
+                            <>
+                                <Trash2 className="w-4 h-4" />
+                                Hapus
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         </div>
@@ -93,18 +182,25 @@ const PromotorCard = ({
     promotor,
     isExpanded,
     onToggle,
+    onDelete,
 }: {
     promotor: Promotor;
     isExpanded: boolean;
     onToggle: () => void;
+    onDelete: () => void;
 }) => {
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
+
     return (
         <div className="bg-gray-800/50 rounded-xl shadow-lg border border-gray-700/30 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
             {/* Header Card */}
-            <div
-                onClick={onToggle}
-                className="p-5 cursor-pointer hover:bg-gray-800/70 transition-colors duration-200 rounded-xl"
-            >
+            <div className="p-5">
                 <div className="flex items-center gap-4 mb-4">
                     <div className="relative">
                         {promotor.profile_picture ? (
@@ -129,31 +225,49 @@ const PromotorCard = ({
                         <h2 className="font-semibold text-lg text-white mb-1">
                             {promotor.name}
                         </h2>
+                        <p className="text-sm text-gray-400">
+                            {promotor.email}
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={onToggle}
+                            className="bg-gray-700 rounded-lg p-2 hover:bg-gray-600 transition-colors"
+                        >
+                            <ChevronDown
+                                className={`w-4 h-4 text-white transition-transform duration-200 ${
+                                    isExpanded ? "rotate-180" : ""
+                                }`}
+                            />
+                        </button>
+                        <button
+                            onClick={onDelete}
+                            className="bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg p-2 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 text-gray-300">
-                        <Calendar className="w-4 h-4 text-cyan-400" />
-                        <span className="text-sm">
-                            {promotor.events.length} Acara
-                        </span>
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="bg-gray-700/30 rounded-lg p-3">
+                        <div className="flex items-center gap-2 text-gray-300 mb-1">
+                            <Calendar className="w-4 h-4 text-cyan-400" />
+                            <span className="text-sm">Total Acara</span>
+                        </div>
+                        <p className="text-lg font-semibold text-white">
+                            {promotor.events.length}
+                        </p>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                        <TrendingUp className="w-4 h-4 text-emerald-400" />
-                        <span className="text-sm">Aktif</span>
-                    </div>
-                </div>
-
-                {/* Toggle Button */}
-                <div className="flex items-center justify-center">
-                    <div className="bg-gray-700 rounded-lg p-2">
-                        <ChevronDown
-                            className={`w-4 h-4 text-white transition-transform duration-200 ${
-                                isExpanded ? "rotate-180" : ""
-                            }`}
-                        />
+                    <div className="bg-gray-700/30 rounded-lg p-3">
+                        <div className="flex items-center gap-2 text-gray-300 mb-1">
+                            <TrendingUp className="w-4 h-4 text-emerald-400" />
+                            <span className="text-sm">Total Revenue</span>
+                        </div>
+                        <p className="text-lg font-semibold text-emerald-400">
+                            {formatCurrency(promotor.total_revenue)}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -207,18 +321,98 @@ export default function Promotor() {
     const [selectedPromotorId, setSelectedPromotorId] = useState<number | null>(
         null
     );
+    const [deleteModal, setDeleteModal] = useState<{
+        isOpen: boolean;
+        promotorId: number | null;
+        promotorName: string;
+    }>({ isOpen: false, promotorId: null, promotorName: "" });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handlePromotorClick = (id: number) => {
         setSelectedPromotorId(id === selectedPromotorId ? null : id);
     };
 
+    const handleDeleteClick = (promotor: Promotor) => {
+        setDeleteModal({
+            isOpen: true,
+            promotorId: promotor.id,
+            promotorName: promotor.name,
+        });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteModal.promotorId) return;
+
+        setIsDeleting(true);
+
+        try {
+            const response = await fetch(
+                `/admin/partner/${deleteModal.promotorId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") || "",
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Refresh the page to update the promotor list
+                router.reload({ only: ["promotors"] });
+
+                // Show success message (you can customize this)
+                alert(data.message);
+            } else {
+                alert(
+                    data.message || "Terjadi kesalahan saat menghapus promotor"
+                );
+            }
+        } catch (error) {
+            console.error("Error deleting promotor:", error);
+            alert("Terjadi kesalahan saat menghapus promotor");
+        } finally {
+            setIsDeleting(false);
+            setDeleteModal({
+                isOpen: false,
+                promotorId: null,
+                promotorName: "",
+            });
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteModal({ isOpen: false, promotorId: null, promotorName: "" });
+    };
+
     const totalPromotors = useMemo(() => promotors.length, [promotors.length]);
+    const totalRevenue = useMemo(
+        () =>
+            promotors.reduce(
+                (sum, promotor) => sum + promotor.total_revenue,
+                0
+            ),
+        [promotors]
+    );
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(amount);
+    };
 
     return (
         <AdminLayout>
             <div className="space-y-6">
-                {/* Header  */}
-                <div className="flex justify-between items-center">
+                {/* Header */}
+                <div className="flex justify-between items-start">
                     <div>
                         <h1 className="text-3xl font-bold text-white">
                             Daftar Promotor
@@ -228,24 +422,41 @@ export default function Promotor() {
                             Kelola dan pantau semua promotor GOTIX
                         </p>
                     </div>
-                    <div className="bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-700/50">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg p-2">
-                                <Users className="w-5 h-5" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-700/50">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg p-2">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">
+                                        Total Promotor
+                                    </p>
+                                    <p className="text-xl font-bold text-white">
+                                        {totalPromotors}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-400">
-                                    Total Promotor
-                                </p>
-                                <p className="text-xl font-bold text-white">
-                                    {totalPromotors}
-                                </p>
+                        </div>
+                        <div className="bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-700/50">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg p-2">
+                                    <TrendingUp className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-400">
+                                        Total Revenue
+                                    </p>
+                                    <p className="text-xl font-bold text-emerald-400">
+                                        {formatCurrency(totalRevenue)}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Promotor Grid  */}
+                {/* Promotor Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {promotors.map((promotor) => (
                         <PromotorCard
@@ -253,11 +464,12 @@ export default function Promotor() {
                             promotor={promotor}
                             isExpanded={selectedPromotorId === promotor.id}
                             onToggle={() => handlePromotorClick(promotor.id)}
+                            onDelete={() => handleDeleteClick(promotor)}
                         />
                     ))}
                 </div>
 
-                {/* Empty State  */}
+                {/* Empty State */}
                 {promotors.length === 0 && (
                     <div className="text-center py-12">
                         <div className="bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-700/50 max-w-md mx-auto">
@@ -273,6 +485,15 @@ export default function Promotor() {
                         </div>
                     </div>
                 )}
+
+                {/* Delete Confirmation Modal */}
+                <DeleteConfirmationModal
+                    isOpen={deleteModal.isOpen}
+                    onClose={handleDeleteCancel}
+                    onConfirm={handleDeleteConfirm}
+                    promotorName={deleteModal.promotorName}
+                    isLoading={isDeleting}
+                />
             </div>
         </AdminLayout>
     );

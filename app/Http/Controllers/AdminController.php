@@ -30,20 +30,20 @@ class AdminController extends Controller
         // Orders Statistics
         $totalOrders = Order::count();
         $pendingOrders = Order::where('status', 'pending')->count();
-        $completedOrders = Order::where('status', 'completed')->count();
+        $paidOrders = Order::where('status', 'paid')->count();
         $cancelledOrders = Order::where('status', 'cancelled')->count();
 
-        // Revenue Statistics - calculated from Orders
-        $totalRevenue = Order::where('status', 'completed')->sum('total_price');
-        $monthlyRevenue = Order::where('status', 'completed')
+        // Revenue Statistics - perbaikan perhitungan
+        $totalRevenue = Order::where('status', 'paid')->sum('total_price') ?? 0;
+        $monthlyRevenue = Order::where('status', 'paid')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
-            ->sum('total_price');
+            ->sum('total_price') ?? 0;
         
         // Tickets Statistics
         $totalTickets = Ticket::count();
-        $soldTickets = Order::where('status', 'completed')->sum('quantity');
-        $availableTickets = Ticket::sum('available_seats');
+        $soldTickets = Order::where('status', 'paid')->sum('quantity') ?? 0;
+        $availableTickets = Ticket::sum('available_seats') ?? 0;
 
         // Recent Activities
         $recentOrders = Order::with(['user', 'event', 'ticket'])
@@ -56,14 +56,16 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
 
-        // Top Promotors by Revenue - calculated from Orders through Events
-        $topPromotors = User::where('role', 'partner')
-            ->withSum([
-                'events as total_revenue' => function($query) {
-                    $query->join('orders', 'events.id', '=', 'orders.event_id')
-                          ->where('orders.status', 'completed');
-                }
-            ], 'orders.total_price')
+        // Top Promotors by Revenue - perbaikan query
+        $topPromotors = User::select('users.*')
+            ->where('role', 'partner')
+            ->leftJoin('events', 'users.id', '=', 'events.user_id')
+            ->leftJoin('orders', function($join) {
+                $join->on('events.id', '=', 'orders.event_id')
+                     ->where('orders.status', '=', 'paid');
+            })
+            ->groupBy('users.id', 'users.name', 'users.email', 'users.role', 'users.created_at', 'users.updated_at', 'users.email_verified_at')
+            ->selectRaw('COALESCE(SUM(orders.total_price), 0) as total_revenue')
             ->orderBy('total_revenue', 'desc')
             ->limit(5)
             ->get();
@@ -86,10 +88,10 @@ class AdminController extends Controller
         $monthlyRevenueData = collect();
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
-            $revenue = Order::where('status', 'completed')
+            $revenue = Order::where('status', 'paid')
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
-                ->sum('total_price');
+                ->sum('total_price') ?? 0;
             
             $monthlyRevenueData->push([
                 'month' => $date->format('M Y'),
@@ -113,7 +115,7 @@ class AdminController extends Controller
                 'orders' => [
                     'total' => $totalOrders,
                     'pending' => $pendingOrders,
-                    'completed' => $completedOrders,
+                    'paid' => $paidOrders,
                     'cancelled' => $cancelledOrders,
                 ],
                 'revenue' => [
@@ -140,7 +142,8 @@ class AdminController extends Controller
 
     public function promotor()
     {
-        $promotors = User::with(['events' => function($query) {
+        $promotors = User::where('role', 'partner')
+            ->with(['events' => function($query) {
                 $query->select(
                     'id',
                     'created_at',
@@ -155,23 +158,29 @@ class AdminController extends Controller
                     'seating_chart'
                 );
             }])
-            ->where('role', 'partner')
             ->get()
             ->map(function ($user) {
-                // Calculate total revenue for each promotor
-                $totalRevenue = Order::whereHas('event', function($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
-                ->where('status', 'completed')
-                ->sum('total_price');
+                // Perbaikan perhitungan revenue per promotor
+                $totalRevenue = DB::table('orders')
+                    ->join('events', 'orders.event_id', '=', 'events.id')
+                    ->where('events.user_id', $user->id)
+                    ->where('orders.status', 'paid')
+                    ->sum('orders.total_price') ?? 0;
 
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'email' => $user->email,
                     'description' => $user->description ?? null,
                     'profile_picture' => $user->profile_picture ?? null,
+                    'created_at' => $user->created_at,
                     'total_revenue' => $totalRevenue,
                     'events' => $user->events->map(function ($event) {
+                        // Hitung revenue per event
+                        $eventRevenue = Order::where('event_id', $event->id)
+                            ->where('status', 'paid')
+                            ->sum('total_price') ?? 0;
+                            
                         return [
                             'id' => $event->id,
                             'created_at' => $event->created_at,
@@ -184,6 +193,7 @@ class AdminController extends Controller
                             'user_id' => $event->user_id,
                             'poster' => $event->poster,
                             'seating_chart' => $event->seating_chart,
+                            'revenue' => $eventRevenue,
                         ];
                     }),
                 ];
@@ -197,15 +207,15 @@ class AdminController extends Controller
     public function laporan()
     {
         // Revenue analytics for admin reports
-        $totalRevenue = Order::where('status', 'completed')->sum('total_price');
+        $totalRevenue = Order::where('status', 'paid')->sum('total_price') ?? 0;
         
         // Monthly revenue for the current year
         $monthlyRevenueCurrentYear = collect();
         for ($month = 1; $month <= 12; $month++) {
-            $revenue = Order::where('status', 'completed')
+            $revenue = Order::where('status', 'paid')
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', now()->year)
-                ->sum('total_price');
+                ->sum('total_price') ?? 0;
             
             $monthlyRevenueCurrentYear->push([
                 'month' => date('M', mktime(0, 0, 0, $month, 1)),
@@ -213,12 +223,19 @@ class AdminController extends Controller
             ]);
         }
 
-        // Top performing events by revenue
-        $topEvents = Event::select('events.id', 'events.title', 'events.date', 'events.user_id')
-            ->join('orders', 'events.id', '=', 'orders.event_id')
-            ->where('orders.status', 'completed')
+        // Perbaikan query top events
+        $topEvents = Event::select([
+                'events.id', 
+                'events.title', 
+                'events.date', 
+                'events.user_id',
+                DB::raw('COALESCE(SUM(orders.total_price), 0) as total_revenue')
+            ])
+            ->leftJoin('orders', function($join) {
+                $join->on('events.id', '=', 'orders.event_id')
+                     ->where('orders.status', '=', 'paid');
+            })
             ->groupBy('events.id', 'events.title', 'events.date', 'events.user_id')
-            ->selectRaw('SUM(orders.total_price) as total_revenue')
             ->orderBy('total_revenue', 'desc')
             ->limit(10)
             ->with('user:id,name')
@@ -233,24 +250,37 @@ class AdminController extends Controller
 
     public function acara()
     {
-        // Optimasi: hanya ambil field yang diperlukan dan gunakan pagination
-        $events = Event::select(
-            'id',
-            'title',
-            'description',
-            'poster',
-            'date',
-            'time',
-            'place',
-            'user_id',
-            'created_at'
-        )
-        ->with(['user:id,name']) // Hanya ambil id dan name dari user
-        ->withSum(['orders as total_revenue' => function($query) {
-            $query->where('status', 'completed');
-        }], 'total_price')
-        ->orderBy('created_at', 'desc')
-        ->get();
+        // Perbaikan query events dengan revenue
+        $events = Event::select([
+                'events.id',
+                'events.title',
+                'events.description',
+                'events.poster',
+                'events.date',
+                'events.time',
+                'events.place',
+                'events.user_id',
+                'events.created_at',
+                DB::raw('COALESCE(SUM(orders.total_price), 0) as total_revenue')
+            ])
+            ->leftJoin('orders', function($join) {
+                $join->on('events.id', '=', 'orders.event_id')
+                     ->where('orders.status', '=', 'paid');
+            })
+            ->with(['user:id,name'])
+            ->groupBy(
+                'events.id',
+                'events.title',
+                'events.description',
+                'events.poster',
+                'events.date',
+                'events.time',
+                'events.place',
+                'events.user_id',
+                'events.created_at'
+            )
+            ->orderBy('events.created_at', 'desc')
+            ->get();
 
         return Inertia::render('Admin/Acara', [
             'events' => $events,
@@ -258,20 +288,34 @@ class AdminController extends Controller
     }
 
     public function customer()
-    {
-        // Ambil semua user yang rolenya 'customer' dengan total pembelian
-        $customers = User::where('role', 'customer')
-            ->withSum(['orders as total_spent' => function($query) {
-                $query->where('status', 'completed');
-            }], 'total_price')
-            ->withCount(['orders as total_orders'])
-            ->get();
+{
+    // Perbaikan query customer dengan total spent dan total tickets purchased
+    $customers = User::select([
+            'users.*',
+            DB::raw('COALESCE(SUM(CASE WHEN orders.status = "paid" THEN orders.total_price END), 0) as total_spent'),
+            DB::raw('COUNT(CASE WHEN orders.status = "paid" THEN orders.id END) as total_orders'),
+            DB::raw('COALESCE(SUM(CASE WHEN orders.status = "paid" THEN orders.quantity END), 0) as total_tickets_purchased')
+        ])
+        ->where('users.role', 'customer')
+        ->leftJoin('orders', 'users.id', '=', 'orders.user_id')
+        ->groupBy(
+            'users.id', 
+            'users.name', 
+            'users.email', 
+            'users.role', 
+            'users.created_at', 
+            'users.updated_at', 
+            'users.email_verified_at',
+            'users.password',
+            'users.remember_token'
+        )
+        ->orderBy('total_tickets_purchased', 'desc')
+        ->get();
 
-        // Kirim data ke halaman Admin/Customer
-        return Inertia::render('Admin/Customer', [
-            'customers' => $customers,
-        ]);
-    }
+    return Inertia::render('Admin/Customer', [
+        'customers' => $customers,
+    ]);
+}
 
     public function deleteCustomer(Request $request, $id)
     {
@@ -291,7 +335,7 @@ class AdminController extends Controller
             // Simpan nama customer untuk response
             $customerName = $customer->name;
 
-            // Hapus customer
+            // Hapus customer (pastikan foreign key constraints diatur dengan benar)
             $customer->delete();
 
             return response()->json([
@@ -308,4 +352,45 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+ public function deletePartner(Request $request, $id)
+{
+    try {
+        // Cari partner berdasarkan ID dan pastikan rolenya partner
+        $partner = User::where('id', $id)
+                      ->where('role', 'partner')
+                      ->first();
+
+        if (!$partner) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Partner tidak ditemukan.'
+            ], 404);
+        }
+
+        // Simpan nama partner untuk response
+        $partnerName = $partner->name;
+
+        // Hapus profile picture jika ada
+        if ($partner->profile_picture) {
+            Storage::disk('public')->delete($partner->profile_picture);
+        }
+
+        // Force delete partner - akan menghapus semua relasi terkait
+        $partner->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Partner {$partnerName} berhasil dihapus secara permanen."
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error force deleting partner: ' . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan saat menghapus partner secara permanen.'
+        ], 500);
+    }
+}
 }
