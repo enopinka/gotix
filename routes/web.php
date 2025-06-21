@@ -37,7 +37,6 @@ Route::middleware([Authentication::class . ":customer"])->group(function () {
     // Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
     Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
     Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
-    Route::post('/payment-handler', [MidtransApiController::class, 'paymentHandler']);
     Route::post('/payment', [CustomerOrderController::class, 'payment_post']);
     Route::get('/invoice/{id}', [CustomerOrderController::class, 'createInvoice']);;
 
@@ -81,3 +80,5 @@ Route::middleware([Authentication::class . ":admin"])->group(function () {
     Route::get('/admin/acara', [AdminController::class, 'acara']);
     Route::get('/admin/customer', [AdminController::class, 'customer']);
 });
+
+Route::post('/payment-handler', [MidtransApiController::class, 'paymentHandler']);

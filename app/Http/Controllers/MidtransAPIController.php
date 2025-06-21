@@ -13,12 +13,30 @@ class MidtransApiController extends Controller
     public function paymentHandler(Request $request)
     {
         $json = json_decode($request->getContent());
+        // if (!$json) {
+        //     // Body tidak valid JSON
+        //     return response()->json(['message' => 'Invalid JSON'], 400);
+        // }
 
-        if (!$json) {
-            return response()->json(['message' => 'Invalid JSON'], 400);
-        }
+
+        // SHA512(order_id+status_code+gross_amount+ServerKey)
 
         $serverKey = env('MIDTRANS_SERVER_KEY');
+
+        $signature_key = hash('sha512', $json->order_id . $json->status_code . $json->gross_amount . $serverKey);
+
+        if ($signature_key != $json->signature_key) {
+            return response()->json([
+                'message' => 'Invalid signature',
+                'order_id' => $json->order_id,
+                'status_code' => $json->status_code,
+                'gross_amount' => $json->gross_amount,
+                'server_key' => $serverKey,
+
+                'calculated_signature' => $signature_key,
+                'received_signature' => $json->signature_key,
+            ], 403);
+        }
 
         $signature_key = hash('sha512', $json->order_id . $json->status_code . $json->gross_amount . $serverKey);
 
