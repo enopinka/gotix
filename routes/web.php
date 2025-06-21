@@ -39,9 +39,10 @@ Route::middleware([Authentication::class . ":customer"])->group(function () {
     Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
     Route::post('/payment-handler', [MidtransApiController::class, 'paymentHandler']);
     Route::post('/payment', [CustomerOrderController::class, 'payment_post']);
+    Route::get('/invoice/{id}', [CustomerOrderController::class, 'createInvoice']);;
 
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
-    Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
+    // Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
 
     // Route::delete('/profile/photo/delete', [CustomerProfileController::class, 'deletePhoto'])->name('customer.profile.photo.delete');
 

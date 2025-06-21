@@ -16,8 +16,7 @@ class Order extends Model
         'snap_token',
         'transaction_id',
         'payment_type',
-        'payment_code',
-        'pdf_url',
+        'order_id'
     ];
 
     public function user()

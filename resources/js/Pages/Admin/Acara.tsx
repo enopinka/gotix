@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { usePage } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 

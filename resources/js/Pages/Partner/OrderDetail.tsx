@@ -5,7 +5,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import PartnerLayout from "@/Layouts/PartnerLayout";
 import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 
