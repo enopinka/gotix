@@ -1,5 +1,6 @@
 import { Button } from "@/Components/ui/button";
 import AdminLayout from "@/Layouts/AdminLayout";
+
 import { usePage, router } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 import { motion } from "framer-motion";
@@ -13,6 +14,10 @@ import {
     DollarSign,
 } from "lucide-react";
 import { useState } from "react";
+
+import { usePage } from "@inertiajs/react";
+import { PageProps as InertiaPageProps } from "@inertiajs/core";
+
 
 // Bikin Customer type dengan tambahan data tiket
 interface Customer {
@@ -40,6 +45,11 @@ export default function Customer() {
     const handleDelete = async (customer: Customer) => {
         const confirmation = window.confirm(
             `Apakah Anda yakin ingin menghapus pelanggan ${customer.name}?`
+        );
+
+    const handleDelete = (customerName: string) => {
+        const confirmation = window.confirm(
+            `Apakah Anda yakin ingin menghapus pelanggan ${customerName}?`
         );
 
         if (confirmation) {
@@ -87,6 +97,7 @@ export default function Customer() {
 
     return (
         <AdminLayout>
+
             <div className="p-6 text-white">
                 {/* Header Section */}
                 <motion.div
@@ -119,6 +130,53 @@ export default function Customer() {
                             </div>
                             <div className="text-sm text-gray-400">
                                 Data terupdate secara real-time
+<!-- =======
+            <div className="p-6">
+                <h1 className="text-2xl font-bold mb-6">Daftar Pelanggan</h1>
+
+                <div className="space-y-4">
+                    {customers.map((customer) => (
+                        <div
+                            key={customer.id}
+                            className="border rounded-xl p-4 shadow-sm hover:bg-gray-50 transition"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="mr-4">
+                                    <img
+                                        src={
+                                            customer.profile_picture ||
+                                            "/default-profile.png"
+                                        }
+                                        alt={customer.name}
+                                        className="w-16 h-16 rounded-full object-cover"
+                                    />
+                                </div>
+
+                                <div className="flex-1">
+                                    <h2 className="font-semibold text-lg">
+                                        {customer.name}
+                                    </h2>
+                                    <p className="text-sm text-gray-600">
+                                        Email: {customer.email}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        Telepon: {customer.phone ?? "-"}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        Terdaftar pada:{" "}
+                                        {new Date(
+                                            customer.created_at
+                                        ).toLocaleDateString()}
+                                    </p>
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    className="hover:bg-red-600 hover:text-white transition"
+                                    onClick={() => handleDelete(customer.name)}
+                                >
+                                    Hapus
+                                </Button>
                             </div>
                         </div>
                     </div>

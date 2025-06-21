@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,19 +14,20 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
+        'photo',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected $hidden = [
         'password',
@@ -47,19 +47,15 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Get the events associated with this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function events()
+
     {
         return $this->hasMany(Event::class, 'user_id');
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class, 'user_id');
-    }
-
-    public function revenue()
-    {
-        return $this->hasOne(Revenue::class, 'user_id');
     }
     
 }

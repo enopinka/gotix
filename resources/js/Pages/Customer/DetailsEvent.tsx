@@ -10,7 +10,6 @@ import {
     DialogHeader,
 } from "@/Components/ui/dialog";
 import { CalendarIcon, MapPinIcon, ClockIcon, Plus, Minus } from "lucide-react";
-import { ScrollArea } from "@/Components/ui/scroll-area";
 import { useState } from "react";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { router, usePage } from "@inertiajs/react";
@@ -44,11 +43,20 @@ export default function DetailsEvent({ event }: EventDetailProps) {
     const { auth } = usePage().props;
     const [isFlipped, setIsFlipped] = useState(false);
     const handleClick = () => setIsFlipped((prev) => !prev);
+    const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [showDetailDialog, setShowDetailDialog] = useState(false);
 
-    const handleCheckout = async (ticketId: number, quantity: number) => {
+    const handleCheckout = async (
+        ticketId: number,
+        quantity: number,
+        totalPrice: number
+    ) => {
         if (!auth.user) {
             return router.get("/login");
         }
+        console.log(totalPrice);
 
         try {
             router.post(
@@ -56,6 +64,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                 {
                     ticket_id: ticketId,
                     quantity: quantity,
+                    total_price: totalPrice,
                 },
                 {
                     onSuccess: () => {
@@ -82,15 +91,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
         date: new Date(`${event.date}T${event.time}`),
     };
 
-    const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
-    const [quantity, setQuantity] = useState<number>(1);
-    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-    const [showDetailDialog, setShowDetailDialog] = useState(false);
-
     const calculateTotal = (price: number, quantity: number) => {
         const subtotal = price * quantity;
-        const serviceFee = quantity * 10000;
-        const tax = subtotal * 0.1; // Pajak 10%
+        const serviceFee = 0;
+        const tax = 1; // Pajak 10%
         const total = subtotal + serviceFee + tax;
         return { subtotal, serviceFee, tax, total };
     };
@@ -264,7 +268,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                 value="ticket"
                                                 className="w-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white text-gray-300 rounded-lg font-semibold transition-all duration-300"
                                             >
-                                                Tiket
+                                                TiketSS
                                             </TabsTrigger>
                                         </TabsList>
 
@@ -561,27 +565,27 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                                         )}
                                                                                                                     </span>
                                                                                                                 </div>
+                                                                                                                <Button
+                                                                                                                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 shadow-lg hover:shadow-cyan-500/25"
+                                                                                                                    onClick={async () => {
+                                                                                                                        await handleCheckout(
+                                                                                                                            category.id,
+                                                                                                                            quantity,
+                                                                                                                            total
+                                                                                                                        );
+                                                                                                                        setShowDetailDialog(
+                                                                                                                            false
+                                                                                                                        );
+                                                                                                                    }}
+                                                                                                                >
+                                                                                                                    Konfirmasi
+                                                                                                                    &
+                                                                                                                    Bayar
+                                                                                                                </Button>
                                                                                                             </>
                                                                                                         );
                                                                                                     })()}
                                                                                                 </div>
-
-                                                                                                <Button
-                                                                                                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 shadow-lg hover:shadow-cyan-500/25"
-                                                                                                    onClick={async () => {
-                                                                                                        await handleCheckout(
-                                                                                                            category.id,
-                                                                                                            quantity
-                                                                                                        );
-                                                                                                        setShowDetailDialog(
-                                                                                                            false
-                                                                                                        );
-                                                                                                    }}
-                                                                                                >
-                                                                                                    Konfirmasi
-                                                                                                    &
-                                                                                                    Bayar
-                                                                                                </Button>
                                                                                             </div>
                                                                                         </DialogContent>
                                                                                     </Dialog>
@@ -678,7 +682,10 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                 </DialogDescription>
                             </div>
                             <button
-                                onClick={() => setShowSuccessDialog(false)}
+                                onClick={() => {
+                                    setShowSuccessDialog(false);
+                                    router.get("/tickets");
+                                }}
                                 className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
                             >
                                 Tutup

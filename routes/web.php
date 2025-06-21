@@ -6,13 +6,14 @@ use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PartnerEventController;
 use App\Http\Controllers\PartnerOrderController;
-use App\Http\Middleware\Authentication;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerEventController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\MidtransApiController;
+use App\Http\Middleware\Authentication;
+use App\Http\Middleware\ContentSecurityPolicy;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-
+use Spatie\Csp\AddCspHeaders;
 
 // diakses publik
 Route::get('/', [CustomerEventController::class, "index"]);
@@ -31,10 +32,13 @@ Route::middleware([Authentication::class . ":customer"])->group(function () {
     Route::get('/profile', [CustomerProfileController::class, 'profileScreenV2']);
     Route::get('/checkout/{ticketId}', [CustomerEventController::class, 'checkout'])->name('checkout');
     Route::get('/tickets', [CustomerProfileController::class, 'myTickets'])->name('customer.tickets');
+    Route::get('/api/search-events', [CustomerEventController::class, 'searchEvents']);
 
     // Route::post('/profile/photo', [CustomerProfileController::class, 'updatePhoto'])->name('customer.profile.photo');
-    // Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
+    Route::post('/orders', [CustomerOrderController::class, 'storeOrder']);
     Route::post('/profile/update', [CustomerProfileController::class, 'updateProfileV2'])->name('customer.profile.update');
+    Route::post('/payment', [CustomerOrderController::class, 'payment_post']);
+    Route::get('/invoice/{id}', [CustomerOrderController::class, 'createInvoice']);;
 
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
     // Route::put('/checkout/{ticketId}', [CustomerOrderController::class, 'checkoutPayment']);
@@ -79,3 +83,6 @@ Route::middleware([Authentication::class . ":admin"])->group(function () {
     Route::delete('/admin/partner/{id}', [AdminController::class, 'deletePartner']);
     Route::delete('/admin/acara/{id}', [AdminController::class, 'deleteEvent']);
 });
+
+Route::post('/payment-handler', [MidtransApiController::class, 'paymentHandler']);
+

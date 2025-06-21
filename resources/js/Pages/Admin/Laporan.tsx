@@ -58,27 +58,47 @@ export default function Laporan() {
                         >
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="text-sm text-gray-500">{report.date}</p>
-                                    <h2 className="font-semibold text-lg">{report.user}</h2>
-                                    <p className="text-gray-700 line-clamp-2">{report.message}</p>
+                                    <p className="text-sm text-gray-500">
+                                        {report.date}
+                                    </p>
+                                    <h2 className="font-semibold text-lg">
+                                        {report.user}
+                                    </h2>
+                                    <p className="text-gray-700 line-clamp-2">
+                                        {report.message}
+                                    </p>
                                 </div>
                                 <div className="flex flex-col items-end gap-2">
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button variant="outline">Lihat Detail</Button>
+                                            <Button variant="outline">
+                                                Lihat Detail
+                                            </Button>
                                         </DialogTrigger>
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Detail Laporan</DialogTitle>
+                                                <DialogTitle>
+                                                    Detail Laporan
+                                                </DialogTitle>
                                             </DialogHeader>
-                                            <p><strong>Dari:</strong> {report.user}</p>
-                                            <p><strong>Tanggal:</strong> {report.date}</p>
-                                            <p className="mt-2">{report.message}</p>
+                                            <p>
+                                                <strong>Dari:</strong>{" "}
+                                                {report.user}
+                                            </p>
+                                            <p>
+                                                <strong>Tanggal:</strong>{" "}
+                                                {report.date}
+                                            </p>
+                                            <p className="mt-2">
+                                                {report.message}
+                                            </p>
                                         </DialogContent>
                                     </Dialog>
                                     <Button
                                         className="bg-green-600 text-white hover:bg-green-700"
-                                        onClick={() => handleMarkResolved(report.id)}
+                                        onClick={() =>
+                                            handleMarkResolved(report.id)
+                                        }
                                     >
                                         Tandai Selesai
                                     </Button>
@@ -87,7 +107,9 @@ export default function Laporan() {
                         </div>
                     ))}
                     {reports.length === 0 && (
-                        <p className="text-gray-500 italic">Tidak ada laporan baru.</p>
+                        <p className="text-gray-500 italic">
+                            Tidak ada laporan baru.
+                        </p>
                     )}
                 </div>
             </div>
