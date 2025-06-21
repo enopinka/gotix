@@ -79,42 +79,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
 
     const handlePay = (snap_token: string, id: number) => {
         if (window.snap) {
-            window.snap.pay(snap_token, {
-                // onSuccess: async function (result) {
-                //     console.log("Success:", result);
-                //     router.put(`/checkout/${id}`, result, {
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //         },
-                //         onSuccess: () => console.log("berhasil"),
-                //     });
-                //     // await fetch(`/checkout/${id}`, {
-                //     //     method: "PUT",
-                //     //     headers: {
-                //     //         "Content-Type": "application/json",
-                //     //     },
-                //     //     body: JSON.stringify(result),
-                //     // });
-                //     // window.location.href = "/tickets";
-                // },
-                // onPending: function (result) {
-                //     console.log("Pending:", result);
-                //     router.put(`/checkout/${id}`, result, {
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //         },
-                //         onSuccess: () => console.log("berhasil"),
-                //     });
-                // },
-                // onError: function (result) {
-                //     console.log("Error:", result);
-                // },
-                // onClose: function () {
-                //     console.log(
-                //         "Customer closed the popup without finishing the payment"
-                //     );
-                // },
-            });
+            window.snap.pay(snap_token, {});
         } else {
             console.error("Snap not loaded yet!");
         }
@@ -123,7 +88,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
     // Komponen untuk kartu tiket
     const TicketCard: React.FC<TicketCardProps> = ({ order, index }) => {
         const isPastEvent = new Date(order.event.date) < new Date();
-        const isSuccess = order.status === "paid";
+        const orderStatus = order.status;
 
         const formatDate = (date: string) => {
             return new Date(date).toLocaleDateString("id-ID", {
@@ -159,19 +124,21 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                                     Order #{order.id}
                                 </span>
                                 <div className="flex items-center gap-2 mt-1">
-                                    {isSuccess ? (
+                                    {orderStatus === "settlement" ? (
                                         <CheckCircle className="w-4 h-4 text-green-400" />
                                     ) : (
                                         <AlertCircle className="w-4 h-4 text-yellow-400" />
                                     )}
                                     <span
                                         className={`text-xs font-bold px-3 py-1 rounded-full ${
-                                            isSuccess
+                                            orderStatus === "settlement"
                                                 ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                                 : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                                         }`}
                                     >
-                                        {isSuccess ? "TERBAYAR" : "PENDING"}
+                                        {orderStatus === "settlement"
+                                            ? "TERBAYAR"
+                                            : "PENDING"}
                                     </span>
                                 </div>
                             </div>
@@ -224,14 +191,33 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                                 Rp {order.total_price.toLocaleString("id-ID")}
                             </div>
                         </div>
+
+                        {/* Action buttons */}
+                        {/* {orderStatus === "settlement" && !isPastEvent && (
+                            // <div className="flex gap-3">
+                            //     <button className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center gap-2 group">
+                            //         <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            //         Download Tiket
+                            //     </button>
+                            //     <button className="px-4 py-3 bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-white rounded-xl transition-all duration-200 border border-gray-600/50 hover:border-gray-500">
+                            //         <Share2 className="w-4 h-4" />
+                            //     </button>
+                            // </div>
+                        )} */}
+                    </div>
+                    <div className=" flex justify-end gap-4">
                         <Button
                             onClick={() =>
                                 handlePay(order.snap_token, order.id)
                             }
+                            className={`bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${
+                                orderStatus === "pending" ? "block" : "hidden"
+                            }`}
                         >
                             Bayar
                         </Button>
                         <Button
+                            className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg"
                             onClick={() =>
                                 window.open(`/invoice/${order.id}`, "_blank")
                             }
@@ -239,20 +225,6 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                             Invoice
                         </Button>
                     </div>
-
-                    {/* Action buttons */}
-                    {isSuccess && !isPastEvent && (
-                        <div className="flex gap-3">
-                            <button className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-cyan-500/25 flex items-center justify-center gap-2 group">
-                                <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                Download Tiket
-                            </button>
-                            <button className="px-4 py-3 bg-gray-700/50 hover:bg-gray-700 text-gray-300 hover:text-white rounded-xl transition-all duration-200 border border-gray-600/50 hover:border-gray-500">
-                                <Share2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
-
                     {isPastEvent && (
                         <div className="text-center py-3 px-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
                             <span className="text-gray-400 font-medium">
