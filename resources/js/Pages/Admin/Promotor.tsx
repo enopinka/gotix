@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { usePage, router } from "@inertiajs/react";
+import { usePage, router, Link } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 import {
     Users,
@@ -14,6 +14,7 @@ import {
     User,
     Trash2,
     AlertTriangle,
+    TriangleAlert,
 } from "lucide-react";
 
 interface Event {
@@ -198,7 +199,7 @@ const PromotorCard = ({
     };
 
     return (
-        <div className="bg-gray-800/50 rounded-xl shadow-lg border border-gray-700/30 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-gray-800/50 rounded-xl shadow-lg border border-gray-700/30 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300 ">
             {/* Header Card */}
             <div className="p-5">
                 <div className="flex items-center gap-4 mb-4">
@@ -421,6 +422,14 @@ export default function Promotor() {
                             <Sparkles className="w-4 h-4 text-cyan-400" />
                             Kelola dan pantau semua promotor GOTIX
                         </p>
+                        <a
+                            href="https://docs.google.com/spreadsheets/d/18hB5yc3ZBreUPxfnN5WjflZtEcjz0OxW4UX8aQMMTIU/edit?resourcekey=&gid=1101009762#gid=1101009762"
+                            className="text-sm text-blue-400 hover:underline mt-2 inline-flex items-center gap-2"
+                            target="_blank"
+                        >
+                            <TriangleAlert className="w-4 h-4 text-yellow-400" />
+                            Pengajuan Mitra Perlu Tinjauan
+                        </a>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-700/50">
@@ -457,7 +466,7 @@ export default function Promotor() {
                 </div>
 
                 {/* Promotor Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="w-full space-y-4">
                     {promotors.map((promotor) => (
                         <PromotorCard
                             key={promotor.id}

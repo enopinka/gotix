@@ -48,7 +48,7 @@ class AdminController extends Controller
 
         // Tickets Statistics
         $totalTickets = Ticket::count();
-        $soldTickets = Order::where('status', 'paid')->sum('quantity') ?? 0;
+        $soldTickets = Order::sum('quantity') ?? 0;
         $availableTickets = Ticket::sum('available_seats') ?? 0;
 
         // Recent Activities
@@ -185,12 +185,9 @@ class AdminController extends Controller
             }])
             ->get()
             ->map(function ($user) {
-                // Perbaikan perhitungan revenue per promotor
-                $totalRevenue = DB::table('orders')
-                    ->join('events', 'orders.event_id', '=', 'events.id')
-                    ->where('events.user_id', $user->id)
-                    ->where('orders.status', 'paid')
-                    ->sum('orders.total_price') ?? 0;
+                $totalRevenue = DB::table('revenues')
+                    ->where('user_id', $user->id)
+                    ->sum('total_revenue') ?? 0;
 
                 return [
                     'id' => $user->id,
@@ -199,9 +196,8 @@ class AdminController extends Controller
                     'description' => $user->description ?? null,
                     'profile_picture' => $user->profile_picture ?? null,
                     'created_at' => $user->created_at,
-                    'total_revenue' => $totalRevenue,
+                    'total_revenue' => (int) $totalRevenue,
                     'events' => $user->events->map(function ($event) {
-                        // Hitung revenue per event
                         $eventRevenue = Order::where('event_id', $event->id)
                             ->where('status', 'paid')
                             ->sum('total_price') ?? 0;
@@ -218,7 +214,7 @@ class AdminController extends Controller
                             'user_id' => $event->user_id,
                             'poster' => $event->poster,
                             'seating_chart' => $event->seating_chart,
-                            'revenue' => $eventRevenue,
+                            'revenue' => (int) $eventRevenue,
                         ];
                     }),
                 ];
