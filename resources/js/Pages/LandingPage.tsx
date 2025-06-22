@@ -310,7 +310,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                 {open && (
                     // Dialog hanya muncul ketika open = true
                     <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent className="bg-white rounded-2xl shadow-xl max-w-md mx-auto p-0 overflow-hidden">
+                        <DialogContent className="bg-white rounded-2xl shadow-xl max-w-xl mx-auto p-0 overflow-hidden">
                             
                             <div className="bg-gradient-to-br from-cyan-400 to-blue-400 px-8 pt-8 pb-6 text-center relative">
                                
@@ -321,17 +321,23 @@ export default function LandingPage({ events }: LandingPageProps) {
                                 <div className="text-white/80 text-base relative z-10 mb-2">Get Online Ticket</div>
                             </div>
                             
-                            <div className="px-8 pt-8 pb-6 text-center">
-                                <p className="text-gray-500 mb-8">
-                                    GOTIX (Get Online Ticket) adalah platform yang didedikasikan untuk mendukung industri seni, festival, dan event di Indonesia. Kami menyediakan solusi tiket online yang mudah digunakan, aman, dan efisien untuk membantu penyelenggara acara dalam mengelola tiket dan meningkatkan pengalaman pengunjung.
+                            <div className="px-8 pt-8 pb-6 ">
+                                <p className="text-gray-500 text-justify mb-8">
+                                    GOTIX (Get Online Ticket) adalah platform tiket digital yang dirancang khusus untuk mendukung pertumbuhan industri seni, festival, dan event di seluruh Indonesia. Kami hadir dengan solusi penjualan tiket yang mudah, aman, dan efisien—membantu penyelenggara acara mengelola tiket dengan lebih baik dan menciptakan pengalaman terbaik bagi pengunjung.
+
+                                    <br /> ✨ Tingkatkan jangkauan dan profesionalisme event Anda bersama GOTIX!
+                                    Gabung sekarang dan rasakan kemudahan dalam setiap proses penjualan tiket Anda.
+                                    
                                 </p>
-                                
-                                <Button
-                                    onClick={() => setOpen(false)}
-                                    className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold rounded-full py-3 shadow-md transition-all duration-200"
+                                <p className="font-bold text-lg text-center">Mau jadi mitra kami?</p>
+                                <a
+                                    href="https://forms.gle/dMAK6ZXeQEEBShMg8"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full inline-block bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold rounded-full py-3 shadow-md transition-all duration-200 text-center mt-2"
                                 >
-                                    Tutup
-                                </Button>
+                                    Daftar Sekarang
+                                </a>
                             </div>
                         </DialogContent>
                     </Dialog>
