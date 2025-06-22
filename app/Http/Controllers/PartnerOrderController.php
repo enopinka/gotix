@@ -12,6 +12,7 @@ class PartnerOrderController extends Controller
 {
     public function order(Request $request)
     {
+
         $user_id = $request->user()->getAuthIdentifier();
         $events = Event::where('user_id', $user_id)->get();
 

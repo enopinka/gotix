@@ -1,11 +1,6 @@
 import { Card, CardContent } from "@/Components/ui/card";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/Components/ui/carousel";
+import { Dialog,  DialogContent} from "@/Components/ui/dialog";
+import { Button } from "@/Components/ui/button";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
@@ -26,6 +21,8 @@ type LandingPageProps = {
     events: Events[];
 };
 
+;
+    
 export default function LandingPage({ events }: LandingPageProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const eventsPerPage = 8;
@@ -63,6 +60,8 @@ export default function LandingPage({ events }: LandingPageProps) {
             year: "numeric",
         });
     };
+    
+    const [open, setOpen] = useState(false);
 
     const EventCard = ({
         event,
@@ -133,66 +132,60 @@ export default function LandingPage({ events }: LandingPageProps) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
             <CustomerLayout>
-                {/* Hero Carousel */}
-                {upcomingEvents.filter((event) => event.banner).length > 0 && (
-                    <section className="mb-12">
-                        <Carousel className="w-full">
-                            <CarouselContent>
-                                {upcomingEvents
-                                    .filter((event) => event.banner)
-                                    .slice(0, 5)
-                                    .map((event) => (
-                                        <CarouselItem key={event.id}>
-                                            <Card className="rounded-2xl overflow-hidden bg-gray-800 shadow-2xl">
-                                                <Link
-                                                    href={`/event/${event.id}`}
-                                                >
-                                                    <CardContent className="relative p-0 group">
-                                                        <img
-                                                            src={event.banner}
-                                                            alt={event.title}
-                                                            className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
-                                                        />
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                                                        <div className="absolute bottom-0 left-0 right-0 p-6">
-                                                            <span className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 shadow-lg">
-                                                                FEATURED
-                                                            </span>
-                                                            <h2 className="text-white text-2xl font-bold mb-2">
-                                                                {event.title}
-                                                            </h2>
-                                                            <p className="text-blue-200 text-sm">
-                                                                {formatEventDate(
-                                                                    event.date
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    </CardContent>
-                                                </Link>
-                                            </Card>
-                                        </CarouselItem>
-                                    ))}
-                            </CarouselContent>
-                            <CarouselPrevious className="left-4 bg-black/60 border-gray-600 text-white hover:bg-black/80 hover:border-blue-500 transition-colors" />
-                            <CarouselNext className="right-4 bg-black/60 border-gray-600 text-white hover:bg-black/80 hover:border-blue-500 transition-colors" />
-                        </Carousel>
-                    </section>
+                {upcomingEvents.length > 0 && (
+                    <Link
+                        href={`/event/${upcomingEvents[0].id}`}
+                        className="mb-16 block"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50"
+                        >
+                            <img
+                                src={upcomingEvents[0].poster}
+                                alt={upcomingEvents[0].title}
+                                className="w-full h-[75vh] object-cover object-center"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col md:flex-row md:items-end md:justify-between">
+                                <div>
+                                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">
+                                        {upcomingEvents[0].title}
+                                    </h2>
+                                    <div className="flex flex-wrap gap-4 text-gray-200 text-sm font-medium">
+                                        <span>
+                                            {formatEventDate(upcomingEvents[0].date)}
+                                        </span>
+                                        <span>
+                                            {formatEventTime(upcomingEvents[0].date, upcomingEvents[0].time)} WIB
+                                        </span>
+                                        <span>
+                                            {upcomingEvents[0].category}
+                                        </span>
+                                        <span>
+                                            {upcomingEvents[0].price}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </Link>
                 )}
-
-                {/* Upcoming Events */}
                 <section className="mb-16">
-                    <div className="text-center mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6 border border-gray-700/50 shadow-xl">
+                    <div className="text-left mb-8 ">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <h1 className="text-3xl font-bold mb-2">
-                                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                                    Event Mendatang
+                            <h1 className="text-4xl font-bold mb-2">
+                                <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                                    Upcoming Events
                                 </span>
                             </h1>
-                            <p className="text-gray-300 max-w-2xl mx-auto">
+                            <p className=" text-gray-800 text-lg ">
                                 Jangan lewatkan event-event menarik yang akan
                                 segera hadir
                             </p>
@@ -218,7 +211,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                     {/* Pagination */}
                     {totalPages > 1 && (
                         <div className="flex justify-center items-center mt-10">
-                            <div className="flex items-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-xl p-1.5 shadow-xl border border-gray-600/30">
+                            <div className="flex items-center bg-gray-100 rounded-xl p-1.5 border border-gray-600/30">
                                 <button
                                     onClick={() =>
                                         setCurrentPage((prev) =>
@@ -228,7 +221,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                                     disabled={currentPage === 1}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-1.5 text-sm ${
                                         currentPage === 1
-                                            ? "bg-gray-700/50 text-gray-500 cursor-not-allowed opacity-50"
+                                            ? "bg-gray-700 text-gray-100 cursor-not-allowed opacity-50"
                                             : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 font-bold shadow-md hover:shadow-cyan-500/25 hover:scale-105 transform"
                                     }`}
                                 >
@@ -293,41 +286,92 @@ export default function LandingPage({ events }: LandingPageProps) {
                     )}
                 </section>
 
+                 <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 my-8">
+                    {/* Logo */}
+                    <div className="flex items-center gap-6">
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                                GOTIX <br /> Get Online Ticket
+                            </h2>
+                            <p className="text-white text-base">
+                                Gotix berkomitmen mendukung industri seni, festival, dan event di Indonesia bersama GOTIX.
+                            </p>
+                        </div>
+                    </div>
+                    {/* Tombol */}
+                    <Button
+                        className="bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold px-8 py-3 rounded-full text-lg shadow transition-all duration-200"
+                        onClick={() => setOpen(true)}
+                    >
+                        Discover more about GOTIX here&nbsp; &rarr;
+                    </Button>
+                </div>
+
+                {open && (
+                    // Dialog hanya muncul ketika open = true
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogContent className="bg-white rounded-2xl shadow-xl max-w-md mx-auto p-0 overflow-hidden">
+                            {/* Header gradient dan judul */}
+                            <div className="bg-gradient-to-br from-cyan-400 to-blue-400 px-8 pt-8 pb-6 text-center relative">
+                                {/* Wave effect (opsional, bisa pakai SVG) */}
+                                <svg className="absolute bottom-0 left-0 w-full" height="32" viewBox="0 0 400 32" fill="none">
+                                    <path d="M0 32V0C66.6667 21.3333 133.333 21.3333 200 0C266.667 21.3333 333.333 21.3333 400 0V32H0Z" fill="#fff" fillOpacity="0.7"/>
+                                </svg>
+                                <h2 className="text-2xl font-bold text-white relative z-10 mb-1">Tentang GOTIX</h2>
+                                <div className="text-white/80 text-base relative z-10 mb-2">Get Online Ticket</div>
+                            </div>
+                            {/* Deskripsi */}
+                            <div className="px-8 pt-8 pb-6 text-center">
+                                <p className="text-gray-500 mb-8">
+                                    GOTIX (Get Online Ticket) adalah platform yang didedikasikan untuk mendukung industri seni, festival, dan event di Indonesia. Kami menyediakan solusi tiket online yang mudah digunakan, aman, dan efisien untuk membantu penyelenggara acara dalam mengelola tiket dan meningkatkan pengalaman pengunjung.
+                                </p>
+                                {/* Tombol */}
+                                <Button
+                                    onClick={() => setOpen(false)}
+                                    className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold rounded-full py-3 shadow-md transition-all duration-200"
+                                >
+                                    Tutup
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )}
+
                 {/* Past Events */}
-                <section className="border-t border-gray-700 pt-12">
-                    <div className="text-center mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6 border border-gray-700/30">
+                <section className="pt-12">
+                    <div className="text-left mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            <h2 className="text-2xl font-bold text-white mb-2">
-                                Event Sebelumnya
+                            <h2 className="text-4xl font-bold text-white mb-2">
+                                Past Event
                             </h2>
-                            <p className="text-gray-300">
+                            <p className="text-gray-300 mb-8">
                                 Lihat kembali event-event yang telah
                                 terselenggara
                             </p>
                         </motion.div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {pastEvents.map((event, index) => (
-                            <motion.div
-                                key={event.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    delay: index * 0.1,
-                                    duration: 0.5,
-                                }}
-                            >
-                                <EventCard event={event} isPast={true} />
-                            </motion.div>
-                        ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {pastEvents.map((event, index) => (
+                                <motion.div
+                                    key={event.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        delay: index * 0.1,
+                                        duration: 0.5,
+                                    }}
+                                >
+                                    <EventCard event={event} isPast={true} />
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                 </section>
             </CustomerLayout>
         </div>
     );
+    
 }

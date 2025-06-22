@@ -93,8 +93,8 @@ export default function DetailsEvent({ event }: EventDetailProps) {
 
     const calculateTotal = (price: number, quantity: number) => {
         const subtotal = price * quantity;
-        const serviceFee = 0;
-        const tax = 1; // Pajak 10%
+        const serviceFee = quantity * 10000; 
+        const tax = price * 0.1; // Pajak 10%
         const total = subtotal + serviceFee + tax;
         return { subtotal, serviceFee, tax, total };
     };
@@ -268,7 +268,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                 value="ticket"
                                                 className="w-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white text-gray-300 rounded-lg font-semibold transition-all duration-300"
                                             >
-                                                TiketSS
+                                                Tiket
                                             </TabsTrigger>
                                         </TabsList>
 
@@ -390,7 +390,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                                         : 1
                                                                                             )
                                                                                         }
-                                                                                        className="border-gray-600 text-black hover:bg-gray-700"
+                                                                                        className="border-gray-600 text-black hover:bg-gray-700 hover:text-white"
                                                                                     >
                                                                                         <Minus className="w-4 h-4" />
                                                                                     </Button>
@@ -418,7 +418,7 @@ export default function DetailsEvent({ event }: EventDetailProps) {
                                                                                             quantity >=
                                                                                             category.available_seats
                                                                                         }
-                                                                                        className="border-gray-600 text-black hover:bg-gray-700 disabled:opacity-50"
+                                                                                        className="border-gray-600 text-black hover:bg-gray-700 hover:text-white disabled:opacity-50"
                                                                                     >
                                                                                         <Plus className="w-4 h-4" />
                                                                                     </Button>

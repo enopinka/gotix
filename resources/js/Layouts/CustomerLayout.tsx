@@ -93,6 +93,7 @@ export default function CustomerLayout({
     const isScrolled = useScrollDetection();
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
     const searchRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const performSearch = useCallback(async (query: string) => {
         if (!query.trim()) {
@@ -128,6 +129,12 @@ export default function CustomerLayout({
     }, []);
 
     useEffect(() => {
+        if (searchFocused && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [searchFocused, showSearchResults, searchResults]);
+
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 searchRef.current &&
@@ -160,15 +167,15 @@ export default function CustomerLayout({
         e.preventDefault();
         if (searchQuery.trim()) {
             router.get("/", { search: searchQuery.trim() });
-            setShowSearchResults(false);
-            setSearchFocused(false);
+            setShowSearchResults(true);
+            setSearchFocused(true);
         }
     };
 
     const handleResultClick = (eventId: number) => {
         router.get(`/event/${eventId}`);
-        setShowSearchResults(false);
-        setSearchFocused(false);
+        setShowSearchResults(true);
+        setSearchFocused(true);
         setSearchQuery("");
     };
 
@@ -269,45 +276,55 @@ export default function CustomerLayout({
         >
             <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
-                <motion.input
-                    type="text"
-                    value={searchQuery}
-                    onKeyDownCapture={(e) => {
-                        if (e.key === "Enter") {
-                            setShowSearchResults(false);
-                            setSearchFocused(false);
+
+                <motion.div
+                    //animate={{ scale: searchFocused ? 1.02 : 1 }}
+                    //transition={{ duration: 0.2 }}
+                >
+                    <input
+                        ref={inputRef}
+                        id="search-event"
+                        name="search"
+                        type="text"
+                        value={searchQuery}
+                        onFocus={() => {
+                        if (!auth.user) {
+                            router.visit("/login");
+                            return;
                         }
-                    }}
-                    placeholder="Cari event impian Anda..."
-                    className={cn(
-                        "w-full pl-12 pr-6 py-3.5 bg-gray-700/80 backdrop-blur-xl border border-gray-600 text-white placeholder:text-gray-400",
-                        "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-gray-700",
-                        "transition-all duration-300 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-blue-500/20",
-                        "text-sm font-medium"
-                    )}
-                    onFocus={() => {
                         setSearchFocused(true);
-                        if (searchQuery.trim()) {
-                            setShowSearchResults(true);
-                        }
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            handleSearchSubmit(e);
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                             if (!auth.user) {
+                            router.visit("/login");
+                            return;
                         }
-                    }}
-                    animate={{ scale: searchFocused ? 1.02 : 1 }}
-                    transition={{ duration: 0.2 }}
-                />
+                            setSearchQuery(e.target.value);
+                            setSearchFocused(true); // Tetap fokus saat mengetik
+                            setShowSearchResults(!!e.target.value.trim()); // Tampilkan hasil selama query tidak kosong
+                        }}
+                        placeholder="Cari event impian Anda..."
+                        className={cn(
+                            "w-full pl-12 pr-6 py-3.5 bg-gray-700/80 backdrop-blur-xl border border-gray-600 text-white placeholder:text-gray-400",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 focus:bg-gray-700",
+                            "transition-all duration-300 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-blue-500/20",
+                            "text-sm font-medium"
+                        )}
+                    />
+                </motion.div>
+
                 {isSearching && (
                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                         <div className="w-4 h-4 border-2 border-blue-400/50 border-t-blue-400 rounded-full animate-spin" />
                     </div>
                 )}
             </div>
+
             <SearchResults />
         </div>
     );
+
+
 
     const UserMenu = () => (
         <DropdownMenu>
@@ -444,9 +461,23 @@ export default function CustomerLayout({
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        if (!auth.user) {
+                                            router.visit("/login");
+                                            return;
+                                        }
+                                        setSearchQuery(e.target.value);
+                                        setSearchFocused(true);
+                                        setShowSearchResults(!!e.target.value.trim());
+                                    }}
+                                    onFocus={() => 
+                                    {
+                                        if (!auth.user) {
+                                        router.visit("/login");
+                                        return;
+                        
                                     }
+                                        setSearchFocused(true)}}
                                     placeholder="Cari event..."
                                     className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
                                 />
