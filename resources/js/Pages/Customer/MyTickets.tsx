@@ -140,7 +140,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                                         }`}
                                     >
                                         {orderStatus === "settlement"
-                                            ? "TERBAYAR"
+                                            ? "PAID"
                                             : "PENDING"}
                                     </span>
                                 </div>

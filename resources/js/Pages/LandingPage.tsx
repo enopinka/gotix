@@ -146,7 +146,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                             <img
                                 src={upcomingEvents[0].poster}
                                 alt={upcomingEvents[0].title}
-                                className="w-full h-[75vh] object-cover object-center"
+                                className="w-full h-[640px] object-cover object-center"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent" />
                             <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col md:flex-row md:items-end md:justify-between">
@@ -211,7 +211,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                     {/* Pagination */}
                     {totalPages > 1 && (
                         <div className="flex justify-center items-center mt-10">
-                            <div className="flex items-center bg-gray-100 rounded-xl p-1.5 border border-gray-600/30">
+                            <div className="flex items-center rounded-xl p-1.5 border-gray-600/30">
                                 <button
                                     onClick={() =>
                                         setCurrentPage((prev) =>
@@ -221,8 +221,8 @@ export default function LandingPage({ events }: LandingPageProps) {
                                     disabled={currentPage === 1}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-1.5 text-sm ${
                                         currentPage === 1
-                                            ? "bg-gray-700 text-gray-100 cursor-not-allowed opacity-50"
-                                            : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 font-bold shadow-md hover:shadow-cyan-500/25 hover:scale-105 transform"
+                                            ? "bg-gray-500 text-gray-100 cursor-not-allowed opacity-50"
+                                            : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 font-bold  hover:shadow-cyan-500/25 hover:scale-105 transform"
                                     }`}
                                 >
                                     <svg
@@ -262,8 +262,8 @@ export default function LandingPage({ events }: LandingPageProps) {
                                     disabled={currentPage === totalPages}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-1.5 text-sm ${
                                         currentPage === totalPages
-                                            ? "bg-gray-700/50 text-gray-500 cursor-not-allowed opacity-50"
-                                            : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 font-bold shadow-md hover:shadow-cyan-500/25 hover:scale-105 transform"
+                                            ? "bg-gray-500 text-gray-100 cursor-not-allowed opacity-50"
+                                            : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 font-bold  hover:shadow-cyan-500/25 hover:scale-105 transform"
                                     }`}
                                 >
                                     Next
@@ -286,7 +286,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                     )}
                 </section>
 
-                 <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 my-8">
+                 <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 mb-4 mt-8">
                     
                     <div className="flex items-center gap-6">
                         <div>
@@ -338,8 +338,8 @@ export default function LandingPage({ events }: LandingPageProps) {
                 )}
 
               
-                <section className="pt-12">
-                    <div className="text-left mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
+                <section className="pt-8">
+                    <div className="text-left bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
