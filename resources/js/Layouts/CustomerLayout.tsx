@@ -287,18 +287,7 @@ export default function CustomerLayout({
                         name="search"
                         type="text"
                         value={searchQuery}
-                        onFocus={() => {
-                        if (!auth.user) {
-                            router.visit("/login");
-                            return;
-                        }
-                        setSearchFocused(true);
-                    }}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                             if (!auth.user) {
-                            router.visit("/login");
-                            return;
-                        }
                             setSearchQuery(e.target.value);
                             setSearchFocused(true); // Tetap fokus saat mengetik
                             setShowSearchResults(!!e.target.value.trim()); // Tampilkan hasil selama query tidak kosong
@@ -461,23 +450,11 @@ export default function CustomerLayout({
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        if (!auth.user) {
-                                            router.visit("/login");
-                                            return;
-                                        }
-                                        setSearchQuery(e.target.value);
-                                        setSearchFocused(true);
-                                        setShowSearchResults(!!e.target.value.trim());
-                                    }}
-                                    onFocus={() => 
-                                    {
-                                        if (!auth.user) {
-                                        router.visit("/login");
-                                        return;
-                        
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                        
                                     }
-                                        setSearchFocused(true)}}
+                                    onFocus={() => setSearchFocused(true)}
                                     placeholder="Cari event..."
                                     className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
                                 />

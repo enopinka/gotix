@@ -339,7 +339,7 @@ export default function LandingPage({ events }: LandingPageProps) {
 
               
                 <section className="pt-8">
-                    <div className="text-left mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
+                    <div className="text-left bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
