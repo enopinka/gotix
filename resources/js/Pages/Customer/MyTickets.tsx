@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/Components/ui/dialog"; // Pastikan Anda punya komponen Dialog, atau gunakan modal lain
+
 
 // Tipe data yang digunakan
 interface TicketType {
@@ -67,7 +70,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
         // Buat script tag Snap.js
         const script = document.createElement("script");
         script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", clientKey);
+        script.setAttribute("data-client-key", import.meta.env.VITE_MIDTRANS_CLIENT_KEY);;
         script.async = true;
 
         document.body.appendChild(script);
@@ -77,13 +80,13 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
         };
     }, []);
 
-    const handlePay = (snap_token: string, id: number) => {
-        if (window.snap) {
-            window.snap.pay(snap_token, {});
-        } else {
-            console.error("Snap not loaded yet!");
-        }
-    };
+    const handleOrder = (order: OrderType) => {
+    setSelectedOrder(order);
+    setPayDialogOpen(true);
+};
+    const [payDialogOpen, setPayDialogOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+    const [showCounterDialog, setShowCounterDialog] = useState(false);
 
     // Komponen untuk kartu tiket
     const TicketCard: React.FC<TicketCardProps> = ({ order, index }) => {
@@ -207,9 +210,7 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                     </div>
                     <div className=" flex justify-end gap-4">
                         <Button
-                            onClick={() =>
-                                handlePay(order.snap_token, order.id)
-                            }
+                            onClick={() => handleOrder(order)}
                             className={`bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${
                                 orderStatus === "pending" ? "block" : "hidden"
                             }`}
@@ -232,8 +233,9 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                             </span>
                         </div>
                     )}
+                   
                 </div>
-
+                
                 {/* Decorative elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl -translate-y-16 translate-x-16" />
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-2xl translate-y-12 -translate-x-12" />
@@ -388,6 +390,76 @@ export default function MyTickets({ orders = [] }: { orders?: OrderType[] }) {
                         </div>
                     )}
                 </div>
+                 <Dialog open={payDialogOpen} onOpenChange={setPayDialogOpen}>
+                        <DialogContent>
+                            <DialogTitle>Pilih Metode Pembayaran</DialogTitle>
+                            <p className="text-gray-500 mb-2">
+                                Total nominal transaksi anda:{" "}
+                                <span className="font-bold text-lg">
+                                    Rp {selectedOrder?.total_price.toLocaleString("id-ID")}
+                                </span>
+
+                                <br/> Silakan pilih metode pembayaran yang Anda inginkan.
+                            </p>
+                            <div className="space-y-4 mt-4">
+                                <Button
+                                    className="w-full bg-gray-700 text-white"
+                                    onClick={() => {
+                                        setPayDialogOpen(false);
+                                        setShowCounterDialog(true);
+                                    }}
+                                >
+                                    Bayar di Counter
+                                </Button>
+                                <Button
+                                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                                    onClick={() => {
+                                        setPayDialogOpen(false);
+                                        if (selectedOrder && window.snap) {
+                                            window.snap.pay(selectedOrder.snap_token, {});
+                                        }
+                                    }}
+                                >
+                                    Online Payment
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={showCounterDialog} onOpenChange={setShowCounterDialog}>
+                    <DialogContent className="flex flex-col items-center justify-center p-8 rounded-2xl shadow-xl bg-white max-w-xs mx-auto">
+                        <div className="flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
+                            <CheckCircle className="w-12 h-12 text-green-500" />
+                        </div>
+                      
+                        <h2 className="text-xl font-bold text-gray-900 mb-2 text-center">
+                            Permintaan Terkirim
+                        </h2>
+                        
+                        <p className="text-dgray-500 mb-6 text-center">
+                            Permintaan pembayaran Anda telah dikirim.
+                            Silakan tunggu konfirmasi dari mitra.
+                        </p>
+                        
+                        <Button
+                            onClick={async () => {
+                                setShowCounterDialog(false);
+                                // Kirim notifikasi ke mitra (misal via endpoint API)
+                                if (selectedOrder) {
+                                    await fetch(`/api/notify-mitra`, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ order_id: selectedOrder.id }),
+                                    });
+                                }
+                            }}
+                            className="w-full bg-green-400 hover:bg-green-500 text-white font-semibold rounded-xl py-3 shadow-md transition-all duration-200"
+                        >
+                            OK
+                        </Button>
+                    </DialogContent>
+                </Dialog>
             </CustomerLayout>
         </div>
     );
