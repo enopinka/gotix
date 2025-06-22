@@ -145,7 +145,7 @@ class CustomerProfileController extends Controller
         $orders = Order::with(['event', 'ticket'])
             ->where('user_id', Auth::id())
             ->latest()
-            ->get();
+            ->get(); // Ambil data dulu, baru map
 
         return Inertia::render('Customer/MyTickets', [
             'orders' => $orders,

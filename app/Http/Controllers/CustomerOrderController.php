@@ -42,7 +42,12 @@ class CustomerOrderController extends Controller
         // Mengurangi kuota tiket
         $ticket->available_seats -= $request->quantity;
 
-        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = config('services.midtrans.serverKey');
+        \Midtrans\Config::$isProduction = config('services.midtrans.isProduction');
+        \Midtrans\Config::$isSanitized = config('services.midtrans.isSanitized');
+        \Midtrans\Config::$is3ds = config('services.midtrans.is3ds');
+
+       /* // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = config('midtrans.serverKey');
         // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
         \Midtrans\Config::$isProduction = config('midtrans.isProduction');
@@ -50,7 +55,8 @@ class CustomerOrderController extends Controller
         \Midtrans\Config::$isSanitized = config('midtrans.isSanitized');
         // Set 3DS transaction for credit card to true
         \Midtrans\Config::$is3ds = config('midtrans.isSanitized');
-
+        */
+        
         $order_id = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 8);;
         // Simpan order
         $order = Order::create([

@@ -140,6 +140,12 @@ class CustomerEventController extends Controller
             ];
         });
 
+        \Midtrans\Config::$serverKey = config('services.midtrans.serverKey');
+        \Midtrans\Config::$isProduction = config('services.midtrans.isProduction');
+        \Midtrans\Config::$isSanitized = config('services.midtrans.isSanitized');
+        \Midtrans\Config::$is3ds = config('services.midtrans.is3ds');
+
+
         $partner_id = $event->user_id;
         $partner = User::where('id', $partner_id)->first();
         $partner_name = $partner ? $partner->name : 'Unknown';
