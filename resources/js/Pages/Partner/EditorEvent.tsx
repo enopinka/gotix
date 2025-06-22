@@ -1,13 +1,6 @@
 import PartnerLayout from "@/Layouts/PartnerLayout";
-import { Link, router } from "@inertiajs/react";
-import {
-    Banknote,
-    CalendarIcon,
-    Copy,
-    LogOut,
-    Plus,
-    Ticket,
-} from "lucide-react";
+import { router } from "@inertiajs/react";
+import { CalendarIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,7 +21,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/Components/ui/popover";
-import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -106,7 +98,6 @@ export default function EditorEvent({ event }: eventProps) {
                 onSuccess: () => console.log("Event berhasil diupdate"),
                 onError: (e) => console.error(e),
             });
-            console.log(values);
         } else {
             router.post("/partner/event/create", formattedValues, {
                 onSuccess: () => {
@@ -120,17 +111,22 @@ export default function EditorEvent({ event }: eventProps) {
     }
 
     return (
-        <>
-            <PartnerLayout>
-                <p className="text-2xl font-bold my-4">Tambah Acara</p>
-
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8"
-                    >
-                        <div className="space-y-4">
-                            {" "}
+        <PartnerLayout>
+            <div className="flex justify-center py-8">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl px-8 py-10">
+                    <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+                        {isEdit ? "Edit Acara" : "Tambah Acara"}
+                    </h1>
+                    <p className="text-center text-gray-500 mb-8">
+                        {isEdit
+                            ? "Perbarui detail acara Anda di bawah ini."
+                            : "Lengkapi detail acara untuk membuat event baru."}
+                    </p>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-6"
+                        >
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -138,7 +134,7 @@ export default function EditorEvent({ event }: eventProps) {
                                     <FormItem>
                                         <FormLabel>Nama Acara</FormLabel>
                                         <FormControl>
-                                            <Input {...field} />
+                                            <Input {...field} placeholder="Masukkan nama acara" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -151,159 +147,165 @@ export default function EditorEvent({ event }: eventProps) {
                                     <FormItem>
                                         <FormLabel>Deskripsi</FormLabel>
                                         <FormControl>
-                                            <Textarea {...field} />
+                                            <Textarea {...field} placeholder="Deskripsi acara" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="place"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tempat</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="date"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel>Tanggal</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "w-[240px] pl-3 text-left font-normal",
-                                                            !field.value &&
-                                                                "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        {field.value ? (
-                                                            format(
-                                                                field.value,
-                                                                "dd/MM/yyyy"
-                                                            )
-                                                        ) : (
-                                                            <span>
-                                                                Pilih tanggal
-                                                            </span>
-                                                        )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-auto p-0"
-                                                align="start"
-                                            >
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date < new Date()
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="place"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Tempat</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder="Lokasi acara" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="date"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Tanggal</FormLabel>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "w-full pl-3 text-left font-normal",
+                                                                !field.value &&
+                                                                    "text-muted-foreground"
+                                                            )}
+                                                        >
+                                                            {field.value ? (
+                                                                format(
+                                                                    field.value,
+                                                                    "dd/MM/yyyy"
+                                                                )
+                                                            ) : (
+                                                                <span>
+                                                                    Pilih tanggal
+                                                                </span>
+                                                            )}
+                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-auto p-0"
+                                                    align="start"
+                                                >
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        disabled={(date) =>
+                                                            date < new Date()
+                                                        }
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="time"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Waktu</FormLabel>
+                                            <FormControl>
+                                                <Input type="time" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="poster"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Upload Poster</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.files?.[0]
+                                                        )
                                                     }
-                                                    initialFocus
                                                 />
-                                            </PopoverContent>
-                                        </Popover>
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="time"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Waktu</FormLabel>
-                                        <FormControl>
-                                            <Input type="time" {...field} />
-                                        </FormControl>
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="poster"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Poster</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        e.target.files?.[0]
-                                                    )
-                                                }
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="seat"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Denah</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        e.target.files?.[0]
-                                                    )
-                                                }
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="banner"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Banner</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) =>
-                                                    field.onChange(
-                                                        e.target.files?.[0]
-                                                    )
-                                                }
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        <Button type="submit">Submit</Button>
-                    </form>
-                </Form>
-            </PartnerLayout>
-        </>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="seat"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Upload Denah</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.files?.[0]
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="banner"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Upload Banner</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.files?.[0]
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <Button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-600 hover:to-cyan-600 transition-all duration-200"
+                            >
+                                {isEdit ? "Simpan Perubahan" : "Buat Event"}
+                            </Button>
+                        </form>
+                    </Form>
+                </div>
+            </div>
+        </PartnerLayout>
     );
 }

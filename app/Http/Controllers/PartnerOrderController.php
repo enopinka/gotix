@@ -44,7 +44,14 @@ class PartnerOrderController extends Controller
 
         return Inertia::render("Partner/Order", ['events' => $events_map]);
     }
+    public function updateStatus(Request $request, $orderId)
+{
+    $order = Order::findOrFail($orderId);
+    $order->status = $request->input('status'); // status: "paid" atau "checked-in"
+    $order->save();
 
+    return back()->with('success', 'Status berhasil diubah!');
+}
     public function orderDetail($id)
     {
         $events = Event::whereId($id)->first();
