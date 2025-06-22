@@ -186,18 +186,18 @@ const OrderItem = memo(
                 </p>
                 <span
                     className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        order.status === "paid"
+                        order.status === "settlement"
                             ? "bg-emerald-600 text-white"
                             : order.status === "pending"
                             ? "bg-yellow-600 text-white"
                             : "bg-red-600 text-white"
                     }`}
                 >
-                    {order.status === "paid"
+                    {order.status === "settlement"
                         ? "Terbayar"
                         : order.status === "pending"
                         ? "Pending"
-                        : "Dibatalkan"}
+                        : order.status}
                 </span>
             </div>
         </div>
@@ -417,7 +417,7 @@ export default function Dashboard({
                                 <div className="flex items-center space-x-2">
                                     <XCircle className="w-4 h-4 text-red-400" />
                                     <span className="text-gray-300">
-                                        Dibatalkan
+                                        Lainnya
                                     </span>
                                 </div>
                                 <span className="font-bold text-white">
@@ -462,7 +462,7 @@ export default function Dashboard({
                                         </div>
                                         <span className="font-bold text-white text-sm">
                                             {formatCurrency(
-                                                promotor.total_revenue || 0
+                                                promotor.total_revenue
                                             )}
                                         </span>
                                     </div>
