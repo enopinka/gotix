@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/Components/ui/card";
-import { Dialog,  DialogContent} from "@/Components/ui/dialog";
+import { Dialog, DialogContent } from "@/Components/ui/dialog";
 import { Button } from "@/Components/ui/button";
 import CustomerLayout from "@/Layouts/CustomerLayout";
 import { Link } from "@inertiajs/react";
@@ -21,8 +21,6 @@ type LandingPageProps = {
     events: Events[];
 };
 
-;
-    
 export default function LandingPage({ events }: LandingPageProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const eventsPerPage = 8;
@@ -60,7 +58,7 @@ export default function LandingPage({ events }: LandingPageProps) {
             year: "numeric",
         });
     };
-    
+
     const [open, setOpen] = useState(false);
 
     const EventCard = ({
@@ -156,17 +154,21 @@ export default function LandingPage({ events }: LandingPageProps) {
                                     </h2>
                                     <div className="flex flex-wrap gap-4 text-gray-200 text-sm font-medium">
                                         <span>
-                                            {formatEventDate(upcomingEvents[0].date)}
+                                            {formatEventDate(
+                                                upcomingEvents[0].date
+                                            )}
                                         </span>
                                         <span>
-                                            {formatEventTime(upcomingEvents[0].date, upcomingEvents[0].time)} WIB
+                                            {formatEventTime(
+                                                upcomingEvents[0].date,
+                                                upcomingEvents[0].time
+                                            )}{" "}
+                                            WIB
                                         </span>
                                         <span>
                                             {upcomingEvents[0].category}
                                         </span>
-                                        <span>
-                                            {upcomingEvents[0].price}
-                                        </span>
+                                        <span>{upcomingEvents[0].price}</span>
                                     </div>
                                 </div>
                             </div>
@@ -286,15 +288,15 @@ export default function LandingPage({ events }: LandingPageProps) {
                     )}
                 </section>
 
-                 <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 mb-4 mt-8">
-                    
+                <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 mb-4 mt-8">
                     <div className="flex items-center gap-6">
                         <div>
                             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                                 GOTIX <br /> Get Online Ticket
                             </h2>
                             <p className="text-white text-base">
-                                Gotix berkomitmen mendukung industri seni, festival, dan event di Indonesia bersama GOTIX.
+                                Gotix berkomitmen mendukung industri seni,
+                                festival, dan event di Indonesia bersama GOTIX.
                             </p>
                         </div>
                     </div>
@@ -311,21 +313,44 @@ export default function LandingPage({ events }: LandingPageProps) {
                     // Dialog hanya muncul ketika open = true
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogContent className="bg-white rounded-2xl shadow-xl max-w-md mx-auto p-0 overflow-hidden">
-                            
                             <div className="bg-gradient-to-br from-cyan-400 to-blue-400 px-8 pt-8 pb-6 text-center relative">
-                               
-                                <svg className="absolute bottom-0 left-0 w-full" height="32" viewBox="0 0 400 32" fill="none">
-                                    <path d="M0 32V0C66.6667 21.3333 133.333 21.3333 200 0C266.667 21.3333 333.333 21.3333 400 0V32H0Z" fill="#fff" fillOpacity="0.7"/>
+                                <svg
+                                    className="absolute bottom-0 left-0 w-full"
+                                    height="32"
+                                    viewBox="0 0 400 32"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M0 32V0C66.6667 21.3333 133.333 21.3333 200 0C266.667 21.3333 333.333 21.3333 400 0V32H0Z"
+                                        fill="#fff"
+                                        fillOpacity="0.7"
+                                    />
                                 </svg>
-                                <h2 className="text-2xl font-bold text-white relative z-10 mb-1">Tentang GOTIX</h2>
-                                <div className="text-white/80 text-base relative z-10 mb-2">Get Online Ticket</div>
+                                <h2 className="text-2xl font-bold text-white relative z-10 mb-1">
+                                    Tentang GOTIX
+                                </h2>
+                                <div className="text-white/80 text-base relative z-10 mb-2">
+                                    Get Online Ticket
+                                </div>
                             </div>
-                            
-                            <div className="px-8 pt-8 pb-6 text-center">
+
+                            <div className="px-8 pt-8 pb-6 text-center space-y-4">
                                 <p className="text-gray-500 mb-8">
-                                    GOTIX (Get Online Ticket) adalah platform yang didedikasikan untuk mendukung industri seni, festival, dan event di Indonesia. Kami menyediakan solusi tiket online yang mudah digunakan, aman, dan efisien untuk membantu penyelenggara acara dalam mengelola tiket dan meningkatkan pengalaman pengunjung.
+                                    GOTIX (Get Online Ticket) adalah platform
+                                    yang didedikasikan untuk mendukung industri
+                                    seni, festival, dan event di Indonesia. Kami
+                                    menyediakan solusi tiket online yang mudah
+                                    digunakan, aman, dan efisien untuk membantu
+                                    penyelenggara acara dalam mengelola tiket
+                                    dan meningkatkan pengalaman pengunjung.
                                 </p>
-                                
+
+                                <a
+                                    href="https://forms.gle/dMAK6ZXeQEEBShMg8"
+                                    className="w-full text-blue-500 font-semibold rounded-full py-3 transition-all duration-200"
+                                >
+                                    Klik untuk Pengajuan Mitra Gotix
+                                </a>
                                 <Button
                                     onClick={() => setOpen(false)}
                                     className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold rounded-full py-3 shadow-md transition-all duration-200"
@@ -337,7 +362,6 @@ export default function LandingPage({ events }: LandingPageProps) {
                     </Dialog>
                 )}
 
-              
                 <section className="pt-8">
                     <div className="text-left bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
                         <motion.div
@@ -373,5 +397,4 @@ export default function LandingPage({ events }: LandingPageProps) {
             </CustomerLayout>
         </div>
     );
-    
 }
