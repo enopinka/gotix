@@ -53,8 +53,9 @@ class User extends Authenticatable
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function events()
-    
+
     {
         return $this->hasMany(Event::class, 'user_id');
     }
+    
 }

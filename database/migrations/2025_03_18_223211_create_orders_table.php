@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('ticket_id')->constrained('tickets')->cascadeOnDelete();
             $table->unsignedInteger('quantity');
             $table->unsignedBigInteger('total_price');
-            $table->enum('status', ['pending', 'paid', 'failed', 'expired', 'canceled', 'checked-in']);
+            $table->string("status");
         });
     }
 
