@@ -1,25 +1,12 @@
 import { Button } from "@/Components/ui/button";
 import AdminLayout from "@/Layouts/AdminLayout";
-
 import { usePage, router } from "@inertiajs/react";
 import { PageProps as InertiaPageProps } from "@inertiajs/core";
 import { motion } from "framer-motion";
-import {
-    Trash2,
-    Mail,
-    Calendar,
-    User,
-    Ticket,
-    ShoppingBag,
-    DollarSign,
-} from "lucide-react";
+import { Trash2, Mail, Calendar, User } from "lucide-react";
 import { useState } from "react";
 
-import { usePage } from "@inertiajs/react";
-import { PageProps as InertiaPageProps } from "@inertiajs/core";
-
-
-// Bikin Customer type dengan tambahan data tiket
+// Bikin Customer type
 interface Customer {
     id: number;
     name: string;
@@ -27,9 +14,6 @@ interface Customer {
     phone?: string;
     created_at: string;
     profile_picture?: string;
-    total_spent: number;
-    total_orders: number;
-    total_tickets_purchased: number;
 }
 
 // Extend PageProps, bukan replace
@@ -45,11 +29,6 @@ export default function Customer() {
     const handleDelete = async (customer: Customer) => {
         const confirmation = window.confirm(
             `Apakah Anda yakin ingin menghapus pelanggan ${customer.name}?`
-        );
-
-    const handleDelete = (customerName: string) => {
-        const confirmation = window.confirm(
-            `Apakah Anda yakin ingin menghapus pelanggan ${customerName}?`
         );
 
         if (confirmation) {
@@ -79,25 +58,8 @@ export default function Customer() {
         }
     };
 
-    // Format currency untuk IDR
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
-    };
-
-    // Hitung total tiket yang terbeli
-    const totalTicketsPurchased = customers.reduce(
-        (sum, customer) => sum + customer.total_tickets_purchased,
-        0
-    );
-
     return (
         <AdminLayout>
-
             <div className="p-6 text-white">
                 {/* Header Section */}
                 <motion.div
@@ -115,8 +77,7 @@ export default function Customer() {
                         </h1>
                     </div>
                     <p className="text-gray-400">
-                        Kelola semua data pelanggan dan aktivitas pembelian
-                        mereka
+                        Kelola semua data pelanggan Anda
                     </p>
 
                     {/* Stats Bar */}
@@ -130,53 +91,6 @@ export default function Customer() {
                             </div>
                             <div className="text-sm text-gray-400">
                                 Data terupdate secara real-time
-<!-- =======
-            <div className="p-6">
-                <h1 className="text-2xl font-bold mb-6">Daftar Pelanggan</h1>
-
-                <div className="space-y-4">
-                    {customers.map((customer) => (
-                        <div
-                            key={customer.id}
-                            className="border rounded-xl p-4 shadow-sm hover:bg-gray-50 transition"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="mr-4">
-                                    <img
-                                        src={
-                                            customer.profile_picture ||
-                                            "/default-profile.png"
-                                        }
-                                        alt={customer.name}
-                                        className="w-16 h-16 rounded-full object-cover"
-                                    />
-                                </div>
-
-                                <div className="flex-1">
-                                    <h2 className="font-semibold text-lg">
-                                        {customer.name}
-                                    </h2>
-                                    <p className="text-sm text-gray-600">
-                                        Email: {customer.email}
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        Telepon: {customer.phone ?? "-"}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        Terdaftar pada:{" "}
-                                        {new Date(
-                                            customer.created_at
-                                        ).toLocaleDateString()}
-                                    </p>
-                                </div>
-
-                                <Button
-                                    variant="outline"
-                                    className="hover:bg-red-600 hover:text-white transition"
-                                    onClick={() => handleDelete(customer.name)}
-                                >
-                                    Hapus
-                                </Button>
                             </div>
                         </div>
                     </div>
@@ -200,15 +114,6 @@ export default function Customer() {
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                                             Email
-                                        </th>
-                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
-                                            Tiket Dibeli
-                                        </th>
-                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
-                                            Total Pesanan
-                                        </th>
-                                        <th className="px-6 py-4 text-center text-xs font-semibold text-gray-300 uppercase tracking-wider">
-                                            Total Pengeluaran
                                         </th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">
                                             Terdaftar
@@ -263,63 +168,10 @@ export default function Customer() {
                                                 </div>
                                             </td>
 
-                                            {/* Total Tickets Purchased */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <Ticket className="w-4 h-4 text-purple-400" />
-                                                    <span
-                                                        className={`text-sm font-semibold ${
-                                                            customer.total_tickets_purchased >
-                                                            0
-                                                                ? "text-purple-400"
-                                                                : "text-gray-500"
-                                                        }`}
-                                                    >
-                                                        {
-                                                            customer.total_tickets_purchased
-                                                        }
-                                                    </span>
-                                                </div>
-                                            </td>
-
-                                            {/* Total Orders */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <ShoppingBag className="w-4 h-4 text-cyan-400" />
-                                                    <span
-                                                        className={`text-sm font-semibold ${
-                                                            customer.total_orders >
-                                                            0
-                                                                ? "text-cyan-400"
-                                                                : "text-gray-500"
-                                                        }`}
-                                                    >
-                                                        {customer.total_orders}
-                                                    </span>
-                                                </div>
-                                            </td>
-
-                                            {/* Total Spent */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <span
-                                                    className={`text-sm font-semibold ${
-                                                        customer.total_spent > 0
-                                                            ? "text-green-400"
-                                                            : "text-gray-500"
-                                                    }`}
-                                                >
-                                                    {customer.total_spent > 0
-                                                        ? formatCurrency(
-                                                              customer.total_spent
-                                                          )
-                                                        : "Rp 0"}
-                                                </span>
-                                            </td>
-
                                             {/* Created At */}
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-2 text-gray-400">
-                                                    <Calendar className="w-4 h-4 text-orange-400" />
+                                                    <Calendar className="w-4 h-4 text-purple-400" />
                                                     <span className="text-sm">
                                                         {new Date(
                                                             customer.created_at

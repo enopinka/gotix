@@ -1,17 +1,16 @@
-
 import { Link, usePage } from "@inertiajs/react";
 import {
     LogOut,
     UsersIcon,
     HandshakeIcon,
     LayoutDashboardIcon,
+    CalendarRangeIcon,
+    Ticket,
+    Banknote,
+    BookOpenIcon,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "@inertiajs/react";
-import { CalendarRangeIcon, Ticket, Banknote, LogOut, UsersIcon, HandshakeIcon, BookOpenIcon, LayoutDashboardIcon} from "lucide-react";
-import { ReactNode } from "react";
-
 
 const menuItems = [
     {
@@ -58,7 +57,7 @@ export default function AdminLayout({
                             <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
                                 <span className="text-white text-xl font-bold">
                                     {auth.user.name?.charAt(0).toUpperCase()}
-
+                                </span>
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-800"></div>
                         </div>
