@@ -85,4 +85,3 @@ Route::middleware([Authentication::class . ":admin"])->group(function () {
 });
 
 Route::post('/payment-handler', [MidtransApiController::class, 'paymentHandler']);
-
