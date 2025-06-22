@@ -39,7 +39,7 @@ type OrderDetailProps = {
 
 const statusColor = {
     pending: "bg-red-600",
-    paid: "bg-blue-600",
+    settlement: "bg-blue-600",
     expired: "bg-red-600",
     failed: "bg-red-600",
     canceled: "bg-slate-600",
@@ -48,7 +48,7 @@ const statusColor = {
 
 const statusLabel = {
     pending: "Pending",
-    paid: "Settlement",
+    settlement: "Paid",
     expired: "Expired",
     failed: "Gagal",
     canceled: "Canceled",
@@ -156,7 +156,7 @@ export default function Orderdetail({ event, orders }: OrderDetailProps) {
                                                     className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-1"
                                                     disabled={loadingId === order.id}
                                                     onClick={() =>
-                                                        handleConfirm(order.id, "paid")
+                                                        handleConfirm(order.id, "settlement")
                                                     }
                                                 >
                                                     {loadingId === order.id ? (
@@ -169,7 +169,7 @@ export default function Orderdetail({ event, orders }: OrderDetailProps) {
                                                     )}
                                                 </Button>
                                             )}
-                                            {order.status === "paid" && (
+                                            {order.status === "settlement" && (
                                                 <Button
                                                     size="sm"
                                                     className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-1"
