@@ -287,7 +287,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                 </section>
 
                  <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-cyan-500  rounded-2xl shadow-lg p-8 my-8">
-                    {/* Logo */}
+                    
                     <div className="flex items-center gap-6">
                         <div>
                             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
@@ -311,21 +311,21 @@ export default function LandingPage({ events }: LandingPageProps) {
                     // Dialog hanya muncul ketika open = true
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogContent className="bg-white rounded-2xl shadow-xl max-w-md mx-auto p-0 overflow-hidden">
-                            {/* Header gradient dan judul */}
+                            
                             <div className="bg-gradient-to-br from-cyan-400 to-blue-400 px-8 pt-8 pb-6 text-center relative">
-                                {/* Wave effect (opsional, bisa pakai SVG) */}
+                               
                                 <svg className="absolute bottom-0 left-0 w-full" height="32" viewBox="0 0 400 32" fill="none">
                                     <path d="M0 32V0C66.6667 21.3333 133.333 21.3333 200 0C266.667 21.3333 333.333 21.3333 400 0V32H0Z" fill="#fff" fillOpacity="0.7"/>
                                 </svg>
                                 <h2 className="text-2xl font-bold text-white relative z-10 mb-1">Tentang GOTIX</h2>
                                 <div className="text-white/80 text-base relative z-10 mb-2">Get Online Ticket</div>
                             </div>
-                            {/* Deskripsi */}
+                            
                             <div className="px-8 pt-8 pb-6 text-center">
                                 <p className="text-gray-500 mb-8">
                                     GOTIX (Get Online Ticket) adalah platform yang didedikasikan untuk mendukung industri seni, festival, dan event di Indonesia. Kami menyediakan solusi tiket online yang mudah digunakan, aman, dan efisien untuk membantu penyelenggara acara dalam mengelola tiket dan meningkatkan pengalaman pengunjung.
                                 </p>
-                                {/* Tombol */}
+                                
                                 <Button
                                     onClick={() => setOpen(false)}
                                     className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white font-semibold rounded-full py-3 shadow-md transition-all duration-200"
@@ -337,7 +337,7 @@ export default function LandingPage({ events }: LandingPageProps) {
                     </Dialog>
                 )}
 
-                {/* Past Events */}
+              
                 <section className="pt-12">
                     <div className="text-left mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 backdrop-blur-sm rounded-2xl py-8 px-6">
                         <motion.div
