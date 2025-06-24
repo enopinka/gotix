@@ -23,7 +23,7 @@ RUN npm run build
 FROM php:8.2.28-fpm-alpine3.22
 
 # install deps yang dibutuhkan untuk linux
-RUN apk add oniguruma-dev libzip-dev curl nginx && docker-php-ext-install pdo pdo_mysql mbstring zip
+RUN apk add oniguruma-dev libzip-dev curl nginx && docker-php-ext-install pdo pdo_mysql mbstring zip gd
 
 WORKDIR /var/www
 
